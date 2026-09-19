@@ -23,6 +23,8 @@ src/
       reinitialiser-mot-de-passe/   pages d'authentification
       compte/          compte utilisateur + gestion des entreprises
         entreprises/nouvelle/, entreprises/[id]/
+          opportunites/nouvelle/, opportunites/[opportunityId]/
+      opportunites/, opportunites/[slug]/   pages publiques des opportunités
       not-found.tsx, error.tsx      pages d'erreur génériques
     globals.css        styles globaux + configuration Tailwind
     favicon.ico
@@ -32,16 +34,17 @@ src/
     auth/              formulaires d'authentification (Client Components)
     account/           formulaire de profil, bouton de déconnexion
     companies/         formulaires et affichage liés à une entreprise (profil, produits/services, offres, besoins, membres)
+    opportunities/     formulaires et affichage liés aux opportunités (publication, réponses, filtres)
   lib/
     env.ts             lecture + validation des variables d'environnement
     utils.ts            fonctions utilitaires pures (ex. slugify)
     companies.ts         repli de langue pour les descriptions d'entreprise
-    offersNeeds.ts        composition automatique du titre d'une offre/d'un besoin
+    offersNeeds.ts        composition automatique du titre d'une offre/d'un besoin/d'une opportunité
     supabase/
       client.ts          client Supabase pour le navigateur
       server.ts           client Supabase pour le code serveur
       session.ts           utilisateur/profil/entreprises courants (serveur uniquement)
-  validations/         schémas Zod partagés entre formulaires (auth, entreprise, offre/besoin, communs)
+  validations/         schémas Zod partagés entre formulaires (auth, entreprise, offre/besoin, opportunité, communs)
   i18n/
     routing.ts          langues supportées, langue par défaut, segments d'URL traduits
     navigation.ts        Link/redirect/useRouter conscients de la langue
@@ -76,6 +79,10 @@ Côté base de données, l'identité repose sur `auth.users` (géré par Supabas
 ## URLs traduites (`pathnames`)
 
 `src/i18n/routing.ts` déclare des segments d'URL différents par langue (ex. `/connexion` en français, `/login` en anglais) via l'option `pathnames` de next-intl. Les fichiers du système de routage restent nommés en français (chemin "canonique") ; `Link`/`redirect`/`router.push` utilisent toujours ce chemin canonique, et next-intl affiche/route automatiquement vers la bonne URL localisée. Pour un chemin dynamique, passer un objet plutôt qu'une chaîne : `{ pathname: "/compte/entreprises/[id]", params: { id } }`.
+
+## Pourquoi des composants "…Client.tsx" intermédiaires (ex. `EditOpportunityClient`) ?
+
+Une page (Server Component) ne peut pas passer une fonction (`onCancel={() => ...}`) directement à un composant client comme `OpportunityForm` — Next.js interdit de sérialiser une fonction à travers la frontière serveur/client. Quand une page a besoin de fournir ce genre de gestionnaire (navigation, rafraîchissement), elle passe par un petit composant client intermédiaire qui définit la fonction lui-même (ex. `src/components/opportunities/EditOpportunityClient.tsx`, `CreateOpportunityClient.tsx`) et se contente de transmettre les données à la page.
 
 ## Conventions de nommage
 

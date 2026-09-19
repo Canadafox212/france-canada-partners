@@ -2,7 +2,7 @@
 
 > Document de référence permanent du projet. Toute décision structurante importante doit être reflétée ici avant/pendant son implémentation. Ce document est mis à jour au fil des phases, pas figé.
 
-**Statut** : Phase 4 — offres et besoins structurés (cœur du futur moteur de matching), testés en conditions réelles.
+**Statut** : Phase 5 — opportunités commerciales et réponses (troisième élément du futur moteur, après offres/besoins), testées en conditions réelles.
 **Dernière mise à jour** : 2026-09-19
 **Propriétaire produit** : non-développeur — toute section technique doit rester accompagnée d'une explication en langage clair dans les échanges de suivi.
 
@@ -199,19 +199,28 @@ Valeurs : DISTRIBUTOR, SUPPLIER, MANUFACTURER, SUBCONTRACTOR, IMPORTER, EXPORTER
 
 Sécurité : mêmes politiques que le reste du profil d'entreprise (owner/admin/member peuvent gérer, viewer en lecture seule, tout le monde en lecture si l'entreprise est active) — voir §9. Les champs contrôlés par la plateforme (`subscription_level`, `verification_status`, `platform_role`) restent hors de portée des offres/besoins, aucune nouvelle voie de contournement n'a été introduite.
 
-### 4.5 Opportunités _(non construite — définition conceptuelle seulement, voir encadré ci-dessus)_
+### 4.5 Opportunités _(✅ construite en Phase 5)_
 
-**opportunities**
+**opportunities** — intention ponctuelle, avec échéance (voir encadré §4.4).
 
-- id, company_id, title, description, opportunity_type, industry_id, origin_country, target_country, target_region
-- estimated_value, currency, deadline
-- status (`draft`/`published`/`closed`/`expired`)
-- visibility (`public`/`premium_only`), premium_status (`none`/`sponsored`)
-- embedding (vector, réservé — matching IA future)
-- created_at, expires_at
+- id, company_id, slug (généré automatiquement à partir du titre), title (composé automatiquement, comme pour les offres/besoins), description
+- capability_type_code (FK → `business_capability_types`, **réutilisé** plutôt qu'un nouveau vocabulaire), direction (`seeking`/`offering` — combiné au code pour couvrir "Recherche X" et "Proposition de X")
+- industry_id (FK, optionnel)
+- origin_country_code, target_country_code, target_region, language_code (langue de publication — une opportunité peut être publiée dans une seule langue)
+- estimated_value, currency_code, deadline (tous facultatifs — une PME peut publier en quelques minutes)
+- published_at, expires_at (calculés automatiquement à la publication : 90 jours par défaut si aucune `deadline`)
+- status (`draft`/`published`/`paused`/`closed`/`expired`/`archived`), visibility (`public`/`private`, réservé)
+- created_at, updated_at
 
-**opportunity_products_services** (jointure opportunity_id, product_service_id)
-**opportunity_responses** : id, opportunity_id, responding_company_id, message, status (`pending`/`accepted`/`declined`), created_at
+**opportunity_products_services** (jointure opportunity_id, product_service_id) — même principe que pour les offres/besoins.
+
+**opportunity_responses** — réponse d'une entreprise à l'opportunité d'une autre. **Jamais publique.**
+
+- id, opportunity_id, responding_company_id, responding_user_id (la personne répond **au nom d'une entreprise**, jamais en son nom propre), message, status (`declared_interest`/`under_review`/`accepted`/`declined`/`withdrawn`), created_at, updated_at
+- Contrainte unique (opportunity_id, responding_company_id) : une seule réponse par entreprise et par opportunité pour le MVP (modifiable/retirable, jamais recréée).
+- Auto-réponse interdite par déclencheur (une entreprise ne peut pas répondre à sa propre opportunité). Qui peut changer quoi est également imposé par déclencheur : l'entreprise répondante peut modifier son message et retirer sa réponse ; seule l'entreprise ayant publié peut faire progresser le statut (mise en examen/acceptation/refus).
+
+**notifications** _(✅ avancée de la Phase 8 à la Phase 5, comme `audit_logs`/`company_translations` l'ont été en Phase 3)_ : id, user_id, type, payload (jsonb), read_at, created_at. Écriture réservée à `create_notification()` (SECURITY DEFINER) — jamais d'insertion directe par un client.
 
 ### 4.6 Correspondances & mise en relation
 
@@ -462,18 +471,18 @@ PROJECT_SPEC.md
 2. Modèle de données central (identité, entreprises, membres, établissements, taxonomie, produits, offres/besoins, marchés, langues, certifications, sources) — **fait**, RLS écrite avec chaque table.
 3. Comptes utilisateurs + création/édition d'entreprise — **fait** : inscription, confirmation de courriel, connexion/déconnexion, mot de passe oublié/réinitialisation, profil, création d'entreprise (transactionnelle, `create_company()`), modification par owner/admin, liste des membres. `audit_logs` et `company_translations` ont été avancés depuis leur phase d'origine (9 et 2) car nécessaires dès maintenant. Sécurité testée en conditions réelles.
 4. Offres et besoins structurés — **fait** : "Nous proposons"/"Nous recherchons" avec produits/services, secteur, géographie et langues rattachés, statut actif/inactif, journal d'audit. Jeu de données de démonstration (`npm run seed:demo`). Priorité métier explicite : le cœur du produit (offres/besoins/opportunités/matching) passe avant l'annuaire public.
-5. **Opportunités commerciales** (publications ponctuelles avec durée de vie et réponses — voir distinction OFFRE/BESOIN/OPPORTUNITÉ en §4.4) — prochaine phase proposée
-6. Moteur de matching déterministe (entreprise↔entreprise, puis opportunité↔entreprise)
+5. Opportunités commerciales — **fait** : publication (brouillon/publiée/pause/clôture/archivage), réponses des entreprises (au nom d'une entreprise, jamais en son nom propre), auto-réponse interdite, confidentialité stricte des réponses, notifications internes, expiration administrable (90 jours par défaut), page publique + liste filtrée, pré-remplissage à partir d'un besoin/offre existant. `notifications` avancée depuis sa phase d'origine (9), comme `audit_logs`/`company_translations` l'ont été en Phase 3.
+6. **Moteur de matching déterministe** (entreprise↔entreprise, puis opportunité↔entreprise) — prochaine phase proposée
 7. Annuaire public + recherche + filtres + fiche entreprise + SEO de base (repoussé après le cœur métier, à la demande explicite du propriétaire du projet)
 8. Revendication d'entreprise + vérification
-9. Demandes de mise en relation + notifications
+9. Demandes de mise en relation + favoris
 10. Back-office admin (incluant le traitement des demandes RGPD/Loi 25)
 11. Import de données (pipeline réel, `data/raw/`)
 12. Structure des abonnements, puis intégration Stripe
 13. SEO avancé + durcissement sécurité + performance
 14. Lancement bêta France-Québec
 
-Tables encore à ajouter, avec leur propre phase : `opportunities`/`opportunity_responses` (5), `matches`/`opportunity_matches` (6), `claim_requests`/`company_verifications` (8), `notifications`/`favorites` (9), `subscriptions` (12), `user_consents`/`data_subject_requests` (au plus tard avant le lancement commercial).
+Tables encore à ajouter, avec leur propre phase : `matches`/`opportunity_matches` (6), `claim_requests`/`company_verifications` (8), `favorites` (9), `subscriptions` (12), `user_consents`/`data_subject_requests` (au plus tard avant le lancement commercial).
 
 ---
 
@@ -508,7 +517,12 @@ Tables encore à ajouter, avec leur propre phase : `opportunities`/`opportunity_
 | 2026-09-19 | Titre d'une offre/d'un besoin composé automatiquement par l'application, pas saisi par l'utilisateur                                                               | Garder le formulaire rapide à remplir (demande explicite) tout en conservant un champ structuré et recherchable                                                                                                                          |
 | 2026-09-19 | Journal d'audit des offres/besoins : jamais le contenu libre (titre/description), seulement les identifiants et le type de catégorie                               | Limiter l'exposition de contenu commercial potentiellement sensible dans un journal technique                                                                                                                                            |
 | 2026-09-19 | Jeu de données de démonstration créé par un script (`scripts/seed-demo-data.mjs`), pas par une migration SQL                                                       | Une migration décrit une évolution de schéma, pas des données ; le script est idempotent et réutilisable sans polluer l'historique des migrations                                                                                        |
+| 2026-09-19 | `opportunities.capability_type_code` réutilise `business_capability_types` avec un champ `direction` (`seeking`/`offering`) plutôt qu'un nouveau vocabulaire       | Couvre "Recherche X" et "Proposition de X" pour chaque catégorie sans dupliquer le vocabulaire déjà en place — demande explicite de réutiliser les catégories existantes                                                                 |
+| 2026-09-19 | Auto-réponse interdite et contrôle de qui peut changer quoi (`opportunity_responses`) imposés par des déclencheurs, pas par l'interface                            | Garantie au niveau base de données, testée explicitement (demande explicite du propriétaire du projet) ; l'interface ne peut pas être contournée par un appel API direct                                                                 |
+| 2026-09-19 | Expiration des opportunités calculée à l'affichage (`expires_at`) plutôt que par une tâche planifiée (pg_cron)                                                     | Aucune tâche planifiée fiable/testable dans cet environnement ; une fonction administrable (`expire_stale_opportunities()`) reste disponible pour mettre à jour le statut affiché, sans dépendance fragile non vérifiable                |
+| 2026-09-19 | `notifications` avancée de la Phase 8/9 à la Phase 5                                                                                                               | Nécessaire dès maintenant pour "votre opportunité a reçu une réponse" et les accusés d'acceptation/refus ; écriture réservée à `create_notification()` (SECURITY DEFINER), jamais d'insertion directe                                    |
+| 2026-09-19 | Entreprises de démonstration marquées `[DEMO]` dans leur nom commercial et leur description                                                                        | Éviter toute confusion avec de vraies entreprises, demande explicite avant la Phase 5                                                                                                                                                    |
 
 ---
 
-_Prochaine révision prévue : à la fin de la Phase 5 (opportunités commerciales)._
+_Prochaine révision prévue : à la fin de la Phase 6 (moteur de matching)._

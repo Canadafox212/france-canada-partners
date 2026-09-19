@@ -30,16 +30,29 @@ La RLS protège des **lignes**, pas des colonnes précises à l'intérieur d'une
 
 Aucune nouvelle logique de permission : `company_offers`/`company_needs` et leurs tables de jointure (produits/services, langues) réutilisent exactement le même schéma de droits que le reste du profil d'entreprise (`has_company_role`) — owner/admin/member peuvent gérer, viewer en lecture seule, aucun accès pour un utilisateur extérieur. Aucun champ contrôlé par la plateforme n'a été introduit dans ces tables. Le journal d'audit associé (`offer_created`, `offer_status_changed`, `offer_updated`, `offer_deleted`, et l'équivalent pour les besoins) n'enregistre **jamais** le titre ni la description — seulement les identifiants et la catégorie — pour limiter l'exposition de contenu commercial potentiellement sensible dans un journal technique.
 
-## Tests de sécurité réels (Phases 3 et 4)
+## Opportunités et réponses (Phase 5)
 
-Deux fichiers dans `tests/integration/` (`npm run test:integration`) exécutent des scénarios réels contre le vrai projet Supabase — pas de simulation locale, pas de mock : création de vrais utilisateurs de test, vraies tentatives d'action autorisée/interdite, vérification du résultat, puis suppression de toutes les données créées.
+`opportunities` réutilise le même schéma de droits (`has_company_role`) que le reste du profil d'entreprise : owner/admin/member peuvent publier/gérer, viewer en lecture seule, aucune modification possible pour une entreprise tierce.
+
+`opportunity_responses` a des règles plus fines, imposées par déclencheur (pas seulement par la RLS) :
+
+- **auto-réponse interdite** — une entreprise ne peut jamais répondre à sa propre opportunité (`prevent_self_response_trigger`) ;
+- **qui peut changer quoi** — l'entreprise répondante peut modifier son message et retirer sa réponse ; seule l'entreprise ayant publié l'opportunité peut faire progresser le statut (mise en examen, acceptation, refus) ; ni l'une ni l'autre ne peut faire ce qui revient à l'autre (`protect_opportunity_response_update_trigger`) ;
+- **confidentialité stricte** — une réponse n'est visible que par l'entreprise répondante, l'entreprise ayant publié, et les administrateurs de la plateforme ; jamais par le grand public ni par une entreprise tierce (politiques RLS de `opportunity_responses`).
+
+Le journal d'audit (`opportunity_response_created`, `..._status_changed`) et les notifications automatiques (`create_notification()`) n'exposent jamais le contenu du message.
+
+## Tests de sécurité réels (Phases 3, 4 et 5)
+
+Trois fichiers dans `tests/integration/` (`npm run test:integration`) exécutent des scénarios réels contre le vrai projet Supabase — pas de simulation locale, pas de mock : création de vrais utilisateurs de test, vraies tentatives d'action autorisée/interdite, vérification du résultat, puis suppression de toutes les données créées.
 
 - `rls.test.ts` : comptes, entreprises, protection des champs sensibles.
 - `offers-needs.test.ts` : offres/besoins par rôle (owner/admin/member/viewer/extérieur/visiteur), contraintes de données (catégorie invalide, pays invalide, produit inexistant), statut actif/inactif, contenu du journal d'audit.
+- `opportunities.test.ts` : publication par rôle, visibilité des brouillons, réponse au nom d'une entreprise (jamais en son nom propre, jamais pour une entreprise inexistante ou étrangère), auto-réponse interdite, unicité de la réponse active, confidentialité des réponses (tiers/visiteur exclus), qui peut accepter/refuser/retirer, notifications, expiration administrable.
 
 pgTAP aurait nécessité une instance Postgres locale via Docker, indisponible dans cet environnement ; ces suites jouent le même rôle de preuve en frappant directement le projet distant.
 
-**C'est la suite de la Phase 3 qui a permis de découvrir deux bugs réels** (voir `docs/DATABASE.md`, migrations 0011 et 0012) : la validation locale (base Postgres embarquée) ne pouvait pas les révéler, car elle s'exécute avec des droits complets et ne peut pas simuler l'application réelle de la RLS. Leçon retenue, appliquée dès la conception de la Phase 4 : une politique de sécurité n'est vérifiée que lorsqu'elle a été testée avec de vraies requêtes, dans un vrai contexte d'authentification.
+**C'est la suite de la Phase 3 qui a permis de découvrir deux bugs réels** (voir `docs/DATABASE.md`, migrations 0011 et 0012) : la validation locale (base Postgres embarquée) ne pouvait pas les révéler, car elle s'exécute avec des droits complets et ne peut pas simuler l'application réelle de la RLS. Leçon retenue, appliquée dès la conception des Phases 4 et 5 : une politique de sécurité n'est vérifiée que lorsqu'elle a été testée avec de vraies requêtes, dans un vrai contexte d'authentification.
 
 ## Validation des entrées
 

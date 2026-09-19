@@ -22,10 +22,17 @@ export const routing = defineRouting({
     "/compte": { en: "/account" },
     "/compte/entreprises/nouvelle": { en: "/account/companies/new" },
     "/compte/entreprises/[id]": { en: "/account/companies/[id]" },
-    // Pas encore construites (voir PROJECT_SPEC.md §6, Phase 4/5) : la page
-    // d'accueil y renvoie déjà, on déclare donc leur URL dès maintenant.
-    "/entreprises": { en: "/companies" },
+    "/compte/entreprises/[id]/opportunites/nouvelle": {
+      en: "/account/companies/[id]/opportunities/new",
+    },
+    "/compte/entreprises/[id]/opportunites/[opportunityId]": {
+      en: "/account/companies/[id]/opportunities/[opportunityId]",
+    },
     "/opportunites": { en: "/opportunities" },
+    "/opportunites/[slug]": { en: "/opportunities/[slug]" },
+    // Pas encore construite (voir PROJECT_SPEC.md §6, Phase 7+) : la page
+    // d'accueil y renvoie déjà, on déclare donc son URL dès maintenant.
+    "/entreprises": { en: "/companies" },
   },
 });
 

@@ -32,3 +32,40 @@ export function buildOfferNeedTitle({
   }
   return title;
 }
+
+/**
+ * Même principe pour une opportunité : le formulaire de publication ne
+ * demande pas de titre (voir PROJECT_SPEC.md §4.4bis), il est composé à
+ * partir du type/de la direction/du produit/du marché.
+ */
+export function buildOpportunityTitle({
+  locale,
+  direction,
+  capabilityLabel,
+  productLabel,
+  targetCountryCode,
+  targetRegion,
+}: {
+  locale: AppLocale;
+  direction: "seeking" | "offering";
+  capabilityLabel: string;
+  productLabel?: string | null;
+  targetCountryCode?: string | null;
+  targetRegion?: string | null;
+}): string {
+  const place = targetRegion || targetCountryCode || null;
+  const parts = [capabilityLabel, productLabel].filter(Boolean);
+  let title = parts.join(" — ");
+  if (place) {
+    title += ` (${place})`;
+  }
+  const prefix =
+    direction === "seeking"
+      ? locale === "en"
+        ? "Looking for: "
+        : "Recherche : "
+      : locale === "en"
+        ? "Offering: "
+        : "Proposition : ";
+  return prefix + title;
+}

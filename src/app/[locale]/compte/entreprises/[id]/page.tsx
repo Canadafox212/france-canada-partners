@@ -13,6 +13,10 @@ import {
   OffersNeedsSection,
   type OfferNeedItem,
 } from "@/components/companies/OffersNeedsSection";
+import {
+  OpportunitiesListSection,
+  type CompanyOpportunityItem,
+} from "@/components/opportunities/OpportunitiesListSection";
 
 type OfferNeedRow = {
   id: string;
@@ -101,6 +105,7 @@ export default async function EditCompanyPage({
     { data: companyProductsServices },
     { data: offerRows },
     { data: needRows },
+    { data: opportunityRows },
   ] = await Promise.all([
     supabase
       .from("company_members")
@@ -138,6 +143,11 @@ export default async function EditCompanyPage({
       )
       .eq("company_id", id)
       .order("created_at"),
+    supabase
+      .from("opportunities")
+      .select("id, title, status, opportunity_responses(count)")
+      .eq("company_id", id)
+      .order("created_at", { ascending: false }),
   ]);
 
   const t = await getTranslations("Company");
@@ -240,6 +250,19 @@ export default async function EditCompanyPage({
         productsServices={productsServicesOptions}
         languages={languagesOptions}
         industries={industriesOptions}
+        canManage={canManageOffersNeeds}
+      />
+
+      <OpportunitiesListSection
+        companyId={company.id}
+        items={(opportunityRows ?? []).map((o): CompanyOpportunityItem => ({
+          id: o.id,
+          title: o.title,
+          status: o.status,
+          responseCount: Array.isArray(o.opportunity_responses)
+            ? (o.opportunity_responses[0]?.count ?? 0)
+            : 0,
+        }))}
         canManage={canManageOffersNeeds}
       />
 

@@ -4,6 +4,29 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ## [Non publié]
 
+### Phase 5 — Opportunités commerciales (2026-09-19)
+
+#### Ajouté
+
+- `opportunities` : intention commerciale ponctuelle avec échéance, distincte du profil durable (offres/besoins) — titre et slug composés automatiquement, réutilisation de `business_capability_types` (+ direction seeking/offering) plutôt qu'un nouveau vocabulaire, produits/services rattachés, dates de publication/expiration calculées automatiquement (90 jours par défaut).
+- Cycle de vie complet : brouillon → publiée → pause/clôture → archivage, avec fonction administrable `expire_stale_opportunities()`.
+- `opportunity_responses` : une entreprise répond à une opportunité **au nom d'une entreprise**, jamais en son nom propre ; auto-réponse interdite (déclencheur) ; une seule réponse active par entreprise et par opportunité ; qui peut changer quoi strictement séparé entre répondant et éditeur (déclencheur) ; confidentialité stricte (RLS).
+- `notifications` (avancée depuis la Phase 8/9) + `create_notification()` : notifications automatiques à la réception d'une réponse et à son acceptation/refus.
+- Interface complète : page publique `/opportunites` (filtres : type, secteur, pays d'origine/cible, région, produit) et `/opportunites/[slug]` (détail + réponse), gestion dans l'espace entreprise (création avec pré-remplissage depuis une offre/un besoin existant, édition, changement de statut, consultation/acceptation/refus des réponses reçues) — FR/EN avec URLs traduites.
+- Migrations `0014_opportunities.sql` et `0015_opportunity_responses_and_notifications.sql`, validées localement puis appliquées au projet réel.
+- 22 nouveaux tests d'intégration réels (`tests/integration/opportunities.test.ts`) : rôles, visibilité des brouillons, auto-réponse interdite, confidentialité, notifications, expiration. Les 32 tests des Phases 3-4 continuent de passer (54 au total).
+- 3 opportunités de démonstration (`npm run seed:demo`), entreprises marquées `[DEMO]` pour ne jamais être confondues avec de vraies entreprises.
+
+#### Documenté
+
+- Distinction OFFRE/BESOIN (durable) vs OPPORTUNITÉ (ponctuelle, avec durée de vie et réponses) précisée dans `PROJECT_SPEC.md` §4.4/§4.5.
+
+#### Décidé
+
+- Codes `business_capability_types` existants non renommés (déjà tranché en Phase 4) ; réutilisés tels quels pour les opportunités via un champ `direction`.
+- Expiration calculée à la lecture plutôt que par tâche planifiée (pas de pg_cron dans cet environnement) — fonction manuelle/administrable disponible.
+- Entreprises de démonstration marquées `[DEMO]` dans leur nom et leur description.
+
 ### Phase 4 — Offres et besoins structurés (2026-09-19)
 
 #### Ajouté
