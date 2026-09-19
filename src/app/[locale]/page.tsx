@@ -1,8 +1,12 @@
 import { getTranslations } from "next-intl/server";
 import { ButtonLink } from "@/components/ui/Button";
+import { getCurrentUser } from "@/lib/supabase/session";
 
 export default async function HomePage() {
-  const t = await getTranslations("HomePage");
+  const [t, user] = await Promise.all([
+    getTranslations("HomePage"),
+    getCurrentUser(),
+  ]);
 
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-10 bg-slate-50 px-6 py-24 text-center dark:bg-slate-950">
@@ -22,8 +26,11 @@ export default async function HomePage() {
         <ButtonLink href="/opportunites" variant="secondary">
           {t("ctaPublishOpportunity")}
         </ButtonLink>
-        <ButtonLink href="/inscription" variant="secondary">
-          {t("ctaRegisterCompany")}
+        <ButtonLink
+          href={user ? "/compte/entreprises/nouvelle" : "/inscription"}
+          variant="secondary"
+        >
+          {user ? t("ctaMyAccount") : t("ctaRegisterCompany")}
         </ButtonLink>
       </div>
 

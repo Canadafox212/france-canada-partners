@@ -1,4 +1,4 @@
-import type { ComponentProps } from "react";
+import type { ButtonHTMLAttributes, ComponentProps } from "react";
 import { Link } from "@/i18n/navigation";
 
 type Variant = "primary" | "secondary";
@@ -31,4 +31,33 @@ export function ButtonLink({
     .join(" ");
 
   return <Link {...props} className={classes} />;
+}
+
+type SubmitButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: Variant;
+  isLoading?: boolean;
+};
+
+export function SubmitButton({
+  variant = "primary",
+  className,
+  isLoading,
+  disabled,
+  children,
+  ...props
+}: SubmitButtonProps) {
+  const classes = [baseClasses, variantClasses[variant], className]
+    .filter(Boolean)
+    .join(" ");
+
+  return (
+    <button
+      type="submit"
+      className={`${classes} disabled:cursor-not-allowed disabled:opacity-60`}
+      disabled={disabled || isLoading}
+      {...props}
+    >
+      {children}
+    </button>
+  );
 }

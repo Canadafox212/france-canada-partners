@@ -9,6 +9,116 @@
     "ctaFindPartner": "Find a partner",
     "ctaPublishOpportunity": "Publish an opportunity",
     "ctaRegisterCompany": "Register my company",
+    "ctaMyAccount": "My account",
     "comingSoon": "The site is under construction. These sections will be enabled over the coming phases."
+  },
+  "NotFound": {
+    "title": "Page not found",
+    "description": "This page doesn't exist or is no longer available.",
+    "backHome": "Back to home"
+  },
+  "ErrorPage": {
+    "title": "Something went wrong",
+    "description": "Something went wrong on our end. Please try again.",
+    "retry": "Try again"
+  },
+  "Header": {
+    "login": "Log in",
+    "account": "My account",
+    "signOut": "Sign out"
+  },
+  "Common": {
+    "loading": "Loading…",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "save": "Save",
+    "saved": "Saved.",
+    "errorGeneric": "Something went wrong. Please try again.",
+    "errorForbidden": "You don't have access to this resource.",
+    "requiredField": "This field is required."
+  },
+  "Auth": {
+    "Login": {
+      "title": "Log in",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Log in",
+      "forgotPassword": "Forgot your password?",
+      "noAccount": "Don't have an account yet?",
+      "signUpLink": "Create an account",
+      "errorInvalidCredentials": "Incorrect email or password.",
+      "errorEmailNotConfirmed": "Please confirm your email before logging in (check your inbox)."
+    },
+    "SignUp": {
+      "title": "Create an account",
+      "fullName": "Full name",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "submit": "Create my account",
+      "alreadyHaveAccount": "Already have an account?",
+      "loginLink": "Log in",
+      "successTitle": "Check your inbox",
+      "successMessage": "A confirmation email has been sent. Click the link in it to activate your account.",
+      "errorEmailInUse": "An account already exists with this email."
+    },
+    "ForgotPassword": {
+      "title": "Forgot password",
+      "instructions": "Enter your email: we'll send you a link to reset your password.",
+      "email": "Email",
+      "submit": "Send the link",
+      "successMessage": "If an account exists with this email, a reset link was just sent to it.",
+      "backToLogin": "Back to login"
+    },
+    "ResetPassword": {
+      "title": "Reset password",
+      "password": "New password",
+      "confirmPassword": "Confirm new password",
+      "submit": "Reset password",
+      "successMessage": "Password updated. You can now log in.",
+      "invalidLink": "This reset link is invalid or has expired. Please request a new one."
+    }
+  },
+  "Account": {
+    "title": "My account",
+    "emailLabel": "Email",
+    "verificationStatus": "Verification status",
+    "verificationUnverified": "Unverified",
+    "verificationPending": "Verification pending",
+    "verificationVerified": "Verified",
+    "profileSectionTitle": "My information",
+    "fullNameLabel": "Full name",
+    "preferredLanguageLabel": "Interface language",
+    "companiesSectionTitle": "My companies",
+    "noCompanies": "You're not part of any company yet.",
+    "createCompanyLink": "Create a company",
+    "roleOwner": "Owner",
+    "roleAdmin": "Admin",
+    "roleMember": "Member",
+    "roleViewer": "Viewer"
+  },
+  "Company": {
+    "createTitle": "Create a company",
+    "editTitle": "Edit company",
+    "displayName": "Trade name",
+    "legalName": "Legal name (optional)",
+    "country": "Country (2-letter code, e.g. FR, CA)",
+    "region": "Region / province",
+    "city": "City",
+    "website": "Website",
+    "professionalEmail": "Professional email",
+    "phone": "Phone (optional)",
+    "industry": "Main industry",
+    "industryNone": "— Not specified —",
+    "description": "Description",
+    "descriptionLocale": "Description language",
+    "submitCreate": "Create company",
+    "submitEdit": "Save changes",
+    "protectedFieldsNote": "Subscription level and verification status are managed by the platform and can't be edited here.",
+    "readOnlyNote": "You're viewing this company's profile, but only its owners and admins can edit it.",
+    "membersTitle": "Company members",
+    "statusInvited": "Invited",
+    "statusActive": "Active",
+    "statusRemoved": "Removed"
   }
 }

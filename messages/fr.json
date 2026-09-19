@@ -9,6 +9,116 @@
     "ctaFindPartner": "Trouver un partenaire",
     "ctaPublishOpportunity": "Publier une opportunité",
     "ctaRegisterCompany": "Inscrire mon entreprise",
+    "ctaMyAccount": "Mon compte",
     "comingSoon": "Le site est en cours de construction. Ces sections seront activées au fil des prochaines phases."
+  },
+  "NotFound": {
+    "title": "Page introuvable",
+    "description": "Cette page n'existe pas ou n'est plus disponible.",
+    "backHome": "Retour à l'accueil"
+  },
+  "ErrorPage": {
+    "title": "Une erreur est survenue",
+    "description": "Quelque chose s'est mal passé de notre côté. Merci de réessayer.",
+    "retry": "Réessayer"
+  },
+  "Header": {
+    "login": "Se connecter",
+    "account": "Mon compte",
+    "signOut": "Se déconnecter"
+  },
+  "Common": {
+    "loading": "Chargement…",
+    "cancel": "Annuler",
+    "edit": "Modifier",
+    "save": "Enregistrer",
+    "saved": "Enregistré.",
+    "errorGeneric": "Une erreur est survenue. Merci de réessayer.",
+    "errorForbidden": "Vous n'avez pas accès à cette ressource.",
+    "requiredField": "Ce champ est requis."
+  },
+  "Auth": {
+    "Login": {
+      "title": "Se connecter",
+      "email": "Courriel",
+      "password": "Mot de passe",
+      "submit": "Se connecter",
+      "forgotPassword": "Mot de passe oublié ?",
+      "noAccount": "Pas encore de compte ?",
+      "signUpLink": "Créer un compte",
+      "errorInvalidCredentials": "Courriel ou mot de passe incorrect.",
+      "errorEmailNotConfirmed": "Merci de confirmer votre courriel avant de vous connecter (vérifiez votre boîte de réception)."
+    },
+    "SignUp": {
+      "title": "Créer un compte",
+      "fullName": "Nom complet",
+      "email": "Courriel",
+      "password": "Mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "submit": "Créer mon compte",
+      "alreadyHaveAccount": "Déjà un compte ?",
+      "loginLink": "Se connecter",
+      "successTitle": "Vérifiez votre boîte de réception",
+      "successMessage": "Un courriel de confirmation a été envoyé. Cliquez sur le lien qu'il contient pour activer votre compte.",
+      "errorEmailInUse": "Un compte existe déjà avec ce courriel."
+    },
+    "ForgotPassword": {
+      "title": "Mot de passe oublié",
+      "instructions": "Indiquez votre courriel : nous vous enverrons un lien pour réinitialiser votre mot de passe.",
+      "email": "Courriel",
+      "submit": "Envoyer le lien",
+      "successMessage": "Si un compte existe avec ce courriel, un lien de réinitialisation vient de lui être envoyé.",
+      "backToLogin": "Retour à la connexion"
+    },
+    "ResetPassword": {
+      "title": "Réinitialiser le mot de passe",
+      "password": "Nouveau mot de passe",
+      "confirmPassword": "Confirmer le nouveau mot de passe",
+      "submit": "Réinitialiser le mot de passe",
+      "successMessage": "Mot de passe mis à jour. Vous pouvez maintenant vous connecter.",
+      "invalidLink": "Ce lien de réinitialisation est invalide ou a expiré. Merci d'en demander un nouveau."
+    }
+  },
+  "Account": {
+    "title": "Mon compte",
+    "emailLabel": "Courriel",
+    "verificationStatus": "Statut de vérification",
+    "verificationUnverified": "Non vérifiée",
+    "verificationPending": "Vérification en cours",
+    "verificationVerified": "Vérifiée",
+    "profileSectionTitle": "Mes informations",
+    "fullNameLabel": "Nom complet",
+    "preferredLanguageLabel": "Langue de l'interface",
+    "companiesSectionTitle": "Mes entreprises",
+    "noCompanies": "Vous n'êtes rattaché à aucune entreprise pour l'instant.",
+    "createCompanyLink": "Créer une entreprise",
+    "roleOwner": "Propriétaire",
+    "roleAdmin": "Administrateur",
+    "roleMember": "Membre",
+    "roleViewer": "Observateur"
+  },
+  "Company": {
+    "createTitle": "Créer une entreprise",
+    "editTitle": "Modifier l'entreprise",
+    "displayName": "Nom commercial",
+    "legalName": "Nom légal (optionnel)",
+    "country": "Pays (code à 2 lettres, ex. FR, CA)",
+    "region": "Région / province",
+    "city": "Ville",
+    "website": "Site Internet",
+    "professionalEmail": "Courriel professionnel",
+    "phone": "Téléphone (optionnel)",
+    "industry": "Secteur principal",
+    "industryNone": "— Non précisé —",
+    "description": "Description",
+    "descriptionLocale": "Langue de la description",
+    "submitCreate": "Créer l'entreprise",
+    "submitEdit": "Enregistrer les modifications",
+    "protectedFieldsNote": "Le niveau d'abonnement et le statut de vérification sont gérés par la plateforme et ne sont pas modifiables ici.",
+    "readOnlyNote": "Vous consultez cette fiche, mais seuls les propriétaires et administrateurs de l'entreprise peuvent la modifier.",
+    "membersTitle": "Membres de l'entreprise",
+    "statusInvited": "Invité",
+    "statusActive": "Actif",
+    "statusRemoved": "Retiré"
   }
 }

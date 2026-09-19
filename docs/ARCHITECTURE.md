@@ -16,29 +16,41 @@ Référence complète des décisions produit : voir `PROJECT_SPEC.md` à la raci
 ```
 src/
   app/
-    [locale]/        toutes les pages du site (routage par langue)
+    [locale]/        toutes les pages du site (routage + segments d'URL par langue)
       layout.tsx      layout racine réel (html/body), fournit les traductions
       page.tsx         page d'accueil
+      connexion/, inscription/, mot-de-passe-oublie/,
+      reinitialiser-mot-de-passe/   pages d'authentification
+      compte/          compte utilisateur + gestion des entreprises
+        entreprises/nouvelle/, entreprises/[id]/
+      not-found.tsx, error.tsx      pages d'erreur génériques
     globals.css        styles globaux + configuration Tailwind
     favicon.ico
   components/
-    ui/                composants d'interface génériques et réutilisables
+    ui/                composants génériques (Button, FormField)
+    layout/            Header (barre de navigation, conscient de la session)
+    auth/              formulaires d'authentification (Client Components)
+    account/           formulaire de profil, bouton de déconnexion
+    companies/         formulaires et affichage liés à une entreprise
   lib/
     env.ts             lecture + validation des variables d'environnement
     utils.ts            fonctions utilitaires pures (ex. slugify)
+    companies.ts         repli de langue pour les descriptions d'entreprise
     supabase/
       client.ts          client Supabase pour le navigateur
       server.ts           client Supabase pour le code serveur
-  validations/         schémas Zod partagés entre formulaires
+      session.ts           utilisateur/profil/entreprises courants (serveur uniquement)
+  validations/         schémas Zod partagés entre formulaires (auth, entreprise, communs)
   i18n/
-    routing.ts          langues supportées, langue par défaut
+    routing.ts          langues supportées, langue par défaut, segments d'URL traduits
     navigation.ts        Link/redirect/useRouter conscients de la langue
     request.ts            chargement des traductions par requête
-  proxy.ts              routage de langue (exécuté avant chaque page)
+  proxy.ts              routage de langue + rafraîchissement de session (avant chaque page)
 messages/
   fr.json, en.json      textes d'interface traduits
 tests/
-  unit/                tests unitaires (Vitest)
+  unit/                tests unitaires rapides et hors-ligne (Vitest)
+  integration/          tests réels contre le vrai projet Supabase (voir docs/DATABASE.md)
 supabase/
   migrations/           migrations SQL (schéma + Row Level Security, voir docs/DATABASE.md)
 data/
@@ -54,9 +66,13 @@ Next.js 16 a renommé la convention `middleware.ts` en `proxy.ts` (le nom prêta
 
 Depuis Next.js 16.3, la langue (premier segment de route `[locale]`) peut être lue n'importe où côté serveur via `import { locale } from "next/root-params"`, sans avoir à la faire passer manuellement de composant en composant. C'est ce que `src/i18n/request.ts` et `src/app/[locale]/layout.tsx` utilisent.
 
-## Authentification (statut à cette phase)
+## Authentification (en place depuis la Phase 3)
 
-`src/lib/supabase/client.ts` et `server.ts` fournissent la connexion technique à Supabase. Côté base de données, l'identité repose sur `auth.users` (géré par Supabase) + une table `profiles` en relation 1:1 pour les données applicatives — voir `docs/DATABASE.md` et `PROJECT_SPEC.md` §4.1. **Aucune page de connexion/inscription n'existe encore côté interface** : ce sera fait en Phase 3. Le rafraîchissement automatique de session dans `proxy.ts` sera ajouté à ce moment-là aussi (inutile tant qu'il n'y a pas de session à rafraîchir).
+Côté base de données, l'identité repose sur `auth.users` (géré par Supabase) + une table `profiles` en relation 1:1 pour les données applicatives — voir `docs/DATABASE.md` et `PROJECT_SPEC.md` §4.1. Côté application : `src/lib/supabase/client.ts`/`server.ts` fournissent les clients, `src/lib/supabase/session.ts` expose `getCurrentUser()` (protection des pages, basé sur `getClaims()`), `getCurrentAuthUser()` (affichage, ex. statut de confirmation du courriel) et `getCurrentUserCompanies()`. `src/proxy.ts` rafraîchit la session à chaque requête, en plus du routage de langue.
+
+## URLs traduites (`pathnames`)
+
+`src/i18n/routing.ts` déclare des segments d'URL différents par langue (ex. `/connexion` en français, `/login` en anglais) via l'option `pathnames` de next-intl. Les fichiers du système de routage restent nommés en français (chemin "canonique") ; `Link`/`redirect`/`router.push` utilisent toujours ce chemin canonique, et next-intl affiche/route automatiquement vers la bonne URL localisée. Pour un chemin dynamique, passer un objet plutôt qu'une chaîne : `{ pathname: "/compte/entreprises/[id]", params: { id } }`.
 
 ## Conventions de nommage
 

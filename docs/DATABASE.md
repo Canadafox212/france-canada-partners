@@ -2,34 +2,36 @@
 
 Le modèle de données complet, table par table, avec les raisons de chaque choix, est documenté dans `PROJECT_SPEC.md` (§4 "Modèle de données relationnel"). Ce fichier explique seulement où et comment les choses sont mises en œuvre techniquement.
 
-## Statut actuel (fin de Phase 2)
+## Statut actuel (fin de Phase 3)
 
-Les migrations SQL du socle central sont écrites dans `supabase/migrations/` :
+**Un vrai projet Supabase existe et est connecté** (région Canada Central, `ca-central-1`). Les 12 migrations ci-dessous y sont appliquées et vérifiées.
 
-| Fichier                             | Contenu                                                                                                                                |
-| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `0001_profiles.sql`                 | `profiles` (liée 1:1 à `auth.users`), création automatique à l'inscription, fonction `is_platform_admin()`                             |
-| `0002_companies_and_members.sql`    | `companies`, `company_locations`, `company_members`, fonction `has_company_role()`, rattachement automatique du créateur comme `owner` |
-| `0003_taxonomy.sql`                 | `industries`, `subindustries`, `products_services` + tables de jointure entreprise                                                     |
-| `0004_offers_needs_markets.sql`     | `business_capability_types`, `company_offers`, `company_needs`, `company_markets`                                                      |
-| `0005_languages_certifications.sql` | `languages`, `certifications` + tables de jointure entreprise                                                                          |
-| `0006_data_sources.sql`             | `data_sources`, `company_source_records`                                                                                               |
+| Fichier                                | Contenu                                                                                                                                                                                                                                  |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `0001_profiles.sql`                    | `profiles` (liée 1:1 à `auth.users`), création automatique à l'inscription, fonction `is_platform_admin()`                                                                                                                               |
+| `0002_companies_and_members.sql`       | `companies`, `company_locations`, `company_members`, fonction `has_company_role()`, rattachement automatique du créateur comme `owner`                                                                                                   |
+| `0003_taxonomy.sql`                    | `industries`, `subindustries`, `products_services` + tables de jointure entreprise                                                                                                                                                       |
+| `0004_offers_needs_markets.sql`        | `business_capability_types`, `company_offers`, `company_needs`, `company_markets`                                                                                                                                                        |
+| `0005_languages_certifications.sql`    | `languages`, `certifications` + tables de jointure entreprise                                                                                                                                                                            |
+| `0006_data_sources.sql`                | `data_sources`, `company_source_records`                                                                                                                                                                                                 |
+| `0007_company_translations.sql`        | `company_translations` (remplace `companies.description`), repli de langue géré côté application                                                                                                                                         |
+| `0008_audit_logs.sql`                  | `audit_logs` + fonction `log_audit_event()` (SECURITY DEFINER)                                                                                                                                                                           |
+| `0009_protect_sensitive_columns.sql`   | Déclencheurs bloquant la modification de `profiles.platform_role` et `companies.subscription_level`/`verification_status` par un non-administrateur ; journalisation des changements légitimes et de la création d'entreprise            |
+| `0010_create_company_rpc.sql`          | Fonction `create_company()` : création transactionnelle entreprise + établissement + secteur + traduction, gestion automatique des collisions de slug                                                                                    |
+| `0011_fix_companies_insert_policy.sql` | **Correction** : la politique d'insertion sur `companies` utilisait `auth.role()`, qui s'est révélé peu fiable en conditions réelles sur ce projet ; remplacée par `auth.uid() is not null`                                              |
+| `0012_fix_create_company_security.sql` | **Correction** : `create_company()` passée en `SECURITY DEFINER` pour éviter un paradoxe RLS (une ligne fraîchement insérée n'est pas visible par `RETURNING` avant que le déclencheur de rattachement `owner` n'ait fini de s'exécuter) |
 
-Chaque table a sa politique de sécurité (Row Level Security) écrite dans le même fichier, pas ajoutée après coup.
+Chaque table a sa politique de sécurité (Row Level Security) écrite dans le même fichier que la table. Les deux corrections (0011, 0012) n'ont été trouvées **qu'en testant contre le vrai projet** : la validation locale (Postgres embarqué, Phase 2) ne pouvait pas les révéler, car ce moteur de test s'exécute avec des droits complets et ne peut pas simuler l'application réelle de la RLS. C'est précisément pourquoi la Phase 3 a exigé des tests contre le projet réel plutôt que de se fier à la seule validation locale.
 
-**Ces migrations n'ont pas encore été appliquées à un vrai projet Supabase** (aucun projet n'existe encore — à créer par le propriétaire du projet, région `ca-central-1`). Elles ont été validées localement avec une base Postgres embarquée simulant `auth.users`/`auth.uid()` : les 6 fichiers s'appliquent sans erreur, et un scénario de bout en bout a été vérifié (inscription → profil créé automatiquement → création d'entreprise → rattachement automatique comme propriétaire → secteur, produit, offre, besoin, marché, langue, certification, source). Cette validation ne couvre pas l'application réelle des politiques RLS (le moteur de test agit avec des droits complets) : à revérifier une fois connecté à un vrai projet Supabase.
+## Comment appliquer une nouvelle migration
 
-## Comment appliquer ces migrations
+Aucun accès direct (jeton CLI, mot de passe de connexion à la base) n'a été partagé avec l'assistant, par prudence — l'application se fait donc manuellement :
 
-Une fois un projet Supabase créé (région Canada Central) :
+1. Ouvrir le tableau de bord Supabase → SQL Editor → New query.
+2. Copier-coller le contenu du fichier de migration, dans l'ordre.
+3. Exécuter, vérifier l'absence d'erreur.
 
-```bash
-npx supabase login
-npx supabase link --project-ref <votre-ref-de-projet>
-npx supabase db push
-```
-
-Ou, plus simplement pour démarrer : copier-coller le contenu de chaque fichier, dans l'ordre, dans l'éditeur SQL du tableau de bord Supabase.
+Si un jour l'accès CLI est configuré (jeton d'accès personnel), `npx supabase db push` permettrait d'automatiser cette étape — non fait à ce stade.
 
 ## Rappels de conception (voir PROJECT_SPEC.md pour le détail)
 
@@ -38,7 +40,13 @@ Ou, plus simplement pour démarrer : copier-coller le contenu de chaque fichier,
 - Chaque entreprise peut avoir plusieurs utilisateurs rattachés (`company_members`, avec un rôle **dans l'entreprise** distinct du rôle **sur la plateforme**, `profiles.platform_role`), plusieurs établissements (`company_locations`), plusieurs besoins, offres, secteurs, produits, marchés, langues et certifications.
 - Les catégories d'offre/besoin (`business_capability_types`) vivent en base, pas dans le code, pour rester modifiables depuis l'administration.
 - Deux fonctions PostgreSQL réutilisables portent la logique de sécurité : `is_platform_admin()` et `has_company_role(company_id, roles[])`, appelées par toutes les politiques RLS plutôt que de dupliquer la même sous-requête partout.
-- Tables encore à venir (par phase) : `opportunities`/`opportunity_responses` (5), `matches`/`opportunity_matches` (6), `claim_requests`/`company_verifications` (7), `notifications`/`favorites` (8), `audit_logs` (9), `subscriptions` (11), `user_consents`/`data_subject_requests` (avant le lancement commercial).
+- Les champs contrôlés par la plateforme (`profiles.platform_role`, `companies.subscription_level`, `companies.verification_status`) sont protégés par des déclencheurs, pas seulement par la RLS — voir `docs/SECURITY.md`.
+- Tables encore à venir (par phase) : `opportunities`/`opportunity_responses` (5), `matches`/`opportunity_matches` (6), `claim_requests`/`company_verifications` (7), `notifications`/`favorites` (8), `subscriptions` (11), `user_consents`/`data_subject_requests` (avant le lancement commercial).
+
+## Tests
+
+- `tests/unit/` : tests rapides, hors-ligne (`npm test`).
+- `tests/integration/` : tests réels contre le vrai projet Supabase (`npm run test:integration`) — créent et suppriment leurs propres utilisateurs/entreprises de test à chaque exécution. Nécessitent `.env.local`. Voir `docs/SECURITY.md` pour ce qu'ils couvrent.
 
 ## Données de sourcing (pas encore importées)
 

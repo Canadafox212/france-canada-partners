@@ -16,30 +16,31 @@ npm run dev
 
 Le site est accessible sur [http://localhost:3000](http://localhost:3000) (redirection automatique vers `/fr`).
 
-> Sans identifiants Supabase valides dans `.env.local`, le site démarre et s'affiche normalement (aucune fonctionnalité de cette phase n'appelle encore Supabase). Les identifiants ne seront nécessaires qu'à partir de la Phase 2/3.
+> Un vrai projet Supabase est nécessaire (région Canada Central) : créez-en un et renseignez `.env.local` avec ses identifiants (Project Settings > API Keys). Voir `docs/DATABASE.md` pour appliquer les migrations existantes.
 
 ## Commandes disponibles
 
-| Commande            | Effet                                     |
-| ------------------- | ----------------------------------------- |
-| `npm run dev`       | Démarre le serveur de développement       |
-| `npm run build`     | Compile la version de production          |
-| `npm run start`     | Démarre la version compilée               |
-| `npm run lint`      | Vérifie le style et les erreurs courantes |
-| `npm run typecheck` | Vérifie les types TypeScript              |
-| `npm test`          | Lance les tests automatisés               |
-| `npm run format`    | Reformate le code automatiquement         |
+| Commande                   | Effet                                                                         |
+| -------------------------- | ----------------------------------------------------------------------------- |
+| `npm run dev`              | Démarre le serveur de développement                                           |
+| `npm run build`            | Compile la version de production                                              |
+| `npm run start`            | Démarre la version compilée                                                   |
+| `npm run lint`             | Vérifie le style et les erreurs courantes                                     |
+| `npm run typecheck`        | Vérifie les types TypeScript                                                  |
+| `npm test`                 | Lance les tests unitaires (rapides, hors-ligne)                               |
+| `npm run test:integration` | Lance les tests réels contre le vrai projet Supabase (nécessite `.env.local`) |
+| `npm run format`           | Reformate le code automatiquement                                             |
 
 ## Documentation
 
 - `PROJECT_SPEC.md` — document de référence (vision, architecture, données, feuille de route)
 - `CHANGELOG.md` — historique des changements
 - `docs/ARCHITECTURE.md` — organisation du code
-- `docs/DATABASE.md` — état du modèle de données
-- `docs/SECURITY.md` — principes de sécurité
+- `docs/DATABASE.md` — état du modèle de données, migrations
+- `docs/SECURITY.md` — principes de sécurité, tests réels
 - `docs/PRIVACY.md` — brouillon technique de conformité RGPD/Loi 25
 - `data/README.md` — rôle des données brutes de sourcing (non versionnées)
 
 ## Stack technique
 
-Next.js 16 (TypeScript, App Router) · Tailwind CSS 4 · Supabase (PostgreSQL, région Canada Central) · next-intl (FR/EN) · Zod · Vitest.
+Next.js 16 (TypeScript, App Router) · Tailwind CSS 4 · Supabase (PostgreSQL + Auth, région Canada Central) · next-intl (FR/EN, URLs traduites) · Zod · React Hook Form · Vitest.

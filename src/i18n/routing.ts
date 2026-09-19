@@ -9,6 +9,24 @@ export const routing = defineRouting({
   locales: ["fr", "en"],
   defaultLocale: "fr",
   localePrefix: "always",
+  // Segments d'URL traduits : la clé est le chemin "canonique" (utilisé
+  // dans le code et le système de fichiers sous src/app/[locale]/), la
+  // valeur est le chemin affiché pour une langue donnée. Le français
+  // (langue par défaut) n'a pas besoin d'être répété : il reprend la clé.
+  pathnames: {
+    "/": "/",
+    "/connexion": { en: "/login" },
+    "/inscription": { en: "/signup" },
+    "/mot-de-passe-oublie": { en: "/forgot-password" },
+    "/reinitialiser-mot-de-passe": { en: "/reset-password" },
+    "/compte": { en: "/account" },
+    "/compte/entreprises/nouvelle": { en: "/account/companies/new" },
+    "/compte/entreprises/[id]": { en: "/account/companies/[id]" },
+    // Pas encore construites (voir PROJECT_SPEC.md §6, Phase 4/5) : la page
+    // d'accueil y renvoie déjà, on déclare donc leur URL dès maintenant.
+    "/entreprises": { en: "/companies" },
+    "/opportunites": { en: "/opportunities" },
+  },
 });
 
 export type AppLocale = (typeof routing.locales)[number];
