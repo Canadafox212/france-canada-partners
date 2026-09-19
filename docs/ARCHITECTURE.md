@@ -35,14 +35,23 @@ src/
     account/           formulaire de profil, bouton de déconnexion
     companies/         formulaires et affichage liés à une entreprise (profil, produits/services, offres, besoins, membres)
     opportunities/     formulaires et affichage liés aux opportunités (publication, réponses, filtres)
+    matching/          affichage d'un résultat de matching (MatchCard, "Pourquoi ce score ?")
   lib/
     env.ts             lecture + validation des variables d'environnement
     utils.ts            fonctions utilitaires pures (ex. slugify)
     companies.ts         repli de langue pour les descriptions d'entreprise
     offersNeeds.ts        composition automatique du titre d'une offre/d'un besoin/d'une opportunité
+    matching/             moteur de matching (Phase 6) — voir docs/MATCHING.md
+      config.ts            poids, seuils, version de l'algorithme (centralisé)
+      types.ts              formes communes (MatchableIntent, résultat de score)
+      scoring.ts             calcul pur, testable sans base de données
+      candidateGeneration.ts (serveur) génération de candidats en SQL
+      persistence.ts          (serveur) écriture via la clé secrète uniquement
+      service.ts               (serveur) orchestration, appelée par les pages
     supabase/
       client.ts          client Supabase pour le navigateur
-      server.ts           client Supabase pour le code serveur
+      server.ts           client Supabase pour le code serveur (respecte la RLS)
+      serviceRole.ts        client avec la clé secrète (contourne la RLS, serveur uniquement)
       session.ts           utilisateur/profil/entreprises courants (serveur uniquement)
   validations/         schémas Zod partagés entre formulaires (auth, entreprise, offre/besoin, opportunité, communs)
   i18n/

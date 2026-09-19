@@ -225,5 +225,40 @@
     "respondAction": "Répondre",
     "noEligibleCompany": "Vous devez appartenir à une autre entreprise pour répondre à cette opportunité.",
     "responseSentMessage": "Votre réponse a été envoyée."
+  },
+  "Matching": {
+    "partnersTitle": "Vos partenaires potentiels",
+    "partnersEmpty": "Aucun partenaire potentiel identifié pour l'instant. Complétez vos offres et besoins pour améliorer les résultats.",
+    "opportunitiesForYouTitle": "Opportunités pour vous",
+    "opportunitiesForYouEmpty": "Aucune opportunité compatible pour l'instant.",
+    "compatibleCompaniesTitle": "Entreprises compatibles",
+    "compatibleCompaniesEmpty": "Aucune entreprise compatible identifiée pour l'instant.",
+    "scoreLabel": "Score de compatibilité",
+    "confidenceLabel": "Confiance",
+    "level": {
+      "very_strong": "Très forte",
+      "strong": "Forte",
+      "possible": "Possible",
+      "weak": "Faible",
+      "insufficient": "Insuffisante"
+    },
+    "confidenceLevel": {
+      "high": "élevée",
+      "moderate": "modérée",
+      "partial": "données partielles"
+    },
+    "whyToggle": "Pourquoi ce score ?",
+    "criterion": {
+      "capability": "Type de partenariat",
+      "productSector": "Produit / secteur",
+      "geography": "Zone géographique",
+      "capacity": "Capacité opérationnelle",
+      "size": "Taille de l'entreprise",
+      "certifications": "Certifications",
+      "languages": "Langue de travail",
+      "exportExperience": "Expérience export",
+      "verification": "Vérification"
+    },
+    "criterionMissing": "Donnée non renseignée — non pénalisant"
   }
 }

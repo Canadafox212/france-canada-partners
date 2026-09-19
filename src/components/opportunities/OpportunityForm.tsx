@@ -187,14 +187,12 @@ export function OpportunityForm({
     }
 
     if (values.productServiceIds.length > 0) {
-      await supabase
-        .from("opportunity_products_services")
-        .insert(
-          values.productServiceIds.map((id) => ({
-            opportunity_id: opportunityId,
-            product_service_id: id,
-          })),
-        );
+      await supabase.from("opportunity_products_services").insert(
+        values.productServiceIds.map((id) => ({
+          opportunity_id: opportunityId,
+          product_service_id: id,
+        })),
+      );
     }
 
     setSubmitting(false);

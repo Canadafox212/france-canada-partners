@@ -11,6 +11,13 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "./src"),
+      // Voir tests/integration/server-only-stub.ts : neutralise le paquet
+      // "server-only" hors du bundler Next.js, pour pouvoir appeler
+      // directement le moteur de matching (serveur) depuis un test Node.
+      "server-only": path.resolve(
+        import.meta.dirname,
+        "./tests/integration/server-only-stub.ts",
+      ),
     },
   },
   test: {

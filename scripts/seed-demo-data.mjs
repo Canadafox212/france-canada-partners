@@ -332,6 +332,64 @@ async function seedCompanies() {
   );
 }
 
+/**
+ * Ajouté en Phase 6 : un besoin volontairement moins précis pour NovaTech
+ * (pas de produit commun avec l'offre de A, secteur différent), qui
+ * s'appuie sur la compatibilité CROISÉE SUBCONTRACTOR↔MANUFACTURER (ratio
+ * 0,6) plutôt qu'une correspondance de type parfaite — sert d'exemple de
+ * correspondance MOYENNE (voir §33 du cahier des charges Phase 6 /
+ * docs/MATCHING.md), en plus de la correspondance FORTE déjà démontrée
+ * par A↔B. Fonction séparée (idempotence propre) car `seedCompanies()`
+ * s'arrête tôt si les entreprises de démonstration existent déjà.
+ */
+async function seedMediumMatchNeed() {
+  const { data: companyC } = await admin
+    .from("companies")
+    .select("id")
+    .eq("slug", "novatech-solutions")
+    .maybeSingle();
+  if (!companyC) {
+    console.log(
+      "NovaTech Solutions introuvable — seedCompanies() doit être exécuté avant.",
+    );
+    return;
+  }
+  const { data: existing } = await admin
+    .from("company_needs")
+    .select("id")
+    .eq("company_id", companyC.id)
+    .eq("capability_type_code", "SUBCONTRACTOR")
+    .maybeSingle();
+  if (existing) {
+    console.log(
+      "Besoin de démonstration (correspondance moyenne) déjà présent — rien à faire.",
+    );
+    return;
+  }
+  const industryTech = await findOrCreate(
+    "industries",
+    "slug",
+    "technologies-demo",
+    {
+      name_fr: "Technologies",
+      name_en: "Technology",
+      slug: "technologies-demo",
+    },
+  );
+  await insert("company_needs", [
+    {
+      company_id: companyC.id,
+      capability_type_code: "SUBCONTRACTOR",
+      title: "Recherche sous-traitant industriel en France",
+      industry_id: industryTech.id,
+      target_country_code: "FR",
+    },
+  ]);
+  console.log(
+    "Besoin de démonstration (correspondance moyenne) ajouté pour NovaTech.",
+  );
+}
+
 async function seedOpportunities() {
   const { data: companyA } = await admin
     .from("companies")
@@ -479,6 +537,7 @@ async function seedOpportunities() {
 
 async function main() {
   await seedCompanies();
+  await seedMediumMatchNeed();
   await seedOpportunities();
 }
 

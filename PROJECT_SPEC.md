@@ -2,7 +2,7 @@
 
 > Document de référence permanent du projet. Toute décision structurante importante doit être reflétée ici avant/pendant son implémentation. Ce document est mis à jour au fil des phases, pas figé.
 
-**Statut** : Phase 5 — opportunités commerciales et réponses (troisième élément du futur moteur, après offres/besoins), testées en conditions réelles.
+**Statut** : Phase 6 — moteur de matching déterministe (entreprise↔entreprise et opportunité↔entreprise), testé en conditions réelles.
 **Dernière mise à jour** : 2026-09-19
 **Propriétaire produit** : non-développeur — toute section technique doit rester accompagnée d'une explication en langage clair dans les échanges de suivi.
 
@@ -222,27 +222,18 @@ Sécurité : mêmes politiques que le reste du profil d'entreprise (owner/admin/
 
 **notifications** _(✅ avancée de la Phase 8 à la Phase 5, comme `audit_logs`/`company_translations` l'ont été en Phase 3)_ : id, user_id, type, payload (jsonb), read_at, created_at. Écriture réservée à `create_notification()` (SECURITY DEFINER) — jamais d'insertion directe par un client.
 
-### 4.6 Correspondances & mise en relation
+### 4.6 Correspondances & mise en relation _(✅ construite en Phase 6 — voir docs/MATCHING.md)_
 
-**matches** (entreprise ↔ entreprise)
+**matches** (entreprise ↔ entreprise — compare le BESOIN d'une entreprise à l'OFFRE d'une autre, jamais besoin↔besoin ni offre↔offre)
 
-- id, company_a_id, company_b_id, score (0-100), status (`suggested`/`viewed`/`dismissed`/`contacted`), created_at, recalculated_at
+- id, company_id (côté besoin), need_id (FK), candidate_company_id (côté offre), offer_id (FK), score (0-100), confidence (0-100), score_breakdown (jsonb — détail par critère), algorithm_version, calculated_at, status (`suggested`/`viewed`/`dismissed`/`contacted`), feedback (nullable, préparé pour un futur retour utilisateur, jamais utilisé pour ajuster l'algorithme automatiquement)
+- **Différence avec la version envisagée en Phase 0** : pas de table `match_score_details` séparée — le détail vit dans `score_breakdown` (jsonb), assumé comme exception au principe "pas de gros JSON" car c'est un artefact d'explication propre à un match, pas une donnée métier filtrée/agrégée. Écriture réservée à la clé secrète (aucune politique RLS d'insertion/modification pour un client normal) — voir docs/SECURITY.md.
 
-**match_score_details**
+**opportunity_matches** (opportunité ↔ entreprise candidate — direction `seeking` comparée aux offres, `offering` comparée aux besoins)
 
-- id, match_id, criterion (ex: `need_offer_fit`, `sector`, `geography`, ...), points_awarded, points_possible
+- id, opportunity_id (FK), candidate_company_id (FK), candidate_offer_id (FK, nullable), candidate_need_id (FK, nullable — exactement un des deux renseigné selon la direction), score, confidence, score_breakdown, algorithm_version, calculated_at, status, feedback
 
-**opportunity_matches** _(✅ ajouté — corrige la version précédente)_ (opportunité ↔ entreprise candidate)
-
-- id, opportunity_id (FK), candidate_company_id (FK), score (0-100), status (`suggested`/`viewed`/`dismissed`/`responded`), created_at, recalculated_at
-
-**opportunity_match_score_details**
-
-- id, opportunity_match_id, criterion, points_awarded, points_possible
-
-**partnership_requests**
-
-- id, requester_company_id, target_company_id, message, status (`pending`/`accepted`/`declined`), created_at
+**partnership_requests** _(pas encore construite — reportée, la mise en relation directe passe pour l'instant par les réponses aux opportunités, §4.5)_
 
 ### 4.7 Commercial
 
@@ -328,9 +319,9 @@ Indexation conditionnelle : une page de liste filtrée n'est indexable que si el
 
 ---
 
-## 7. Moteur de matching (MVP)
+## 7. Moteur de matching (MVP) _(✅ construit en Phase 6 — voir docs/MATCHING.md pour l'architecture complète)_
 
-Scoring déterministe 0-100, recalculé lors des changements pertinents (profil, besoin, offre) :
+Scoring déterministe 0-100, recalculé **à la lecture** (appelé depuis les pages concernées plutôt que par déclencheur sur chaque écriture, choix documenté §23/§11 de docs/MATCHING.md) :
 
 | Critère                    | Points  |
 | -------------------------- | ------- |
@@ -350,9 +341,9 @@ Le même barème s'applique à deux relations distinctes, stockées séparément
 - **entreprise ↔ entreprise** (`matches`) — pour suggérer des partenaires généraux ;
 - **opportunité ↔ entreprise** (`opportunity_matches`) — pour suggérer les entreprises les plus pertinentes face à une opportunité publiée.
 
-Le détail du score est conservé (`match_score_details` / `opportunity_match_score_details`) pour rester explicable.
+Le détail du score est conservé dans `score_breakdown` (voir §4.6) pour rester explicable — affiché à l'utilisateur sous "Pourquoi ce score ?", jamais généré par une IA. Une incompatibilité fondamentale de type (aucune ligne dans `capability_compatibility`) **élimine** le candidat entièrement plutôt que de produire un score de 0. Seuil d'affichage : 60/100 (les scores plus bas restent calculés et persistés pour analyse interne, jamais supprimés). Vocabulaire imposé : "Score de compatibilité", jamais "Probabilité de réussite".
 
-**Évolution prévue (post-MVP)** : recherche sémantique / embeddings via `pgvector` (colonne `embedding` déjà prévue sur `companies` et `opportunities`), matching hybride (score déterministe + similarité sémantique).
+**Évolution prévue (post-MVP)** : recherche sémantique / embeddings via `pgvector` (colonne `embedding` déjà présente sur `companies` depuis la Phase 2, inutilisée pour l'instant), matching hybride (score déterministe + similarité sémantique) via un futur critère `SEMANTIC_SIMILARITY` sans casser l'architecture actuelle.
 
 ---
 
@@ -482,7 +473,7 @@ PROJECT_SPEC.md
 13. SEO avancé + durcissement sécurité + performance
 14. Lancement bêta France-Québec
 
-Tables encore à ajouter, avec leur propre phase : `matches`/`opportunity_matches` (6), `claim_requests`/`company_verifications` (8), `favorites` (9), `subscriptions` (12), `user_consents`/`data_subject_requests` (au plus tard avant le lancement commercial).
+Tables encore à ajouter, avec leur propre phase : `claim_requests`/`company_verifications` (8), `favorites` (9), `subscriptions` (12), `user_consents`/`data_subject_requests` (au plus tard avant le lancement commercial).
 
 ---
 
@@ -522,7 +513,14 @@ Tables encore à ajouter, avec leur propre phase : `matches`/`opportunity_matche
 | 2026-09-19 | Expiration des opportunités calculée à l'affichage (`expires_at`) plutôt que par une tâche planifiée (pg_cron)                                                     | Aucune tâche planifiée fiable/testable dans cet environnement ; une fonction administrable (`expire_stale_opportunities()`) reste disponible pour mettre à jour le statut affiché, sans dépendance fragile non vérifiable                |
 | 2026-09-19 | `notifications` avancée de la Phase 8/9 à la Phase 5                                                                                                               | Nécessaire dès maintenant pour "votre opportunité a reçu une réponse" et les accusés d'acceptation/refus ; écriture réservée à `create_notification()` (SECURITY DEFINER), jamais d'insertion directe                                    |
 | 2026-09-19 | Entreprises de démonstration marquées `[DEMO]` dans leur nom commercial et leur description                                                                        | Éviter toute confusion avec de vraies entreprises, demande explicite avant la Phase 5                                                                                                                                                    |
+| 2026-09-19 | Matrice de compatibilité besoin↔offre stockée dans une table SQL (`capability_compatibility`), avec règle réflexive implicite plutôt que stockée                   | Administrable sans déploiement de code ; éviter 18 lignes redondantes pour la règle "même code = compatible"                                                                                                                             |
+| 2026-09-19 | Scoring implémenté en TypeScript pur (pas en PL/pgSQL), génération de candidats en SQL                                                                             | Le scoring doit être testable unitairement sans base de données (§34) ; la génération de candidats doit rester performante à grande échelle (§24) — deux besoins différents, deux couches différentes                                    |
+| 2026-09-19 | `score_breakdown` en jsonb plutôt qu'une table `match_score_details` séparée                                                                                       | Exception assumée au principe "pas de gros JSON" : c'est un artefact d'explication propre à un match, pas une donnée métier filtrée/agrégée entre plusieurs matches                                                                      |
+| 2026-09-19 | Écriture de `matches`/`opportunity_matches` réservée à la clé secrète, aucune politique RLS d'insertion pour un client normal                                      | Empêcher qu'un utilisateur puisse fabriquer ou gonfler un score de compatibilité depuis le navigateur                                                                                                                                    |
+| 2026-09-19 | Recalcul "à la lecture" (appelé depuis les pages, upserté comme sous-produit) plutôt qu'un déclencheur sur chaque écriture d'offre/besoin/opportunité              | Simplicité et fiabilité pour le MVP (§23) ; évite une file d'attente ou une infrastructure de tâches de fond non nécessaire au volume actuel                                                                                             |
+| 2026-09-19 | Incompatibilité fondamentale de type = élimination complète du candidat, pas un score de 0 affiché                                                                 | Un score de 0 laisserait croire qu'un calcul a eu lieu ; l'absence de correspondance dans la matrice signifie que la comparaison n'a pas de sens                                                                                         |
+| 2026-09-19 | Donnée manquante sur un critère = ratio neutre (50 % du poids) + réduction de la CONFIANCE globale, jamais du score au-delà de ce ratio                            | Ne pas pénaliser excessivement un profil incomplet (§37) tout en signalant honnêtement la fiabilité du score affiché                                                                                                                     |
 
 ---
 
-_Prochaine révision prévue : à la fin de la Phase 6 (moteur de matching)._
+_Prochaine révision prévue : au démarrage de la Phase 7._

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { locale } from "next/root-params";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
 import { getCurrentUser } from "@/lib/supabase/session";
 import { createClient } from "@/lib/supabase/server";
@@ -17,6 +18,11 @@ import {
   OpportunitiesListSection,
   type CompanyOpportunityItem,
 } from "@/components/opportunities/OpportunitiesListSection";
+import { MatchCard } from "@/components/matching/MatchCard";
+import {
+  getPartnersForCompany,
+  getOpportunitiesForCompany,
+} from "@/lib/matching/service";
 
 type OfferNeedRow = {
   id: string;
@@ -150,7 +156,13 @@ export default async function EditCompanyPage({
       .order("created_at", { ascending: false }),
   ]);
 
+  const [partners, opportunitiesForYou] = await Promise.all([
+    getPartnersForCompany(supabase, id),
+    getOpportunitiesForCompany(supabase, id),
+  ]);
+
   const t = await getTranslations("Company");
+  const tMatching = await getTranslations("Matching");
   const primaryLocation =
     company.company_locations?.find((loc) => loc.is_primary) ?? null;
   const translation = pickCompanyTranslation(
@@ -265,6 +277,71 @@ export default async function EditCompanyPage({
         }))}
         canManage={canManageOffersNeeds}
       />
+
+      <section className="flex flex-col gap-4 rounded-lg border border-slate-200 p-6 dark:border-slate-800">
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+          {tMatching("partnersTitle")}
+        </h2>
+        {partners.length === 0 ? (
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            {tMatching("partnersEmpty")}
+          </p>
+        ) : (
+          <ul className="flex flex-col gap-3">
+            {partners.map((p, i) => (
+              <MatchCard
+                key={`${p.companyId}-${i}`}
+                title={p.companyName}
+                subtitle={p.companyCountryCode}
+                score={p.score}
+                confidence={p.confidence}
+                level={p.level}
+                confidenceLevel={p.confidenceLevel}
+                breakdown={p.breakdown}
+              />
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className="flex flex-col gap-4 rounded-lg border border-slate-200 p-6 dark:border-slate-800">
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+          {tMatching("opportunitiesForYouTitle")}
+        </h2>
+        {opportunitiesForYou.length === 0 ? (
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            {tMatching("opportunitiesForYouEmpty")}
+          </p>
+        ) : (
+          <ul className="flex flex-col gap-3">
+            {opportunitiesForYou.map((o) => (
+              <MatchCard
+                key={o.opportunityId}
+                title={
+                  o.slug ? (
+                    <Link
+                      href={{
+                        pathname: "/opportunites/[slug]",
+                        params: { slug: o.slug },
+                      }}
+                    >
+                      {o.title}
+                    </Link>
+                  ) : (
+                    o.title
+                  )
+                }
+                subtitle={o.companyName}
+                score={o.score}
+                confidence={o.confidence}
+                level={o.level}
+                confidenceLevel={o.confidenceLevel}
+                breakdown={o.breakdown}
+              />
+            ))}
+          </ul>
+        )}
+      </section>
 
       <MembersList members={members ?? []} />
     </main>

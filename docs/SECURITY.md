@@ -42,13 +42,32 @@ Aucune nouvelle logique de permission : `company_offers`/`company_needs` et leur
 
 Le journal d'audit (`opportunity_response_created`, `..._status_changed`) et les notifications automatiques (`create_notification()`) n'exposent jamais le contenu du message.
 
-## Tests de sécurité réels (Phases 3, 4 et 5)
+## Moteur de matching (Phase 6)
 
-Trois fichiers dans `tests/integration/` (`npm run test:integration`) exécutent des scénarios réels contre le vrai projet Supabase — pas de simulation locale, pas de mock : création de vrais utilisateurs de test, vraies tentatives d'action autorisée/interdite, vérification du résultat, puis suppression de toutes les données créées.
+`matches`/`opportunity_matches` (voir `docs/MATCHING.md`) sont **écrits
+uniquement par la clé secrète** (`service_role`, qui contourne la RLS) :
+aucune politique RLS n'autorise un client normal à insérer ou modifier un
+score, pour qu'aucun utilisateur ne puisse fabriquer un match ou gonfler
+un score depuis le navigateur. Un déclencheur
+(`protect_match_score_fields`) referme la seule brèche restante : même
+une entreprise autorisée à modifier SA propre ligne (pour changer un
+statut comme "vu"/"pas intéressé") ne peut pas toucher au score, à la
+confiance ni au détail — seul un administrateur de la plateforme le peut
+(diagnostic/correction).
+
+Lecture : réservée aux deux entreprises concernées par un match (jamais
+une entreprise tierce), et aux administrateurs de la plateforme. Aucun
+accès public/anonyme aux scores internes, même pour une opportunité
+publique.
+
+## Tests de sécurité réels (Phases 3 à 6)
+
+Fichiers dans `tests/integration/` (`npm run test:integration`) exécutent des scénarios réels contre le vrai projet Supabase — pas de simulation locale, pas de mock : création de vrais utilisateurs de test, vraies tentatives d'action autorisée/interdite, vérification du résultat, puis suppression de toutes les données créées.
 
 - `rls.test.ts` : comptes, entreprises, protection des champs sensibles.
 - `offers-needs.test.ts` : offres/besoins par rôle (owner/admin/member/viewer/extérieur/visiteur), contraintes de données (catégorie invalide, pays invalide, produit inexistant), statut actif/inactif, contenu du journal d'audit.
 - `opportunities.test.ts` : publication par rôle, visibilité des brouillons, réponse au nom d'une entreprise (jamais en son nom propre, jamais pour une entreprise inexistante ou étrangère), auto-réponse interdite, unicité de la réponse active, confidentialité des réponses (tiers/visiteur exclus), qui peut accepter/refuser/retirer, notifications, expiration administrable.
+- `matching.test.ts` : cohérence métier (candidat compatible proposé, incompatibilité fondamentale éliminée, offre inactive exclue, opportunité expirée exclue malgré un statut encore `published`, persistance avec version d'algorithme), et sécurité (visibilité d'un match par les deux entreprises concernées, exclusion d'une entreprise tierce, accès administrateur, aucun accès anonyme, impossibilité pour une entreprise de modifier elle-même un score).
 
 pgTAP aurait nécessité une instance Postgres locale via Docker, indisponible dans cet environnement ; ces suites jouent le même rôle de preuve en frappant directement le projet distant.
 

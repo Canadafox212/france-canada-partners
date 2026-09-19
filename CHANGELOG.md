@@ -4,6 +4,29 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ## [Non publié]
 
+### Phase 6 — Moteur de matching (2026-09-19)
+
+#### Ajouté
+
+- Moteur de matching déterministe (aucune IA/embedding) : entreprise↔entreprise (besoin comparé à une offre) et opportunité↔entreprise (dans les deux sens, selon `direction`). Architecture en deux étapes : génération de candidats en SQL (`src/lib/matching/candidateGeneration.ts`, filtrage par compatibilité/statut avant tout calcul détaillé) puis scoring en TypeScript pur, testable sans base de données (`src/lib/matching/scoring.ts`).
+- `capability_compatibility` : matrice de compatibilité besoin↔offre administrable, ne stockant que les correspondances croisées (règle réflexive "même code = compatible" implicite dans le moteur).
+- `matches` et `opportunity_matches` : score (0-100), confiance (0-100, reflète les données manquantes), détail par critère, version de l'algorithme (`MATCH_V1`), écriture réservée à la clé secrète — aucune politique RLS n'autorise un client normal à fabriquer un score, déclencheur `protect_match_score_fields` en défense supplémentaire.
+- Barème centralisé (30/20/15/10/5/5/5/5/5 = 100), incompatibilité fondamentale = élimination complète (pas un score de 0), donnée manquante = ratio neutre + réduction de la confiance (jamais du score au-delà de ce ratio).
+- Interface : "Vos partenaires potentiels" et "Opportunités pour vous" (page entreprise), "Entreprises compatibles" (page de gestion d'une opportunité), avec repli "Pourquoi ce score ?" détaillant chaque critère.
+- Migration `0016_matching_engine.sql`, validée localement puis appliquée au projet réel.
+- 28 nouveaux tests unitaires (`tests/unit/matching/scoring.test.ts`, règles métier, déterminisme) et de nouveaux tests d'intégration réels (`tests/integration/matching.test.ts` : cohérence métier + sécurité RLS des tables de matching). Les suites précédentes continuent de passer.
+- `docs/MATCHING.md` : architecture, pondération, gestion des données manquantes, limites connues, stratégie de recalcul.
+
+#### Documenté
+
+- `PROJECT_SPEC.md` §4.6/§7 mis à jour pour refléter le schéma réellement construit (différences avec la version envisagée en Phase 0 : `score_breakdown` en jsonb plutôt qu'une table séparée, pas de `partnership_requests` cette phase).
+
+#### Décidé
+
+- Recalcul "à la lecture" (appelé depuis les Server Components, upserté comme sous-produit) plutôt qu'un déclencheur sur chaque écriture — simplicité et fiabilité pour le MVP.
+- Certifications requises non modélisées sur `company_needs` : critère toujours neutre pour l'instant (limite documentée, pas un oubli).
+- Vocabulaire imposé : "Score de compatibilité", jamais "Probabilité de réussite".
+
 ### Phase 5 — Opportunités commerciales (2026-09-19)
 
 #### Ajouté

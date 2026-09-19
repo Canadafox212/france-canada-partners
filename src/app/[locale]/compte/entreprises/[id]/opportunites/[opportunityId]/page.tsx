@@ -11,6 +11,8 @@ import {
   ResponsesManager,
   type OpportunityResponseItem,
 } from "@/components/opportunities/ResponsesManager";
+import { MatchCard } from "@/components/matching/MatchCard";
+import { getCompaniesForOpportunity } from "@/lib/matching/service";
 
 export default async function ManageOpportunityPage({
   params,
@@ -59,6 +61,10 @@ export default async function ManageOpportunityPage({
     membership?.role === "member";
 
   const t = await getTranslations("Opportunity");
+  const tMatching = await getTranslations("Matching");
+  const compatibleCompanies = canManage
+    ? await getCompaniesForOpportunity(supabase, opportunityId)
+    : [];
   const labelFor = (row: {
     label_fr?: string;
     label_en?: string;
@@ -167,6 +173,34 @@ export default async function ManageOpportunityPage({
 
       {canManage ? (
         <ResponsesManager items={responses} canManage={canManage} />
+      ) : null}
+
+      {canManage ? (
+        <section className="flex flex-col gap-4 rounded-lg border border-slate-200 p-6 dark:border-slate-800">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+            {tMatching("compatibleCompaniesTitle")}
+          </h2>
+          {compatibleCompanies.length === 0 ? (
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              {tMatching("compatibleCompaniesEmpty")}
+            </p>
+          ) : (
+            <ul className="flex flex-col gap-3">
+              {compatibleCompanies.map((c, i) => (
+                <MatchCard
+                  key={`${c.companyId}-${i}`}
+                  title={c.companyName}
+                  subtitle={c.companyCountryCode}
+                  score={c.score}
+                  confidence={c.confidence}
+                  level={c.level}
+                  confidenceLevel={c.confidenceLevel}
+                  breakdown={c.breakdown}
+                />
+              ))}
+            </ul>
+          )}
+        </section>
       ) : null}
     </main>
   );

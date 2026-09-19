@@ -225,5 +225,40 @@
     "respondAction": "Respond",
     "noEligibleCompany": "You need to belong to another company to respond to this opportunity.",
     "responseSentMessage": "Your response has been sent."
+  },
+  "Matching": {
+    "partnersTitle": "Your potential partners",
+    "partnersEmpty": "No potential partners identified yet. Complete your offers and needs to improve results.",
+    "opportunitiesForYouTitle": "Opportunities for you",
+    "opportunitiesForYouEmpty": "No compatible opportunities yet.",
+    "compatibleCompaniesTitle": "Compatible companies",
+    "compatibleCompaniesEmpty": "No compatible companies identified yet.",
+    "scoreLabel": "Compatibility score",
+    "confidenceLabel": "Confidence",
+    "level": {
+      "very_strong": "Very strong",
+      "strong": "Strong",
+      "possible": "Possible",
+      "weak": "Weak",
+      "insufficient": "Insufficient"
+    },
+    "confidenceLevel": {
+      "high": "high",
+      "moderate": "moderate",
+      "partial": "partial data"
+    },
+    "whyToggle": "Why this score?",
+    "criterion": {
+      "capability": "Partnership type",
+      "productSector": "Product / sector",
+      "geography": "Geographic area",
+      "capacity": "Operational capacity",
+      "size": "Company size",
+      "certifications": "Certifications",
+      "languages": "Working language",
+      "exportExperience": "Export experience",
+      "verification": "Verification"
+    },
+    "criterionMissing": "Not provided — not penalized"
   }
 }
