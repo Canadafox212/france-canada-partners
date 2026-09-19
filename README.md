@@ -38,6 +38,7 @@ Le site est accessible sur [http://localhost:3000](http://localhost:3000) (redir
 - `docs/DATABASE.md` — état du modèle de données
 - `docs/SECURITY.md` — principes de sécurité
 - `docs/PRIVACY.md` — brouillon technique de conformité RGPD/Loi 25
+- `data/README.md` — rôle des données brutes de sourcing (non versionnées)
 
 ## Stack technique
 

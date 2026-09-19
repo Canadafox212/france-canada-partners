@@ -39,7 +39,10 @@ messages/
   fr.json, en.json      textes d'interface traduits
 tests/
   unit/                tests unitaires (Vitest)
-supabase/               migrations SQL — à partir de la Phase 2
+supabase/
+  migrations/           migrations SQL (schéma + Row Level Security, voir docs/DATABASE.md)
+data/
+  raw/                  données brutes de sourcing, non versionnées (voir data/README.md)
 docs/                   cette documentation
 ```
 
@@ -53,7 +56,7 @@ Depuis Next.js 16.3, la langue (premier segment de route `[locale]`) peut être 
 
 ## Authentification (statut à cette phase)
 
-`src/lib/supabase/client.ts` et `server.ts` fournissent la connexion technique à Supabase. **Aucune page de connexion/inscription n'existe encore** : ce sera fait en Phase 3, en même temps que la création de compte et le rattachement à une entreprise (`company_members`). Le rafraîchissement automatique de session dans `proxy.ts` sera ajouté à ce moment-là aussi (inutile tant qu'il n'y a pas de session à rafraîchir).
+`src/lib/supabase/client.ts` et `server.ts` fournissent la connexion technique à Supabase. Côté base de données, l'identité repose sur `auth.users` (géré par Supabase) + une table `profiles` en relation 1:1 pour les données applicatives — voir `docs/DATABASE.md` et `PROJECT_SPEC.md` §4.1. **Aucune page de connexion/inscription n'existe encore côté interface** : ce sera fait en Phase 3. Le rafraîchissement automatique de session dans `proxy.ts` sera ajouté à ce moment-là aussi (inutile tant qu'il n'y a pas de session à rafraîchir).
 
 ## Conventions de nommage
 

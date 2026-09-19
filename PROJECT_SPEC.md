@@ -2,7 +2,7 @@
 
 > Document de référence permanent du projet. Toute décision structurante importante doit être reflétée ici avant/pendant son implémentation. Ce document est mis à jour au fil des phases, pas figé.
 
-**Statut** : Phase 1 — initialisation technique en cours.
+**Statut** : Phase 2 — modèle de données central (migrations SQL écrites et validées localement, en attente d'application sur un vrai projet Supabase).
 **Dernière mise à jour** : 2026-09-19
 **Propriétaire produit** : non-développeur — toute section technique doit rester accompagnée d'une explication en langage clair dans les échanges de suivi.
 
@@ -123,61 +123,70 @@ Connexion → Tableau de bord statistique → Modération (vérifications, signa
 
 Principe directeur : **pas de gros champs JSON** pour les données structurées et filtrables (secteurs, langues, marchés, certifications, produits). Ces données passent par de vraies tables relationnelles et des tables de jointure, pour garantir des filtres rapides et fiables à grande échelle (100 000+ entreprises).
 
-**Principe de séparation des données personnelles** : les données à caractère personnel (nom d'une personne, courriel de connexion) ne vivent que dans `users` et les tables de confidentialité (§4.10). Toutes les autres tables ne portent que des données professionnelles/d'entreprise (courriel professionnel générique, téléphone de l'entreprise, adresse commerciale) — cette séparation est ce qui permettra plus tard de répondre facilement à une demande d'accès/suppression sans devoir fouiller tout le schéma.
+**Principe de séparation des données personnelles** : les données à caractère personnel (nom d'une personne, courriel de connexion) ne vivent que dans `profiles`/`auth.users` et les tables de confidentialité (§4.10). Toutes les autres tables ne portent que des données professionnelles/d'entreprise (courriel professionnel générique, téléphone de l'entreprise, adresse commerciale) — cette séparation est ce qui permettra plus tard de répondre facilement à une demande d'accès/suppression sans devoir fouiller tout le schéma.
 
-### 4.1 Utilisateurs
+### 4.1 Identité utilisateur _(✅ revu en Phase 2)_
 
-**users**
+Supabase fournit déjà `auth.users` pour l'authentification (email, mot de passe, état de connexion) : **ce n'est pas dupliqué**. Une table applicative distincte porte uniquement les données propres au produit, en relation 1:1 stricte avec `auth.users` (`profiles.id = auth.users.id`, création automatique par déclencheur à l'inscription).
 
-- id, email, password (géré par Supabase Auth), full_name, role (`user` / `admin`), preferred_language (`fr`/`en`), created_at, last_login_at
+**profiles**
 
-### 4.2 Entreprises
+- id (PK, FK → `auth.users.id`), full_name, preferred_language (`fr`/`en` — langue de l'**interface** pour cette personne), platform_role (`user`/`admin` — rôle **sur la plateforme**, distinct du rôle dans une entreprise, voir §4.2), created_at, updated_at
 
-**companies**
+### 4.2 Entreprises _(✅ champs revus en Phase 2)_
 
-- id, legal_name, display_name, slug, description_fr, description_en
-- country, province_region, city, postal_code, address, latitude, longitude
-- website, professional_email, phone, logo_url
-- employee_range, revenue_range
-- verification_status (`unverified`/`pending`/`verified`)
-- subscription_level (`free`/`premium`/`business`)
+**companies** — une entreprise est indépendante de l'utilisateur qui l'a créée ; elle peut exister avant d'être revendiquée.
+
+- id, legal_name, display_name, slug
+- description (texte libre, langue d'origine de l'entreprise — pas de colonnes `_fr`/`_en` ici : voir la nuance i18n en §11)
+- website, professional_email, phone, company_registration_number (format libre : SIREN en France, NEQ au Québec, etc.)
+- country_code (pays "principal", pour un filtre rapide sans jointure — l'adresse complète et les établissements multiples vivent dans `company_locations`)
+- employee_range, revenue_range, export_experience (booléen)
+- verification_status (`unverified`/`pending`/`verified`) — confiance
+- subscription_level (`free`/`premium`/`business`) — offre commerciale
 - profile_completion_score (0-100, calculé)
+- status (`draft`/`active`/`suspended`/`archived`) — cycle de vie/visibilité, distinct des deux précédents
 - embedding (vector, réservé — non utilisé en MVP, prépare le matching IA)
-- is_active, created_at, updated_at
+- created_at, updated_at
 
-**company_members** _(✅ promu au socle MVP — corrige la version précédente)_
+**company_locations** — une entreprise peut avoir plusieurs établissements.
 
-- id, company_id (FK), user_id (FK), role (`owner`/`editor`), created_at
-- Une entreprise peut avoir plusieurs membres dès le lancement ; l'ancien champ unique `companies.owner_user_id` est abandonné au profit de cette table, pour éviter une migration lourde le jour où une entreprise veut ajouter un deuxième utilisateur (ex. un collègue export). Contrainte : au moins un membre `owner` par entreprise.
+- id, company_id (FK), location_type (`headquarters`/`office`/`factory`/`warehouse`/`branch`/`other`), address_line_1, address_line_2, city, postal_code, region, country_code, latitude, longitude, is_primary, created_at
+- Un seul établissement `is_primary` par entreprise (contrainte d'unicité).
 
-**company_locations**
+**company_members** _(✅ rôles précisés en Phase 2)_
 
-- id, company_id, country, province_region, city, postal_code, address, latitude, longitude, is_headquarters
+- id, company_id (FK), user_id (FK → `profiles.id`), role (`owner`/`admin`/`member`/`viewer` — rôle **dans cette entreprise**), status (`invited`/`active`/`removed`), invited_at, joined_at, created_at
+- Une entreprise peut avoir plusieurs membres ; un même utilisateur peut appartenir à plusieurs entreprises. Rattachement automatique : le créateur d'une entreprise en devient `owner` immédiatement (déclencheur). Ce rôle ne doit jamais être confondu avec `profiles.platform_role` (administration globale de la plateforme).
 
-### 4.3 Classification (taxonomies)
+### 4.3 Classification (taxonomies) _(✅ précisée en Phase 2)_
 
 **industries** : id, name_fr, name_en, slug
 **subindustries** : id, industry_id (FK), name_fr, name_en, slug
-**products_services** : id, subindustry_id (FK), name_fr, name_en, slug, type (`product`/`service`)
+**products_services** : id, type (`product`/`service`), subindustry_id (FK, nullable), label_fr, label_en, slug, category (texte libre optionnel)
 
 **Jointures**
 
-- company_industries (company_id, industry_id)
-- company_products_services (company_id, product_service_id)
-- company_languages (company_id, language_code)
-- company_certifications (id, company_id, name, issuing_body, valid_until)
-- company_markets (id, company_id, country/region, market_type: `current`/`target`)
-- `companies.export_experience` (booléen simple pour le MVP)
+- company_industries (company_id, industry_id, is_primary) — plusieurs secteurs par entreprise, un seul marqué secteur principal (contrainte d'unicité)
+- company_subindustries (company_id, subindustry_id)
+- company_products_services (company_id, product_service_id, description) — `description` est un texte libre complémentaire propre à l'entreprise, en plus du libellé standardisé
+- company_languages (company_id, language_code) — langues **commerciales** de l'entreprise, à ne pas confondre avec `profiles.preferred_language`
+- company_certifications (id, company_id, certification_id, issuer, reference, valid_from, valid_until, verification_status)
+- company_markets (id, company_id, market_type `current`/`target`, country_code, region, city)
 
-### 4.4 Besoins / offres
+**Nomenclatures officielles (NAF/APE, NAICS/SCIAN...)** : volontairement non liées à l'application dès maintenant, pour ne pas dépendre d'une nomenclature propriétaire. Si le besoin de correspondance se confirme, une table de correspondance (ex. `industry_code_mappings` : industry_id, code_system, code) sera ajoutée à ce moment-là, sans impact sur le reste du modèle.
 
-**company_needs** ("Nous recherchons")
+### 4.4 Besoins / offres _(✅ revu en Phase 2 : vocabulaire déplacé en base)_
 
-- id, company_id, need_type (`distributeur`, `fournisseur`, `fabricant`, `sous_traitant`, `importateur`, `exportateur`, `agent_commercial`, `partenaire_technologique`, `partenaire_industriel`, `investisseur`, `partenaire_commercial`), description, target_country, target_region, created_at
+Les catégories d'offre/besoin ne sont **pas** codées en dur (elles doivent pouvoir évoluer depuis l'administration sans migration de schéma) :
 
-**company_offers** ("Nous proposons")
+**business_capability_types** : code (PK, ex. `DISTRIBUTOR`), label_fr, label_en, applies_to_offers (booléen), applies_to_needs (booléen), is_active
+Valeurs de départ : DISTRIBUTOR, SUPPLIER, MANUFACTURER, SUBCONTRACTOR, IMPORTER, EXPORTER, SALES_AGENT, COMMERCIAL_PARTNER, TECHNOLOGY_PARTNER, INDUSTRIAL_PARTNER, INVESTOR, JOINT_VENTURE, SERVICES, MANUFACTURING_CAPACITY, DISTRIBUTION_CAPACITY.
 
-- id, company_id, offer_type (`fabrication`, `distribution`, `sous_traitance`, `produits`, `services`, `technologie`, `importation`, `exportation`, `representation_commerciale`, `capacites_industrielles`), description, created_at
+**company_needs** ("Nous recherchons") : id, company_id, capability_type_code (FK), description, target_country_code, target_region, created_at
+**company_offers** ("Nous proposons") : id, company_id, capability_type_code (FK), description, target_country_code, target_region, created_at
+
+`target_country_code`/`target_region` décrivent la zone visée par **cette offre/besoin précis** — distincte des marchés généraux de l'entreprise (`company_markets`) et de sa localisation physique (`company_locations`).
 
 ### 4.5 Opportunités
 
@@ -225,49 +234,55 @@ Principe directeur : **pas de gros champs JSON** pour les données structurées 
 
 **company_verifications**
 
-- id, company_id, method (`domain_email`/`document`/`manual`), submitted_by_user_id, evidence, status (`pending`/`approved`/`rejected`), reviewed_by_admin_id, reviewed_at, created_at
+- id, company_id, method (`domain_email`/`document`/`manual`), submitted_by_user_id (FK → `profiles.id`), evidence, status (`pending`/`approved`/`rejected`), reviewed_by_admin_id (FK → `profiles.id`), reviewed_at, created_at
 
 **claim_requests**
 
-- id, company_id, user_id, professional_email, verification_method, status, created_at, reviewed_by
+- id, company_id, user_id (FK → `profiles.id`), professional_email, verification_method, status, created_at, reviewed_by
 
-**data_sources**
+**data_sources** _(✅ enrichi en Phase 2)_
 
-- id, source_name, source_url, source_license, source_date, import_date, last_verified_at, imported_record_count
+- id, name (ex. "SIRENE", "INPI", "Corporations Canada", "Inscription directe"), url, source_type (`open_data`/`registry`/`partner`/`manual_entry`/`admin_import`), license_name, license_url, created_at
 
-**company_data_sources**
+**company_source_records** _(✅ renommé et enrichi en Phase 2 — remplace `company_data_sources`)_
 
-- company_id, data_source_id (traçabilité — une entreprise peut avoir plusieurs provenances après fusion de doublons)
+- id, company_id (FK), data_source_id (FK), source_record_id (identifiant de l'entreprise **dans** la source, ex. un SIREN), source_date, imported_at, last_verified_at, raw_reference (pointeur libre vers la donnée brute, texte simple — pas de JSON), status (`active`/`superseded`/`disputed`), created_at
+- Une entreprise peut avoir plusieurs sources (notamment après fusion de doublons).
 
 ### 4.9 Support
 
-**notifications** : id, user_id, type, payload_summary, read_at, created_at
-**favorites** : id, user_id, company_id (nullable), opportunity_id (nullable), created_at
-**audit_logs** : id, actor_user_id, action, entity_type, entity_id, before_summary, after_summary, created_at
+**notifications** : id, user_id (FK → `profiles.id`), type, payload_summary, read_at, created_at
+**favorites** : id, user_id (FK → `profiles.id`), company_id (nullable), opportunity_id (nullable), created_at
+**audit_logs** : id, actor_user_id (FK → `profiles.id`), action, entity_type, entity_id, before_summary, after_summary, created_at
 
 ### 4.10 Confidentialité _(✅ ajouté suite à la décision du 2026-09-19)_
 
 **user_consents**
 
-- id, user_id, consent_type (ex. `terms_of_service`, `marketing_email`, `cookies_analytics`), granted (booléen), granted_at, revoked_at, policy_version
+- id, user_id (FK → `profiles.id`), consent_type (ex. `terms_of_service`, `marketing_email`, `cookies_analytics`), granted (booléen), granted_at, revoked_at, policy_version
 - Sert à prouver qu'un consentement a bien été donné, à quelle version de la politique, et à le retirer sans perdre l'historique.
 
 **data_subject_requests**
 
-- id, user_id, request_type (`access`/`rectification`/`deletion`/`export`), status (`pending`/`in_progress`/`completed`/`rejected`), requested_at, completed_at, notes
+- id, user_id (FK → `profiles.id`), request_type (`access`/`rectification`/`deletion`/`export`), status (`pending`/`in_progress`/`completed`/`rejected`), requested_at, completed_at, notes
 - Donne une trace administrable des demandes RGPD/Loi 25 (droit d'accès, de rectification, de suppression, d'export), gérable depuis le back-office admin.
 
 ---
 
 ## 5. Rôles & permissions
 
-- **Visiteur** : lecture publique uniquement.
-- **Utilisateur Free** : compte, création/revendication d'une entreprise, profil et opportunités avec limites.
+Deux échelles de rôle, bien distinctes (voir §4.1 et §4.2) :
+
+- **Rôle sur la plateforme** (`profiles.platform_role`) : `user` (par défaut) ou `admin` (accès total au back-office).
+- **Rôle dans une entreprise** (`company_members.role`) : `owner`, `admin`, `member`, `viewer` — s'applique uniquement à la gestion de cette entreprise précise, sans rapport avec l'administration de la plateforme.
+
+Paliers commerciaux (`companies.subscription_level`), orthogonaux aux deux rôles ci-dessus :
+
+- **Free** : profil et opportunités avec limites.
 - **Premium** : visibilité accrue, plus de réponses aux opportunités, badge de confiance.
 - **Business** : opportunités/entreprise sponsorisées, accès élargi aux correspondances.
-- **Admin** : accès total au back-office.
 
-Sécurité appliquée au niveau base de données (Row Level Security Supabase) en complément des contrôles applicatifs : une entreprise ne peut être modifiée que par ses membres (`company_members`) ; un utilisateur ne voit que ses propres notifications/favoris/consentements.
+Sécurité appliquée au niveau base de données (Row Level Security Supabase) en complément des contrôles applicatifs, écrite en même temps que chaque table plutôt qu'après coup : une entreprise ne peut être modifiée que par ses membres habilités (`company_members`) ou un administrateur de la plateforme ; un utilisateur ne voit que ses propres notifications/favoris/consentements.
 
 ---
 
@@ -432,9 +447,9 @@ PROJECT_SPEC.md
 
 ## 16. Ordre de développement
 
-1. Initialisation du projet (Next.js, Supabase, Tailwind, structure de dépôt) — **en cours**
-2. Modèle de données central (tables + Row Level Security)
-3. Comptes utilisateurs + création/édition d'entreprise (y compris `company_members`)
+1. Initialisation du projet (Next.js, Supabase, Tailwind, structure de dépôt) — **fait**
+2. Modèle de données central (identité, entreprises, membres, établissements, taxonomie, produits, offres/besoins, marchés, langues, certifications, sources) — **fait**, RLS écrite avec chaque table. Restent à ajouter, avec leur propre phase : `opportunities`/`opportunity_responses` (phase 5), `matches`/`opportunity_matches` (phase 6), `claim_requests`/`company_verifications` (phase 7), `notifications`/`favorites` (phase 8), `audit_logs` (phase 9), `subscriptions` (phase 11), `user_consents`/`data_subject_requests` (au plus tard avant le lancement commercial).
+3. Comptes utilisateurs + création/édition d'entreprise (interface sur `profiles`/`company_members`, déjà en base)
 4. Annuaire public + recherche + filtres + fiche entreprise + SEO de base
 5. "Nous recherchons" / "Nous proposons" + opportunités + réponses
 6. Moteur de matching déterministe (entreprise↔entreprise, puis opportunité↔entreprise)
@@ -450,16 +465,23 @@ PROJECT_SPEC.md
 
 ## 17. Journal des décisions
 
-| Date       | Décision                                                                           | Raison                                                                                                                           |
-| ---------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| 2026-09-19 | Stack retenue : Next.js + TypeScript + PostgreSQL/Supabase + Tailwind              | Voir §2                                                                                                                          |
-| 2026-09-19 | Matching MVP = scoring déterministe, pas d'IA                                      | Explicabilité, coût, rapidité de mise en œuvre ; architecture préparée pour l'IA plus tard                                       |
-| 2026-09-19 | Pas de scraping de sites tiers                                                     | Respect des conditions d'utilisation, risque légal                                                                               |
-| 2026-09-19 | Région Supabase : `ca-central-1` (Canada Central)                                  | Priorité Québec, latence raisonnable pour la France ; ne dispense pas des obligations RGPD/Loi 25 (voir §9.1)                    |
-| 2026-09-19 | `company_members` remplace `owner_user_id` comme mécanisme central de rattachement | Support natif de plusieurs utilisateurs par entreprise dès le MVP, sans migration future                                         |
-| 2026-09-19 | Ajout de `opportunity_matches` distinct de `matches`                               | Le matching opportunité↔entreprise est une relation différente du matching entreprise↔entreprise et doit être stockée séparément |
-| 2026-09-19 | Ajout de `user_consents` et `data_subject_requests`                                | Support minimal RGPD/Loi 25 dès l'architecture (consentement, droits des personnes)                                              |
+| Date       | Décision                                                                                                    | Raison                                                                                                                              |
+| ---------- | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-09-19 | Stack retenue : Next.js + TypeScript + PostgreSQL/Supabase + Tailwind                                       | Voir §2                                                                                                                             |
+| 2026-09-19 | Matching MVP = scoring déterministe, pas d'IA                                                               | Explicabilité, coût, rapidité de mise en œuvre ; architecture préparée pour l'IA plus tard                                          |
+| 2026-09-19 | Pas de scraping de sites tiers                                                                              | Respect des conditions d'utilisation, risque légal                                                                                  |
+| 2026-09-19 | Région Supabase : `ca-central-1` (Canada Central)                                                           | Priorité Québec, latence raisonnable pour la France ; ne dispense pas des obligations RGPD/Loi 25 (voir §9.1)                       |
+| 2026-09-19 | `company_members` remplace `owner_user_id` comme mécanisme central de rattachement                          | Support natif de plusieurs utilisateurs par entreprise dès le MVP, sans migration future                                            |
+| 2026-09-19 | Ajout de `opportunity_matches` distinct de `matches`                                                        | Le matching opportunité↔entreprise est une relation différente du matching entreprise↔entreprise et doit être stockée séparément    |
+| 2026-09-19 | Ajout de `user_consents` et `data_subject_requests`                                                         | Support minimal RGPD/Loi 25 dès l'architecture (consentement, droits des personnes)                                                 |
+| 2026-09-19 | `profiles` (liée 1:1 à `auth.users`) remplace la table `users` envisagée initialement                       | Éviter de dupliquer l'identité de connexion déjà gérée par Supabase Auth ; ne conserver que les données applicatives                |
+| 2026-09-19 | Rôles `company_members` précisés : `owner`/`admin`/`member`/`viewer`, distincts de `profiles.platform_role` | Séparer clairement le rôle dans une entreprise du rôle sur la plateforme (demande explicite avant la Phase 2)                       |
+| 2026-09-19 | `business_capability_types` remplace un enum figé pour les types d'offre/besoin                             | Permettre à un administrateur de faire évoluer ce vocabulaire sans migration de schéma                                              |
+| 2026-09-19 | `companies.description` unique (pas de `description_fr`/`description_en`)                                   | Cohérent avec le principe déjà posé en §11 : le texte saisi par une entreprise reste dans sa langue d'origine, non traduit          |
+| 2026-09-19 | Adresses uniquement dans `company_locations` (plus de champs d'adresse sur `companies`)                     | Une entreprise a par nature 0 à N établissements ; éviter de dupliquer l'adresse "principale" à deux endroits                       |
+| 2026-09-19 | `data_sources`/`company_source_records` enrichis (type, licence, identifiant dans la source, statut)        | Nécessaire pour tracer rigoureusement la provenance avant tout import réel (Phase 10)                                               |
+| 2026-09-19 | Fichiers de sourcing d'entreprises déplacés vers `data/raw/{france,quebec,matching}/`, non versionnés       | Organisation claire de la matière première du futur pipeline d'import, sans les mélanger au code applicatif — voir `data/README.md` |
 
 ---
 
-_Prochaine révision prévue : à la fin de la Phase 2 (modèle de données), une fois les migrations SQL écrites._
+_Prochaine révision prévue : à la fin de la Phase 3 (comptes utilisateurs et gestion d'entreprise), une fois l'authentification branchée sur le schéma ci-dessus._

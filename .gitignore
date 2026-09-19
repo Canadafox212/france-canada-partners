@@ -41,18 +41,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Données de sourcing d'entreprises (travail en cours, séparé du code applicatif) :
-# ne pas versionner dans le dépôt de l'application. Voir le rapport de Phase 1
-# pour la recommandation de leur donner un emplacement dédié.
-/entreprises_*.csv
-/entreprises_*.json
-/entreprises_*.xlsx
-/france_quebec_*.csv
-/france_quebec_*.xlsx
-/*matching*.csv
-/*matching*.xlsx
-/master_recherche_*.csv
-/master_recherche_*.xlsx
-/sources_recherche_*.csv
-/journal_progression*.md
-/progression.json
+# Données brutes de sourcing d'entreprises (matière première du futur pipeline
+# d'import, Phase 10) : volumineuses, non qualifiées, jamais versionnées.
+# Voir data/README.md.
+/data/raw/
+
+# Cache local de la CLI Supabase (recréé automatiquement).
+/supabase/.temp/
