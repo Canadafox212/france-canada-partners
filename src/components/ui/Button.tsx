@@ -44,6 +44,7 @@ export function SubmitButton({
   isLoading,
   disabled,
   children,
+  type = "submit",
   ...props
 }: SubmitButtonProps) {
   const classes = [baseClasses, variantClasses[variant], className]
@@ -52,7 +53,7 @@ export function SubmitButton({
 
   return (
     <button
-      type="submit"
+      type={type}
       className={`${classes} disabled:cursor-not-allowed disabled:opacity-60`}
       disabled={disabled || isLoading}
       {...props}

@@ -120,5 +120,37 @@
     "statusInvited": "Invited",
     "statusActive": "Active",
     "statusRemoved": "Removed"
+  },
+  "ProductsServices": {
+    "title": "Products & services",
+    "empty": "No product or service is referenced on the platform yet."
+  },
+  "OfferNeed": {
+    "weOfferTitle": "We offer",
+    "weSeekTitle": "We're looking for",
+    "addOffer": "Add what we offer",
+    "addNeed": "Publish this need",
+    "noOffers": "You haven't declared anything you offer yet.",
+    "noNeeds": "You haven't declared anything you're looking for yet.",
+    "offerCapabilityLabel": "What does your company offer?",
+    "needCapabilityLabel": "What are you looking for?",
+    "selectPlaceholder": "— Choose —",
+    "productsLabel": "For which product or service?",
+    "industryLabel": "Relevant industry (optional)",
+    "industryNone": "— Not specified —",
+    "countryLabel": "Country",
+    "regionLabel": "Region / province (optional)",
+    "languagesLabel": "Desired languages (optional)",
+    "descriptionLabel": "Description",
+    "partnerSizeLabel": "Desired partner size (optional)",
+    "partnerSizePlaceholder": "e.g. 10-49 employees",
+    "publishOffer": "Publish this offer",
+    "publishNeed": "Publish this need",
+    "statusActive": "Active",
+    "statusInactive": "Inactive",
+    "editAction": "Edit",
+    "activateAction": "Activate",
+    "deactivateAction": "Deactivate",
+    "deleteAction": "Delete"
   }
 }

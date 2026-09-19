@@ -31,16 +31,17 @@ src/
     layout/            Header (barre de navigation, conscient de la session)
     auth/              formulaires d'authentification (Client Components)
     account/           formulaire de profil, bouton de déconnexion
-    companies/         formulaires et affichage liés à une entreprise
+    companies/         formulaires et affichage liés à une entreprise (profil, produits/services, offres, besoins, membres)
   lib/
     env.ts             lecture + validation des variables d'environnement
     utils.ts            fonctions utilitaires pures (ex. slugify)
     companies.ts         repli de langue pour les descriptions d'entreprise
+    offersNeeds.ts        composition automatique du titre d'une offre/d'un besoin
     supabase/
       client.ts          client Supabase pour le navigateur
       server.ts           client Supabase pour le code serveur
       session.ts           utilisateur/profil/entreprises courants (serveur uniquement)
-  validations/         schémas Zod partagés entre formulaires (auth, entreprise, communs)
+  validations/         schémas Zod partagés entre formulaires (auth, entreprise, offre/besoin, communs)
   i18n/
     routing.ts          langues supportées, langue par défaut, segments d'URL traduits
     navigation.ts        Link/redirect/useRouter conscients de la langue
@@ -51,6 +52,8 @@ messages/
 tests/
   unit/                tests unitaires rapides et hors-ligne (Vitest)
   integration/          tests réels contre le vrai projet Supabase (voir docs/DATABASE.md)
+scripts/
+  seed-demo-data.mjs     jeu de données de démonstration (npm run seed:demo) — pas une migration
 supabase/
   migrations/           migrations SQL (schéma + Row Level Security, voir docs/DATABASE.md)
 data/

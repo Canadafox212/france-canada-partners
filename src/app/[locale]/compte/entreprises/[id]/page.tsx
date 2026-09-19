@@ -8,6 +8,41 @@ import { createClient } from "@/lib/supabase/server";
 import { pickCompanyTranslation } from "@/lib/companies";
 import { EditCompanyForm } from "@/components/companies/EditCompanyForm";
 import { MembersList } from "@/components/companies/MembersList";
+import { CompanyProductsServicesForm } from "@/components/companies/CompanyProductsServicesForm";
+import {
+  OffersNeedsSection,
+  type OfferNeedItem,
+} from "@/components/companies/OffersNeedsSection";
+
+type OfferNeedRow = {
+  id: string;
+  title: string | null;
+  description: string | null;
+  capability_type_code: string;
+  target_country_code: string | null;
+  target_region: string | null;
+  status: "active" | "inactive";
+  industry_id: string | null;
+  sought_employee_range?: string | null;
+  products?: { product_service_id: string }[] | null;
+  langs?: { language_code: string }[] | null;
+};
+
+function mapOfferNeedRow(row: OfferNeedRow): OfferNeedItem {
+  return {
+    id: row.id,
+    title: row.title,
+    description: row.description,
+    capabilityTypeCode: row.capability_type_code,
+    targetCountryCode: row.target_country_code,
+    targetRegion: row.target_region,
+    status: row.status,
+    industryId: row.industry_id,
+    soughtEmployeeRange: row.sought_employee_range,
+    productServiceIds: (row.products ?? []).map((p) => p.product_service_id),
+    languageCodes: (row.langs ?? []).map((l) => l.language_code),
+  };
+}
 
 export default async function EditCompanyPage({
   params,
@@ -15,9 +50,13 @@ export default async function EditCompanyPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [user, activeLocale] = await Promise.all([getCurrentUser(), locale()]);
+  const [user, activeLocaleValue] = await Promise.all([
+    getCurrentUser(),
+    locale(),
+  ]);
+  const activeLocale = activeLocaleValue as AppLocale;
   if (!user) {
-    redirect({ href: "/connexion", locale: activeLocale as AppLocale });
+    redirect({ href: "/connexion", locale: activeLocale });
     return null;
   }
 
@@ -46,21 +85,97 @@ export default async function EditCompanyPage({
     .eq("user_id", user.id)
     .maybeSingle();
 
-  const canEdit = membership?.role === "owner" || membership?.role === "admin";
+  const canEditProfile =
+    membership?.role === "owner" || membership?.role === "admin";
+  const canManageOffersNeeds =
+    membership?.role === "owner" ||
+    membership?.role === "admin" ||
+    membership?.role === "member";
 
-  const { data: members } = await supabase
-    .from("company_members")
-    .select("id, role, status, profiles(full_name)")
-    .eq("company_id", id)
-    .eq("status", "active");
+  const [
+    { data: members },
+    { data: capabilityTypes },
+    { data: productsServicesCatalog },
+    { data: languagesCatalog },
+    { data: industriesCatalog },
+    { data: companyProductsServices },
+    { data: offerRows },
+    { data: needRows },
+  ] = await Promise.all([
+    supabase
+      .from("company_members")
+      .select("id, role, status, profiles(full_name)")
+      .eq("company_id", id)
+      .eq("status", "active"),
+    supabase
+      .from("business_capability_types")
+      .select("code, label_fr, label_en, applies_to_offers, applies_to_needs")
+      .eq("is_active", true),
+    supabase
+      .from("products_services")
+      .select("id, label_fr, label_en")
+      .order("label_fr"),
+    supabase
+      .from("languages")
+      .select("code, name_fr, name_en")
+      .order("name_fr"),
+    supabase.from("industries").select("id, name_fr, name_en").order("name_fr"),
+    supabase
+      .from("company_products_services")
+      .select("product_service_id")
+      .eq("company_id", id),
+    supabase
+      .from("company_offers")
+      .select(
+        "id, title, description, capability_type_code, target_country_code, target_region, status, industry_id, products:company_offer_products_services(product_service_id), langs:company_offer_languages(language_code)",
+      )
+      .eq("company_id", id)
+      .order("created_at"),
+    supabase
+      .from("company_needs")
+      .select(
+        "id, title, description, capability_type_code, target_country_code, target_region, status, industry_id, sought_employee_range, products:company_need_products_services(product_service_id), langs:company_need_languages(language_code)",
+      )
+      .eq("company_id", id)
+      .order("created_at"),
+  ]);
 
   const t = await getTranslations("Company");
   const primaryLocation =
     company.company_locations?.find((loc) => loc.is_primary) ?? null;
   const translation = pickCompanyTranslation(
     company.company_translations ?? [],
-    activeLocale as AppLocale,
+    activeLocale,
   );
+
+  const labelFor = (row: {
+    label_fr?: string;
+    label_en?: string;
+    name_fr?: string;
+    name_en?: string;
+  }) =>
+    activeLocale === "en"
+      ? (row.label_en ?? row.name_en ?? "")
+      : (row.label_fr ?? row.name_fr ?? "");
+
+  const productsServicesOptions = (productsServicesCatalog ?? []).map((p) => ({
+    id: p.id,
+    label: labelFor(p),
+  }));
+  const languagesOptions = (languagesCatalog ?? []).map((l) => ({
+    id: l.code,
+    label: labelFor(l),
+  }));
+  const industriesOptions = (industriesCatalog ?? []).map((i) => ({
+    id: i.id,
+    label: labelFor(i),
+  }));
+  const offerCapabilityTypes = (capabilityTypes ?? [])
+    .filter((c) => c.applies_to_offers)
+    .map((c) => ({ code: c.code, label: labelFor(c) }));
+  const needCapabilityTypes = (capabilityTypes ?? [])
+    .filter((c) => c.applies_to_needs)
+    .map((c) => ({ code: c.code, label: labelFor(c) }));
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-10 px-6 py-16">
@@ -68,27 +183,65 @@ export default async function EditCompanyPage({
         {company.display_name}
       </h1>
 
-      {canEdit ? (
-        <EditCompanyForm
-          companyId={company.id}
-          locationId={primaryLocation?.id ?? null}
-          descriptionLocale={(activeLocale as AppLocale) === "en" ? "en" : "fr"}
-          defaultValues={{
-            displayName: company.display_name,
-            legalName: company.legal_name ?? "",
-            website: company.website ?? "",
-            professionalEmail: company.professional_email ?? "",
-            phone: company.phone ?? "",
-            region: primaryLocation?.region ?? "",
-            city: primaryLocation?.city ?? "",
-            description: translation?.description ?? "",
-          }}
-        />
-      ) : (
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          {t("readOnlyNote")}
-        </p>
-      )}
+      <section className="flex flex-col gap-4">
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+          {t("profileSectionTitle")}
+        </h2>
+        {canEditProfile ? (
+          <EditCompanyForm
+            companyId={company.id}
+            locationId={primaryLocation?.id ?? null}
+            descriptionLocale={activeLocale === "en" ? "en" : "fr"}
+            defaultValues={{
+              displayName: company.display_name,
+              legalName: company.legal_name ?? "",
+              website: company.website ?? "",
+              professionalEmail: company.professional_email ?? "",
+              phone: company.phone ?? "",
+              region: primaryLocation?.region ?? "",
+              city: primaryLocation?.city ?? "",
+              description: translation?.description ?? "",
+            }}
+          />
+        ) : (
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            {t("readOnlyNote")}
+          </p>
+        )}
+      </section>
+
+      <CompanyProductsServicesForm
+        companyId={company.id}
+        productsServices={productsServicesOptions}
+        selectedIds={(companyProductsServices ?? []).map(
+          (p) => p.product_service_id,
+        )}
+        canManage={canManageOffersNeeds}
+      />
+
+      <OffersNeedsSection
+        kind="offer"
+        companyId={company.id}
+        locale={activeLocale}
+        items={(offerRows ?? []).map(mapOfferNeedRow)}
+        capabilityTypes={offerCapabilityTypes}
+        productsServices={productsServicesOptions}
+        languages={languagesOptions}
+        industries={industriesOptions}
+        canManage={canManageOffersNeeds}
+      />
+
+      <OffersNeedsSection
+        kind="need"
+        companyId={company.id}
+        locale={activeLocale}
+        items={(needRows ?? []).map(mapOfferNeedRow)}
+        capabilityTypes={needCapabilityTypes}
+        productsServices={productsServicesOptions}
+        languages={languagesOptions}
+        industries={industriesOptions}
+        canManage={canManageOffersNeeds}
+      />
 
       <MembersList members={members ?? []} />
     </main>

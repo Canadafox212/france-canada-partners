@@ -4,6 +4,30 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ## [Non publié]
 
+### Phase 4 — Offres et besoins structurés (2026-09-19)
+
+#### Ajouté
+
+- Enrichissement de `company_offers`/`company_needs` : titre (composé automatiquement), statut actif/inactif, secteur optionnel, taille de partenaire recherchée (besoins).
+- Produits/services et langues rattachables à une offre ou un besoin précis (`company_offer_products_services`, `company_need_products_services`, `company_offer_languages`, `company_need_languages`), en plus de la description libre.
+- 3 nouvelles catégories (`LICENSING`, `FRANCHISING`, `OTHER`) dans `business_capability_types`.
+- Interface "Mon entreprise" enrichie (`/compte/entreprises/[id]`) : sections Profil, Produits & services, Nous proposons, Nous recherchons, Membres — ajout/modification/activation-désactivation/suppression d'une offre ou d'un besoin, avec libellés commerciaux (jamais de vocabulaire technique visible).
+- Index de recherche interne (catégorie, entreprise, statut, pays, secteur, produit) et requêtes de démonstration ("qui propose X", "qui recherche X", "besoins ciblant tel pays").
+- Journal d'audit des offres/besoins (création, changement de statut, modification, suppression) sans jamais journaliser le titre ni la description.
+- Jeu de données de démonstration (`npm run seed:demo`, `scripts/seed-demo-data.mjs`) : 3 entreprises dont l'offre de l'une correspond au besoin de l'autre, pensées pour la future Phase 6.
+- Migration `0013_offers_needs_enrichment.sql`, validée localement puis appliquée au projet réel.
+- Suite de tests d'intégration réelle `tests/integration/offers-needs.test.ts` (15 tests : rôles, contraintes, statuts, audit) — la suite de la Phase 3 continue de passer sans modification.
+
+#### Documenté
+
+- Distinction conceptuelle OFFRE/BESOIN (profil durable de l'entreprise) vs OPPORTUNITÉ (Phase 5, publication ponctuelle avec durée de vie) — voir `PROJECT_SPEC.md` §4.4.
+- Réorientation de la feuille de route : offres/besoins/opportunités/matching avant l'annuaire public, à la demande explicite du propriétaire du projet.
+
+#### Décidé
+
+- Codes `business_capability_types` déjà en place non renommés malgré une liste de noms légèrement différente demandée (éviter de casser des données déjà créées) ; équivalence documentée.
+- Jeu de données de démonstration livré comme script (idempotent), pas comme migration — une migration décrit un changement de schéma, pas des données.
+
 ### Phase 3 — Authentification et gestion d'entreprise (2026-09-19)
 
 #### Ajouté

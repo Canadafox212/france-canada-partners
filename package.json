@@ -11,6 +11,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:integration": "vitest run --config vitest.integration.config.mts",
+    "seed:demo": "node scripts/seed-demo-data.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

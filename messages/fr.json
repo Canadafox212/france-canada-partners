@@ -120,5 +120,37 @@
     "statusInvited": "Invité",
     "statusActive": "Actif",
     "statusRemoved": "Retiré"
+  },
+  "ProductsServices": {
+    "title": "Produits & services",
+    "empty": "Aucun produit ou service n'est encore référencé sur la plateforme."
+  },
+  "OfferNeed": {
+    "weOfferTitle": "Nous proposons",
+    "weSeekTitle": "Nous recherchons",
+    "addOffer": "Ajouter ce que nous proposons",
+    "addNeed": "Publier ce besoin",
+    "noOffers": "Vous n'avez encore rien déclaré proposer.",
+    "noNeeds": "Vous n'avez encore rien déclaré rechercher.",
+    "offerCapabilityLabel": "Que propose votre entreprise ?",
+    "needCapabilityLabel": "Que recherchez-vous ?",
+    "selectPlaceholder": "— Choisir —",
+    "productsLabel": "Pour quel produit ou service ?",
+    "industryLabel": "Secteur concerné (optionnel)",
+    "industryNone": "— Non précisé —",
+    "countryLabel": "Pays",
+    "regionLabel": "Région / province (optionnel)",
+    "languagesLabel": "Langues souhaitées (optionnel)",
+    "descriptionLabel": "Description",
+    "partnerSizeLabel": "Taille de partenaire recherchée (optionnel)",
+    "partnerSizePlaceholder": "ex. 10-49 employés",
+    "publishOffer": "Publier cette offre",
+    "publishNeed": "Publier ce besoin",
+    "statusActive": "Actif",
+    "statusInactive": "Inactif",
+    "editAction": "Modifier",
+    "activateAction": "Activer",
+    "deactivateAction": "Désactiver",
+    "deleteAction": "Supprimer"
   }
 }

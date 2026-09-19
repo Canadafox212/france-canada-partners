@@ -26,11 +26,20 @@ Chaque table a sa politique de sécurité au niveau ligne, écrite dans la même
 
 La RLS protège des **lignes**, pas des colonnes précises à l'intérieur d'une ligne qu'un utilisateur a par ailleurs le droit de modifier. Pour empêcher un `owner` de modifier lui-même `companies.subscription_level`/`verification_status`, ou un utilisateur de modifier son propre `profiles.platform_role` (élévation de privilège), des **déclencheurs** comparent explicitement l'ancienne et la nouvelle valeur et rejettent la modification si l'auteur n'est pas administrateur (voir `supabase/migrations/0009_protect_sensitive_columns.sql`, qui documente aussi pourquoi ce mécanisme a été préféré aux permissions par colonne, à une RPC exclusive ou à une table séparée). Chaque tentative bloquée échoue avec une erreur explicite ; chaque changement légitime par un administrateur est journalisé dans `audit_logs`.
 
-## Tests de sécurité réels (Phase 3)
+## Offres et besoins (Phase 4)
 
-`tests/integration/rls.test.ts` (`npm run test:integration`) exécute des scénarios réels contre le vrai projet Supabase — pas de simulation locale, pas de mock : création de vrais utilisateurs de test, vraies tentatives d'action autorisée/interdite, vérification du résultat, puis suppression de toutes les données créées. pgTAP aurait nécessité une instance Postgres locale via Docker, indisponible dans cet environnement ; cette suite joue le même rôle de preuve en frappant directement le projet distant.
+Aucune nouvelle logique de permission : `company_offers`/`company_needs` et leurs tables de jointure (produits/services, langues) réutilisent exactement le même schéma de droits que le reste du profil d'entreprise (`has_company_role`) — owner/admin/member peuvent gérer, viewer en lecture seule, aucun accès pour un utilisateur extérieur. Aucun champ contrôlé par la plateforme n'a été introduit dans ces tables. Le journal d'audit associé (`offer_created`, `offer_status_changed`, `offer_updated`, `offer_deleted`, et l'équivalent pour les besoins) n'enregistre **jamais** le titre ni la description — seulement les identifiants et la catégorie — pour limiter l'exposition de contenu commercial potentiellement sensible dans un journal technique.
 
-**C'est cette suite qui a permis de découvrir deux bugs réels** (voir `docs/DATABASE.md`, migrations 0011 et 0012) : la validation locale de la Phase 2 (base Postgres embarquée) ne pouvait pas les révéler, car elle s'exécute avec des droits complets et ne peut pas simuler l'application réelle de la RLS. Leçon retenue : une politique de sécurité n'est vérifiée que lorsqu'elle a été testée avec de vraies requêtes, dans un vrai contexte d'authentification.
+## Tests de sécurité réels (Phases 3 et 4)
+
+Deux fichiers dans `tests/integration/` (`npm run test:integration`) exécutent des scénarios réels contre le vrai projet Supabase — pas de simulation locale, pas de mock : création de vrais utilisateurs de test, vraies tentatives d'action autorisée/interdite, vérification du résultat, puis suppression de toutes les données créées.
+
+- `rls.test.ts` : comptes, entreprises, protection des champs sensibles.
+- `offers-needs.test.ts` : offres/besoins par rôle (owner/admin/member/viewer/extérieur/visiteur), contraintes de données (catégorie invalide, pays invalide, produit inexistant), statut actif/inactif, contenu du journal d'audit.
+
+pgTAP aurait nécessité une instance Postgres locale via Docker, indisponible dans cet environnement ; ces suites jouent le même rôle de preuve en frappant directement le projet distant.
+
+**C'est la suite de la Phase 3 qui a permis de découvrir deux bugs réels** (voir `docs/DATABASE.md`, migrations 0011 et 0012) : la validation locale (base Postgres embarquée) ne pouvait pas les révéler, car elle s'exécute avec des droits complets et ne peut pas simuler l'application réelle de la RLS. Leçon retenue, appliquée dès la conception de la Phase 4 : une politique de sécurité n'est vérifiée que lorsqu'elle a été testée avec de vraies requêtes, dans un vrai contexte d'authentification.
 
 ## Validation des entrées
 

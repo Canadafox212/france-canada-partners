@@ -2,7 +2,7 @@
 
 > Document de référence permanent du projet. Toute décision structurante importante doit être reflétée ici avant/pendant son implémentation. Ce document est mis à jour au fil des phases, pas figé.
 
-**Statut** : Phase 3 — authentification et gestion d'entreprise (connectées à un vrai projet Supabase, région `ca-central-1`, testées en conditions réelles).
+**Statut** : Phase 4 — offres et besoins structurés (cœur du futur moteur de matching), testés en conditions réelles.
 **Dernière mise à jour** : 2026-09-19
 **Propriétaire produit** : non-développeur — toute section technique doit rester accompagnée d'une explication en langage clair dans les échanges de suivi.
 
@@ -180,19 +180,26 @@ Supabase fournit déjà `auth.users` pour l'authentification (email, mot de pass
 
 **Nomenclatures officielles (NAF/APE, NAICS/SCIAN...)** : volontairement non liées à l'application dès maintenant, pour ne pas dépendre d'une nomenclature propriétaire. Si le besoin de correspondance se confirme, une table de correspondance (ex. `industry_code_mappings` : industry_id, code_system, code) sera ajoutée à ce moment-là, sans impact sur le reste du modèle.
 
-### 4.4 Besoins / offres _(✅ revu en Phase 2 : vocabulaire déplacé en base)_
+### 4.4 Besoins / offres _(✅ enrichi en Phase 4 — cœur du futur matching)_
+
+> **OFFRE vs BESOIN vs OPPORTUNITÉ** — distinction importante pour la Phase 5 :
+> une **OFFRE** ("Nous proposons") ou un **BESOIN** ("Nous recherchons") appartient au **profil durable** de l'entreprise : pas de date d'expiration, ça décrit ce que l'entreprise est capable de fournir ou cherche en continu. Une **OPPORTUNITÉ** (Phase 5, pas encore construite) sera une **publication ponctuelle**, avec une durée de vie, destinée à recevoir des réponses — ex. « recherche un distributeur pour un lancement produit avant fin mars ». Le moteur de matching (Phase 6) rapprochera des OFFRES/BESOINS durables ET, plus tard, des OPPORTUNITÉS ponctuelles.
 
 Les catégories d'offre/besoin ne sont **pas** codées en dur (elles doivent pouvoir évoluer depuis l'administration sans migration de schéma) :
 
 **business_capability_types** : code (PK, ex. `DISTRIBUTOR`), label_fr, label_en, applies_to_offers (booléen), applies_to_needs (booléen), is_active
-Valeurs de départ : DISTRIBUTOR, SUPPLIER, MANUFACTURER, SUBCONTRACTOR, IMPORTER, EXPORTER, SALES_AGENT, COMMERCIAL_PARTNER, TECHNOLOGY_PARTNER, INDUSTRIAL_PARTNER, INVESTOR, JOINT_VENTURE, SERVICES, MANUFACTURING_CAPACITY, DISTRIBUTION_CAPACITY.
+Valeurs : DISTRIBUTOR, SUPPLIER, MANUFACTURER, SUBCONTRACTOR, IMPORTER, EXPORTER, SALES_AGENT, COMMERCIAL_PARTNER, TECHNOLOGY_PARTNER, INDUSTRIAL_PARTNER, INVESTOR, JOINT_VENTURE, SERVICES, MANUFACTURING_CAPACITY, DISTRIBUTION_CAPACITY, LICENSING, FRANCHISING, OTHER _(3 dernières ajoutées en Phase 4)_.
 
-**company_needs** ("Nous recherchons") : id, company_id, capability_type_code (FK), description, target_country_code, target_region, created_at
-**company_offers** ("Nous proposons") : id, company_id, capability_type_code (FK), description, target_country_code, target_region, created_at
+**company_offers** ("Nous proposons") : id, company_id, capability_type_code (FK), title (composé automatiquement, voir `src/lib/offersNeeds.ts`), description, industry_id (FK, optionnel), target_country_code, target_region, status (`active`/`inactive`), created_at, updated_at
+**company_needs** ("Nous recherchons") : mêmes champs, plus sought_employee_range (texte libre, optionnel — taille de partenaire recherchée)
 
-`target_country_code`/`target_region` décrivent la zone visée par **cette offre/besoin précis** — distincte des marchés généraux de l'entreprise (`company_markets`) et de sa localisation physique (`company_locations`).
+**Jointures** _(✅ ajoutées en Phase 4)_ : `company_offer_products_services`/`company_need_products_services` (produits/services concernés — s'ajoute à la description libre, ne la remplace pas), `company_offer_languages`/`company_need_languages` (langues souhaitées pour cette offre/ce besoin précis, distinctes des langues générales de l'entreprise dans `company_languages`).
 
-### 4.5 Opportunités
+`target_country_code`/`target_region` décrivent la zone visée par **cette offre/besoin précis** — distincte des marchés généraux de l'entreprise (`company_markets`) et de sa localisation physique (`company_locations`). Une offre/besoin visant plusieurs marchés se traduit par plusieurs lignes, pas par une liste dans une seule ligne (simplicité voulue pour le MVP).
+
+Sécurité : mêmes politiques que le reste du profil d'entreprise (owner/admin/member peuvent gérer, viewer en lecture seule, tout le monde en lecture si l'entreprise est active) — voir §9. Les champs contrôlés par la plateforme (`subscription_level`, `verification_status`, `platform_role`) restent hors de portée des offres/besoins, aucune nouvelle voie de contournement n'a été introduite.
+
+### 4.5 Opportunités _(non construite — définition conceptuelle seulement, voir encadré ci-dessus)_
 
 **opportunities**
 
@@ -452,18 +459,21 @@ PROJECT_SPEC.md
 ## 16. Ordre de développement
 
 1. Initialisation du projet (Next.js, Supabase, Tailwind, structure de dépôt) — **fait**
-2. Modèle de données central (identité, entreprises, membres, établissements, taxonomie, produits, offres/besoins, marchés, langues, certifications, sources) — **fait**, RLS écrite avec chaque table. Restent à ajouter, avec leur propre phase : `opportunities`/`opportunity_responses` (phase 5), `matches`/`opportunity_matches` (phase 6), `claim_requests`/`company_verifications` (phase 7), `notifications`/`favorites` (phase 8), `audit_logs` (phase 9), `subscriptions` (phase 11), `user_consents`/`data_subject_requests` (au plus tard avant le lancement commercial).
-3. Comptes utilisateurs + création/édition d'entreprise — **fait** : inscription, confirmation de courriel, connexion/déconnexion, mot de passe oublié/réinitialisation, profil, création d'entreprise (transactionnelle, `create_company()`), modification par owner/admin, liste des membres. `audit_logs` et `company_translations` ont été avancés depuis leur phase d'origine (9 et 2) car nécessaires dès maintenant. Sécurité testée en conditions réelles contre le projet Supabase (voir `docs/SECURITY.md`).
-4. Annuaire public + recherche + filtres + fiche entreprise + SEO de base
-5. "Nous recherchons" / "Nous proposons" + opportunités + réponses
+2. Modèle de données central (identité, entreprises, membres, établissements, taxonomie, produits, offres/besoins, marchés, langues, certifications, sources) — **fait**, RLS écrite avec chaque table.
+3. Comptes utilisateurs + création/édition d'entreprise — **fait** : inscription, confirmation de courriel, connexion/déconnexion, mot de passe oublié/réinitialisation, profil, création d'entreprise (transactionnelle, `create_company()`), modification par owner/admin, liste des membres. `audit_logs` et `company_translations` ont été avancés depuis leur phase d'origine (9 et 2) car nécessaires dès maintenant. Sécurité testée en conditions réelles.
+4. Offres et besoins structurés — **fait** : "Nous proposons"/"Nous recherchons" avec produits/services, secteur, géographie et langues rattachés, statut actif/inactif, journal d'audit. Jeu de données de démonstration (`npm run seed:demo`). Priorité métier explicite : le cœur du produit (offres/besoins/opportunités/matching) passe avant l'annuaire public.
+5. **Opportunités commerciales** (publications ponctuelles avec durée de vie et réponses — voir distinction OFFRE/BESOIN/OPPORTUNITÉ en §4.4) — prochaine phase proposée
 6. Moteur de matching déterministe (entreprise↔entreprise, puis opportunité↔entreprise)
-7. Revendication d'entreprise + vérification
-8. Demandes de mise en relation + notifications
-9. Back-office admin (incluant le traitement des demandes RGPD/Loi 25)
-10. Import de données
-11. Structure des abonnements, puis intégration Stripe
-12. SEO avancé + durcissement sécurité + performance
-13. Lancement bêta France-Québec
+7. Annuaire public + recherche + filtres + fiche entreprise + SEO de base (repoussé après le cœur métier, à la demande explicite du propriétaire du projet)
+8. Revendication d'entreprise + vérification
+9. Demandes de mise en relation + notifications
+10. Back-office admin (incluant le traitement des demandes RGPD/Loi 25)
+11. Import de données (pipeline réel, `data/raw/`)
+12. Structure des abonnements, puis intégration Stripe
+13. SEO avancé + durcissement sécurité + performance
+14. Lancement bêta France-Québec
+
+Tables encore à ajouter, avec leur propre phase : `opportunities`/`opportunity_responses` (5), `matches`/`opportunity_matches` (6), `claim_requests`/`company_verifications` (8), `notifications`/`favorites` (9), `subscriptions` (12), `user_consents`/`data_subject_requests` (au plus tard avant le lancement commercial).
 
 ---
 
@@ -492,7 +502,13 @@ PROJECT_SPEC.md
 | 2026-09-19 | Champs protégés (`platform_role`, `subscription_level`, `verification_status`) via déclencheurs plutôt que permissions par colonne, RPC exclusive ou table séparée | Solution la plus lisible, réutilise `is_platform_admin()`, journalise nativement — voir `supabase/migrations/0009_protect_sensitive_columns.sql`                                                                                         |
 | 2026-09-19 | URLs traduites par langue (`/connexion` vs `/login`) via l'option `pathnames` de next-intl                                                                         | Meilleur SEO et meilleure lisibilité pour l'utilisateur final qu'un simple préfixe de langue sur un chemin identique                                                                                                                     |
 | 2026-09-19 | Tests de sécurité réels contre le vrai projet plutôt que pgTAP                                                                                                     | pgTAP nécessite une instance Postgres locale via Docker, indisponible dans cet environnement ; les tests réels se sont avérés plus efficaces (ont trouvé deux bugs réels que la validation locale de la Phase 2 ne pouvait pas détecter) |
+| 2026-09-19 | Priorité métier réorientée : offres/besoins/opportunités/matching avant l'annuaire public                                                                          | Le propriétaire du projet a explicitement demandé que l'avantage concurrentiel (savoir ce que chaque entreprise propose/recherche) prime sur la construction d'un simple annuaire — voir §16                                             |
+| 2026-09-19 | Codes `business_capability_types` existants conservés (non renommés) malgré une liste de noms légèrement différente demandée en Phase 4                            | Éviter de casser des données déjà créées (clé primaire déjà référencée) ; équivalence sémantique documentée en §4.4, seules les catégories réellement absentes (LICENSING, FRANCHISING, OTHER) ont été ajoutées                          |
+| 2026-09-19 | Produits/services et langues d'une offre/besoin dans des tables de jointure dédiées, pas de duplication dans `company_products_services`/`company_languages`       | Une offre/un besoin peut cibler des produits différents de ceux déclarés au niveau de l'entreprise ; séparation plus flexible pour le futur matching                                                                                     |
+| 2026-09-19 | Titre d'une offre/d'un besoin composé automatiquement par l'application, pas saisi par l'utilisateur                                                               | Garder le formulaire rapide à remplir (demande explicite) tout en conservant un champ structuré et recherchable                                                                                                                          |
+| 2026-09-19 | Journal d'audit des offres/besoins : jamais le contenu libre (titre/description), seulement les identifiants et le type de catégorie                               | Limiter l'exposition de contenu commercial potentiellement sensible dans un journal technique                                                                                                                                            |
+| 2026-09-19 | Jeu de données de démonstration créé par un script (`scripts/seed-demo-data.mjs`), pas par une migration SQL                                                       | Une migration décrit une évolution de schéma, pas des données ; le script est idempotent et réutilisable sans polluer l'historique des migrations                                                                                        |
 
 ---
 
-_Prochaine révision prévue : à la fin de la Phase 4 (annuaire public), une fois les entreprises consultables publiquement._
+_Prochaine révision prévue : à la fin de la Phase 5 (opportunités commerciales)._
