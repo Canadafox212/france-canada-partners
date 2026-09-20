@@ -123,6 +123,14 @@ async function main() {
     batchName,
     dryRun: mode === "dry-run",
     createdBy: adminProfile?.id ?? null,
+    // Le statut APPROVED_FOR_IMPORT de cette source a été accordé pour
+    // l'IDENTITÉ légale (SIRENE, Licence Ouverte 2.0) — jamais vérifié
+    // pour la colonne "Description" du fichier, probablement issue du
+    // site propre de chaque entreprise (contenu commercial de tiers, pas
+    // un fait de registre). Exclue de ce lot par prudence, conformément à
+    // la condition explicite du lot pilote ("aucun contenu commercial
+    // existant ne doit être généré [ou repris] par inférence").
+    includeDescription: false,
     rowFilter: (sourceRecordId) =>
       !!sourceRecordId && PILOT_APPROVED_SIRENS.has(sourceRecordId),
   });

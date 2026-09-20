@@ -53,9 +53,26 @@ export async function commitStagingRow(
     batchId: string;
     sourceId: string;
     row: ScoredCompanyRow;
+    /**
+     * Certaines sources sont approuvées pour l'IDENTITÉ légale (SIRENE)
+     * sans que ce même statut couvre nécessairement un champ "description"
+     * séparé, potentiellement issu du site de l'entreprise elle-même
+     * (texte commercial propre à l'entreprise, pas un fait de registre) —
+     * voir docs/DATA_SOURCES.md et la condition explicite "aucun contenu
+     * commercial existant généré par inférence" du lot pilote. Par défaut
+     * `true` (une source future pourrait couvrir aussi la description) ;
+     * mis à `false` pour ce pilote France par `scripts/import-companies.ts`.
+     */
+    includeDescription?: boolean;
   },
 ): Promise<CommitResult> {
-  const { stagingId, batchId, sourceId, row } = params;
+  const {
+    stagingId,
+    batchId,
+    sourceId,
+    row,
+    includeDescription = true,
+  } = params;
 
   if (row.duplicateLevel === "EXACT") {
     const existingCompanyId = row.duplicateMatches.find(
@@ -131,7 +148,7 @@ export async function commitStagingRow(
     });
   }
 
-  if (row.normalized.description) {
+  if (includeDescription && row.normalized.description) {
     await supabase.from("company_translations").insert({
       company_id: companyId,
       locale: "fr",

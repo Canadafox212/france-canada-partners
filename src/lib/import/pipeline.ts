@@ -32,6 +32,8 @@ export interface RunImportBatchParams {
   licenseOverrideBy?: string;
   /** Limite le nombre de lignes traitées (utile pour un lot pilote issu d'un fichier plus large). */
   rowFilter?: (sourceRecordId: string | null, rowNumber: number) => boolean;
+  /** Voir commit.ts : n'écrit la description que si la licence de la source la couvre explicitement. */
+  includeDescription?: boolean;
 }
 
 export interface RunImportBatchResult {
@@ -123,6 +125,7 @@ export async function runImportBatch(
         batchId,
         sourceId: params.sourceId,
         row,
+        includeDescription: params.includeDescription,
       });
       if (result.created) createdCompanyIds.push(result.companyId);
       else linkedExistingCompanyIds.push(result.companyId);

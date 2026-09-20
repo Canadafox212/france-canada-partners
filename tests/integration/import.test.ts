@@ -510,6 +510,39 @@ describe("Valeur source conservée après normalisation (§5 de l'original)", ()
   });
 });
 
+describe("Description exclue quand la licence ne la couvre pas explicitement (lot pilote France)", () => {
+  it("includeDescription=false n'écrit aucune company_translations même si la source en fournit une", async () => {
+    const file = writeCsv("no-description.csv", [
+      csvRow({
+        Nom_Entreprise: `Entreprise Sans Description Publiee ${RUN_ID}`,
+        SIREN: `77777${RUN_NUM}`,
+        Description:
+          "Texte commercial du site de l'entreprise — ne doit PAS être copié ici.",
+        Pays: "France",
+      }),
+    ]);
+    const real = await runImportBatch(admin, {
+      filePath: file,
+      filename: "no-description.csv",
+      sourceId: approvedSourceId,
+      countryCode: "FR",
+      batchName: `NO_DESCRIPTION_${RUN_ID}`,
+      dryRun: false,
+      createdBy: platformAdmin.id,
+      includeDescription: false,
+    });
+    createdBatchIds.push(real.batchId);
+    createdCompanyIds.push(...real.createdCompanyIds);
+
+    expect(real.rows[0].normalized.description).not.toBeNull(); // la valeur EST normalisée en staging...
+    const { data: translations } = await admin
+      .from("company_translations")
+      .select("id")
+      .eq("company_id", real.createdCompanyIds[0]);
+    expect(translations ?? []).toEqual([]); // ...mais jamais écrite dans companies.
+  });
+});
+
 describe("Sécurité RLS réelle (§39 de l'original)", () => {
   it("un utilisateur normal ne voit aucun batch ni ligne de staging", async () => {
     const { data: batches } = await regularUser.client
