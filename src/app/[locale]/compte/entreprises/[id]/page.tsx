@@ -23,6 +23,7 @@ import {
   getPartnersForCompany,
   getOpportunitiesForCompany,
 } from "@/lib/matching/service";
+import { RequestPartnershipButton } from "@/components/partnerships/RequestPartnershipButton";
 
 type OfferNeedRow = {
   id: string;
@@ -161,6 +162,21 @@ export default async function EditCompanyPage({
     getOpportunitiesForCompany(supabase, id),
   ]);
 
+  // Demandes de mise en relation déjà actives DE cette entreprise vers un
+  // partenaire suggéré — évite de proposer un nouveau formulaire pour un
+  // couple déjà en cours (Phase 9, §8 : une seule demande active par paire).
+  const { data: activeOutgoingRequests } = await supabase
+    .from("partnership_requests")
+    .select("target_company_id, status")
+    .eq("requester_company_id", id)
+    .in("status", ["pending", "pending_unclaimed"]);
+  const activeRequestStatusByTarget = new Map(
+    (activeOutgoingRequests ?? []).map((r) => [
+      r.target_company_id,
+      r.status as "pending" | "pending_unclaimed",
+    ]),
+  );
+
   const t = await getTranslations("Company");
   const tMatching = await getTranslations("Matching");
   const primaryLocation =
@@ -291,13 +307,41 @@ export default async function EditCompanyPage({
             {partners.map((p, i) => (
               <MatchCard
                 key={`${p.companyId}-${i}`}
-                title={p.companyName}
+                title={
+                  p.companySlug ? (
+                    <Link
+                      href={{
+                        pathname: "/entreprises/[geoOrSlug]",
+                        params: { geoOrSlug: p.companySlug },
+                      }}
+                    >
+                      {p.companyName}
+                    </Link>
+                  ) : (
+                    p.companyName
+                  )
+                }
                 subtitle={p.companyCountryCode}
                 score={p.score}
                 confidence={p.confidence}
                 level={p.level}
                 confidenceLevel={p.confidenceLevel}
                 breakdown={p.breakdown}
+                actions={
+                  <RequestPartnershipButton
+                    requesterCompanies={
+                      canManageOffersNeeds
+                        ? [{ id: company.id, name: company.display_name }]
+                        : []
+                    }
+                    targetCompanyId={p.companyId}
+                    sourceType="MATCH"
+                    sourceMatchId={p.matchId}
+                    alreadyActiveStatus={
+                      activeRequestStatusByTarget.get(p.companyId) ?? null
+                    }
+                  />
+                }
               />
             ))}
           </ul>

@@ -11,29 +11,40 @@ import type { MatchScoreResult } from "./types";
  * précédent pour la même paire au lieu d'empiler des doublons.
  */
 
+/**
+ * Retourne l'id de la ligne `matches` upsertée — utilisé par
+ * getPartnersForCompany() pour que "Demander une mise en relation"
+ * (Phase 9) puisse RÉFÉRENCER ce match précis (source_match_id) sans
+ * jamais recopier ni recalculer son score dans partnership_requests.
+ */
 export async function upsertMatch(params: {
   companyId: string;
   needId: string;
   candidateCompanyId: string;
   offerId: string;
   result: MatchScoreResult;
-}) {
-  if (params.result.eliminated) return;
+}): Promise<string | null> {
+  if (params.result.eliminated) return null;
   const supabase = createServiceRoleClient();
-  await supabase.from("matches").upsert(
-    {
-      company_id: params.companyId,
-      need_id: params.needId,
-      candidate_company_id: params.candidateCompanyId,
-      offer_id: params.offerId,
-      score: params.result.score,
-      confidence: params.result.confidence,
-      score_breakdown: params.result.breakdown,
-      algorithm_version: ALGORITHM_VERSION,
-      calculated_at: new Date().toISOString(),
-    },
-    { onConflict: "need_id,offer_id" },
-  );
+  const { data } = await supabase
+    .from("matches")
+    .upsert(
+      {
+        company_id: params.companyId,
+        need_id: params.needId,
+        candidate_company_id: params.candidateCompanyId,
+        offer_id: params.offerId,
+        score: params.result.score,
+        confidence: params.result.confidence,
+        score_breakdown: params.result.breakdown,
+        algorithm_version: ALGORITHM_VERSION,
+        calculated_at: new Date().toISOString(),
+      },
+      { onConflict: "need_id,offer_id" },
+    )
+    .select("id")
+    .single();
+  return data?.id ?? null;
 }
 
 export async function upsertOpportunityMatch(params: {

@@ -1,19 +1,36 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
+import { useRouter as usePlainRouter } from "next/navigation";
 import { useRouter, Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { loginSchema, type LoginInput } from "@/validations/auth";
 import { FormField, inputClasses } from "@/components/ui/FormField";
 import { SubmitButton } from "@/components/ui/Button";
 
+// Retour vers la page d'origine après connexion (ex. une fiche entreprise
+// avec "Demander une mise en relation", Phase 9), quand un paramètre
+// "next" sûr est présent — jamais un chemin absolu externe (protection
+// open-redirect minimale : doit commencer par "/" sans être "//...").
+function safeNextPath(raw: string | null): string | null {
+  if (!raw) return null;
+  if (!raw.startsWith("/") || raw.startsWith("//")) return null;
+  return raw;
+}
+
 export function LoginForm() {
   const t = useTranslations("Auth.Login");
   const tCommon = useTranslations("Common");
   const router = useRouter();
+  const searchParams = useSearchParams();
+  // Router "brut" (pas celui de next-intl) : le chemin "next" est déjà
+  // complet, préfixe de langue inclus — le repréfixer via le routeur
+  // conscient de la langue le préfixerait une seconde fois.
+  const plainRouter = usePlainRouter();
   const [formError, setFormError] = useState<string | null>(null);
 
   const {
@@ -38,7 +55,12 @@ export function LoginForm() {
       return;
     }
 
-    router.push("/compte");
+    const next = safeNextPath(searchParams.get("next"));
+    if (next) {
+      plainRouter.push(next);
+    } else {
+      router.push("/compte");
+    }
     router.refresh();
   }
 

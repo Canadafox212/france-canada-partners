@@ -113,7 +113,65 @@ d'une entreprise existante — une correspondance `EXACT` ne fait que
 rattacher un enregistrement de traçabilité (`company_source_records`),
 jamais une mise à jour de champ. Testé réellement (voir ci-dessous).
 
-## Tests de sécurité réels (Phases 3 à 8)
+## Mise en relation commerciale entre entreprises (Phase 9)
+
+`partnership_requests` suit le même principe que `company_claims`
+(Phase 7) et `matches`/`opportunity_matches` (Phase 6) : **aucune**
+politique RLS d'insertion ni de mise à jour, pour un client normal comme
+pour un administrateur — RLS n'autorise que la **lecture**, réservée aux
+membres de l'une des deux entreprises concernées ou à un administrateur.
+Toute écriture passe par quatre fonctions `SECURITY DEFINER` :
+
+| Fonction | Rôle | Contrôles recalculés en interne |
+| -------- | ---- | -------------------------------- |
+| `create_partnership_request()` | Créer une demande | authentification réelle ; jamais vers sa propre entreprise ; appartenance et rôle du demandeur (`owner`/`admin`/`member`, jamais `viewer`) ; entreprise demandeuse `status = 'active'` ; entreprise cible existante et `status = 'active'` ; sujet/message non vides ; provenance MATCH/OPPORTUNITY réellement liée aux deux entreprises (voir ci-dessous) ; une seule demande active à la fois par paire |
+| `accept_partnership_request()` | Accepter | seul un membre autorisé de l'entreprise **cible** peut agir, seulement si la demande est `pending` |
+| `decline_partnership_request()` | Refuser | idem |
+| `withdraw_partnership_request()` | Retirer | seul un membre autorisé de l'entreprise **demandeuse** peut agir, seulement si `pending`/`pending_unclaimed` |
+
+Chaque fonction recalcule elle-même la permission à partir de `auth.uid()`
+et de l'appartenance réelle en base (`has_company_role()`) — jamais une
+confiance accordée à un `company_id` envoyé par le client : structurellement
+impossible de fabriquer une demande en changeant `requester_company_id`
+côté navigateur, il n'existe simplement aucun chemin d'écriture directe.
+
+**Validation de provenance (MATCH/OPPORTUNITY)** — pour éviter qu'un
+client fasse référencer à une demande un match ou une opportunité qui ne
+le concerne pas : pour `source_type = 'MATCH'`, la fonction retrouve les
+véritables entreprises du besoin et de l'offre à l'origine du match
+(`matches` → `company_needs`/`company_offers`) et exige que la paire
+{demandeur, cible} corresponde à la paire {entreprise du besoin,
+entreprise de l'offre}, dans un sens ou dans l'autre ; pour
+`source_type = 'OPPORTUNITY'`, exige que l'opportunité référencée
+appartienne bien à l'entreprise cible. Vérifié réellement (match/opportunité
+appartenant à d'autres entreprises rejetés) dans `tests/integration/partnershipRequests.test.ts`.
+
+**Entreprise cible non revendiquée** (voir `docs/PARTNERSHIP_REQUESTS.md`
+§3) : plutôt que de modifier `submit_company_claim()`/`review_company_claim()`
+(0018, laissées **strictement intactes**), un déclencheur dédié
+(`companies_claimed_at_promote_requests`, `after update of claimed_at`)
+se déclenche uniquement au passage de `claimed_at` de `null` à non-`null`
+et appelle `promote_unclaimed_partnership_requests()` (fonction interne,
+`EXECUTE` révoqué pour tous les rôles y compris `authenticated` — jamais
+appelable directement, seulement via le déclencheur). Solution découplée
+préférée à la réécriture d'une fonction existante déjà éprouvée : zéro
+diff, zéro risque de régression sur le parcours de revendication.
+
+Toutes les fonctions `SECURITY DEFINER` de cette migration fixent
+`search_path = public` et qualifient explicitement chaque référence à une
+table ou fonction du projet (`public.companies`, `public.matches`, etc.),
+qui est la protection réelle et suffisante contre un détournement via
+`pg_temp` (une référence qualifiée par schéma ne consulte jamais
+`search_path`). `revoke all ... from public` a été ajouté sur chacune, en
+plus du `revoke ... from anon` / `grant ... to authenticated` déjà en
+usage dans les migrations précédentes.
+
+Le journal d'audit enregistre `partnership_request_created`/`accepted`/
+`declined`/`withdrawn`, jamais le contenu libre (sujet/message) — même
+principe que pour les offres/besoins (Phase 4) et les réponses aux
+opportunités (Phase 5).
+
+## Tests de sécurité réels (Phases 3 à 9)
 
 Fichiers dans `tests/integration/` (`npm run test:integration`) exécutent des scénarios réels contre le vrai projet Supabase — pas de simulation locale, pas de mock : création de vrais utilisateurs de test, vraies tentatives d'action autorisée/interdite, vérification du résultat, puis suppression de toutes les données créées.
 
@@ -123,6 +181,7 @@ Fichiers dans `tests/integration/` (`npm run test:integration`) exécutent des s
 - `matching.test.ts` : cohérence métier (candidat compatible proposé, incompatibilité fondamentale éliminée, offre inactive exclue, opportunité expirée exclue malgré un statut encore `published`, persistance avec version d'algorithme), et sécurité (visibilité d'un match par les deux entreprises concernées, exclusion d'une entreprise tierce, accès administrateur, aucun accès anonyme, impossibilité pour une entreprise de modifier elle-même un score).
 - `directory.test.ts` : recherche publique réelle (nom, accents, exclusion des entreprises non actives, pagination), revendication (auto-approbation à domaine fort, échec d'un courriel usurpé ne correspondant pas au compte réel, impossibilité de modifier `claim_status` directement, appel de `review_company_claim` par un non-administrateur sans effet, attribution correcte owner/admin selon l'historique de l'entreprise, refus n'accordant aucun droit), et compatibilité ciblée sur la fiche publique (persistée, invisible à un tiers).
 - `import.test.ts` : garde-fou de licence réel (source interdite/inconnue bloquée, source approuvée acceptée), dry run sans aucune écriture dans `companies`, dédoublonnage réel (EXACT rattaché sans recréation, POSSIBLE mis en quarantaine sans fusion automatique), idempotence (même fichier importé deux fois), protection d'une entreprise revendiquée (description jamais écrasée), courriel nominatif jamais publié automatiquement, valeur source conservée après normalisation, et sécurité RLS (utilisateur normal et visiteur anonyme sans accès, administrateur autorisé).
+- `partnershipRequests.test.ts` : création valide, auto-demande interdite, demandeur non membre/`viewer`/entreprise `draft` interdits, entreprise cible inexistante ou `draft` interdite, provenance MATCH/OPPORTUNITY falsifiée (match ou opportunité d'une autre entreprise) rejetée, provenance réelle acceptée (les deux sens pour un match), doublon de demande active interdit, visibilité en lecture (demandeur/cible autorisés, tiers/visiteur exclus, aucune colonne personnelle exposée), qui peut accepter/refuser/retirer (jamais un tiers, jamais l'auteur lui-même côté acceptation, jamais anonyme), notification et journal d'audit réellement créés, demande vers une entreprise non revendiquée sans notification puis visibilité après revendication.
 
 pgTAP aurait nécessité une instance Postgres locale via Docker, indisponible dans cet environnement ; ces suites jouent le même rôle de preuve en frappant directement le projet distant.
 

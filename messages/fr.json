@@ -97,7 +97,9 @@
     "roleOwner": "Propriétaire",
     "roleAdmin": "Administrateur",
     "roleMember": "Membre",
-    "roleViewer": "Observateur"
+    "roleViewer": "Observateur",
+    "partnershipRequestsLink": "Mises en relation",
+    "notificationsLink": "Notifications"
   },
   "Company": {
     "createTitle": "Créer une entreprise",
@@ -356,6 +358,76 @@
       "approved": "Approuvée",
       "rejected": "Refusée",
       "cancelled": "Annulée"
+    }
+  },
+  "PartnershipRequest": {
+    "cta": "Demander une mise en relation",
+    "visitorNotice": "Connectez-vous pour demander une mise en relation.",
+    "formTitle": "Demande de mise en relation",
+    "actingAsLabel": "Au nom de :",
+    "subjectLabel": "Sujet",
+    "messageLabel": "Message",
+    "submitAction": "Envoyer la demande",
+    "successPending": "Votre demande a été envoyée.",
+    "successPendingUnclaimed": "Cette entreprise n'a pas encore revendiqué sa fiche. Votre demande pourra être transmise lorsqu'elle sera revendiquée.",
+    "alreadyPending": "Une demande est déjà en cours avec cette entreprise.",
+    "alreadyPendingUnclaimed": "Une demande est déjà enregistrée ; elle sera transmise dès que cette entreprise revendiquera sa fiche.",
+    "listTitle": "Mises en relation",
+    "receivedTab": "Reçues",
+    "sentTab": "Envoyées",
+    "emptyReceived": "Aucune demande reçue pour l'instant.",
+    "emptySent": "Aucune demande envoyée pour l'instant.",
+    "columnCompany": "Entreprise",
+    "columnDate": "Date",
+    "columnSubject": "Sujet",
+    "columnStatus": "Statut",
+    "columnOrigin": "Origine",
+    "viewAction": "Voir",
+    "detailTitle": "Détail de la demande",
+    "fromLabel": "Entreprise demandeuse",
+    "toLabel": "Entreprise cible",
+    "backToList": "Retour aux mises en relation",
+    "acceptAction": "Accepter",
+    "declineAction": "Refuser",
+    "withdrawAction": "Retirer la demande",
+    "acceptedConfirmation": "Vous avez accepté cette demande.",
+    "declinedConfirmation": "Vous avez refusé cette demande.",
+    "withdrawnConfirmation": "Vous avez retiré cette demande.",
+    "notFound": "Demande introuvable.",
+    "status": {
+      "pending": "En attente",
+      "pending_unclaimed": "En attente (fiche non revendiquée)",
+      "accepted": "Acceptée",
+      "declined": "Refusée",
+      "withdrawn": "Retirée",
+      "expired": "Expirée"
+    },
+    "source": {
+      "DIRECTORY": "Annuaire",
+      "MATCH": "Suggestion de correspondance",
+      "OPPORTUNITY": "Opportunité",
+      "OTHER": "Autre"
+    }
+  },
+  "Notification": {
+    "pageTitle": "Notifications",
+    "empty": "Aucune notification pour l'instant.",
+    "markAsRead": "Marquer comme lu",
+    "viewAction": "Voir",
+    "unreadCount": "{count, plural, =0 {} one {# non lue} other {# non lues}}",
+    "type": {
+      "partnership_request_received": {
+        "title": "Nouvelle demande de mise en relation",
+        "message": "Une entreprise souhaite entrer en relation avec vous."
+      },
+      "partnership_request_accepted": {
+        "title": "Demande acceptée",
+        "message": "Votre demande de mise en relation a été acceptée."
+      },
+      "partnership_request_declined": {
+        "title": "Demande refusée",
+        "message": "Votre demande de mise en relation a été refusée."
+      }
     }
   }
 }

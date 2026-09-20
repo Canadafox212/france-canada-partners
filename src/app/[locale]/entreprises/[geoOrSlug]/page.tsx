@@ -18,9 +18,11 @@ import { loadCompanyBySlug } from "@/lib/directory/companyPageData";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { ClaimCompanyForm } from "@/components/claims/ClaimCompanyForm";
 import { CopyLinkButton } from "@/components/directory/CopyLinkButton";
+import { ButtonLink } from "@/components/ui/Button";
 import { MatchCard } from "@/components/matching/MatchCard";
 import { getCompatibilityBetweenCompanies } from "@/lib/matching/service";
 import { buildLocaleAlternates } from "@/lib/seo/alternates";
+import { RequestPartnershipButton } from "@/components/partnerships/RequestPartnershipButton";
 
 type Params = { geoOrSlug: string };
 type SearchParams = Record<string, string | undefined>;
@@ -218,6 +220,7 @@ export default async function EntrepriseOrGeoPage({
   if (!company) notFound();
 
   const t = await getTranslations("CompanyPublic");
+  const tPartnership = await getTranslations("PartnershipRequest");
   const supabase = await createClient();
 
   const [
@@ -304,6 +307,28 @@ export default async function EntrepriseOrGeoPage({
       .limit(1)
       .maybeSingle();
     existingClaim = data;
+  }
+
+  // Demande de mise en relation déjà active (Phase 9) depuis l'une des
+  // entreprises éligibles de l'utilisateur vers CETTE fiche — évite de
+  // proposer un nouveau formulaire pour un couple déjà en cours.
+  let existingPartnershipRequestStatus:
+    | "pending"
+    | "pending_unclaimed"
+    | null = null;
+  if (eligibleCompanies.length > 0) {
+    const { data } = await supabase
+      .from("partnership_requests")
+      .select("status")
+      .in(
+        "requester_company_id",
+        eligibleCompanies.map((c) => c.id),
+      )
+      .eq("target_company_id", company.id)
+      .in("status", ["pending", "pending_unclaimed"])
+      .limit(1)
+      .maybeSingle();
+    existingPartnershipRequestStatus = data?.status ?? null;
   }
 
   const sourceRecord = company.company_source_records?.[0] ?? null;
@@ -493,6 +518,47 @@ export default async function EntrepriseOrGeoPage({
       </dl>
 
       <CopyLinkButton />
+
+      {company.status === "active" ? (
+        <section className="flex flex-col gap-2">
+          {user ? (
+            !isMember && eligibleCompanies.length > 0 ? (
+              <RequestPartnershipButton
+                requesterCompanies={eligibleCompanies.map((c) => ({
+                  id: c.id,
+                  name: c.display_name,
+                }))}
+                targetCompanyId={company.id}
+                sourceType="DIRECTORY"
+                alreadyActiveStatus={existingPartnershipRequestStatus}
+              />
+            ) : null
+          ) : (
+            <div className="flex flex-col gap-1">
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                {tPartnership("visitorNotice")}
+              </p>
+              <ButtonLink
+                href={{
+                  pathname: "/connexion",
+                  query: {
+                    next: getPathname({
+                      href: {
+                        pathname: "/entreprises/[geoOrSlug]",
+                        params: { geoOrSlug: company.slug },
+                      },
+                      locale: activeLocale,
+                    }),
+                  },
+                }}
+                variant="secondary"
+              >
+                {tPartnership("cta")}
+              </ButtonLink>
+            </div>
+          )}
+        </section>
+      ) : null}
 
       <section className="flex flex-col gap-2">
         <h2 className="text-lg font-semibold text-slate-900 dark:text-white">

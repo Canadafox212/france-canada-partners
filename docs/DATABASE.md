@@ -2,7 +2,7 @@
 
 Le modèle de données complet, table par table, avec les raisons de chaque choix, est documenté dans `PROJECT_SPEC.md` (§4 "Modèle de données relationnel"). Ce fichier explique seulement où et comment les choses sont mises en œuvre techniquement.
 
-## Statut actuel (Phase 8)
+## Statut actuel (Phase 9)
 
 **Un vrai projet Supabase existe et est connecté** (région Canada Central, `ca-central-1`). Les migrations ci-dessous y sont appliquées et vérifiées.
 
@@ -30,6 +30,7 @@ Le modèle de données complet, table par table, avec les raisons de chaque choi
 | `0020_import_pipeline.sql`                         | Pipeline d'import : `data_sources.license_status`/`commercial_use_allowed` (+ 3 sources déjà tranchées par l'audit) ; `import_batches`, `staging_companies`, `import_row_issues`, `import_duplicate_candidates` ; `company_source_records.import_batch_id` ; déclencheur `enforce_import_license_gate` bloquant tout batch sur une source non approuvée sans dérogation administrateur justifiée et auditée — voir `docs/IMPORT_PIPELINE.md` |
 | `0021_industry_mapping_and_content_source.sql`     | `industry_code_mappings` (code officiel APE/NAF → secteur interne, confiance explicite) ; `company_industries.classification_source` (`COMPANY_DECLARED`/`CODE_MAPPING`/`EDITORIAL_VERIFIED`, avec contrainte de cohérence) ; `company_translations.content_source` (`COMPANY_PROVIDED`/`EDITORIAL`/`SOURCE_PROVIDED`) ; sous-secteur "Équipements agricoles et agro-industriels" — voir `docs/EDITORIAL_CONTENT.md`. **Appliquée et figée** (voir règle d'immutabilité ci-dessous). |
 | `0022_fix_subindustry_agro_equipment_label_en.sql` | **Correctif** de 0021 : libellé anglais du sous-secteur agro-équipement (`name_en`), sans toucher à 0021 elle-même — exemple de référence pour la règle d'immutabilité ci-dessous. |
+| `0023_partnership_requests.sql`                    | `partnership_requests` (mécanisme dédié, distinct de `opportunity_responses`/`company_offers`/`company_needs`) ; RLS lecture seule (membre d'une des deux entreprises ou administrateur) ; toute écriture passe par 4 fonctions SECURITY DEFINER (`create_partnership_request()`, `accept_partnership_request()`, `decline_partnership_request()`, `withdraw_partnership_request()`) — aucune politique RLS d'insertion/mise à jour, même principe que `company_claims` (0018) ; validation serveur de la provenance MATCH/OPPORTUNITY (le match ou l'opportunité référencé doit réellement concerner les deux entreprises) ; gestion d'une entreprise cible non revendiquée via un déclencheur sur `companies.claimed_at` (`promote_unclaimed_partnership_requests()`), **sans modifier `submit_company_claim()`/`review_company_claim()` (0018)** ; réutilise `notifications`/`create_notification()` (0015) — voir `docs/PARTNERSHIP_REQUESTS.md`. |
 
 Chaque table a sa politique de sécurité (Row Level Security) écrite dans le même fichier que la table. Les corrections 0011 et 0012 n'ont été trouvées **qu'en testant contre le vrai projet** : la validation locale (Postgres embarqué) ne pouvait pas les révéler, car ce moteur de test s'exécute avec des droits complets et ne peut pas simuler l'application réelle de la RLS. C'est précisément pourquoi les tests contre le projet réel (`tests/integration/`) sont indispensables, pas seulement la validation locale.
 

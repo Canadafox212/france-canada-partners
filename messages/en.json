@@ -97,7 +97,9 @@
     "roleOwner": "Owner",
     "roleAdmin": "Admin",
     "roleMember": "Member",
-    "roleViewer": "Viewer"
+    "roleViewer": "Viewer",
+    "partnershipRequestsLink": "Partnership requests",
+    "notificationsLink": "Notifications"
   },
   "Company": {
     "createTitle": "Create a company",
@@ -356,6 +358,76 @@
       "approved": "Approved",
       "rejected": "Rejected",
       "cancelled": "Cancelled"
+    }
+  },
+  "PartnershipRequest": {
+    "cta": "Request an introduction",
+    "visitorNotice": "Log in to request an introduction.",
+    "formTitle": "Partnership request",
+    "actingAsLabel": "On behalf of:",
+    "subjectLabel": "Subject",
+    "messageLabel": "Message",
+    "submitAction": "Send request",
+    "successPending": "Your request has been sent.",
+    "successPendingUnclaimed": "This company hasn't claimed its profile yet. Your request will be delivered once it does.",
+    "alreadyPending": "A request is already in progress with this company.",
+    "alreadyPendingUnclaimed": "A request is already on file; it will be delivered once this company claims its profile.",
+    "listTitle": "Partnership requests",
+    "receivedTab": "Received",
+    "sentTab": "Sent",
+    "emptyReceived": "No requests received yet.",
+    "emptySent": "No requests sent yet.",
+    "columnCompany": "Company",
+    "columnDate": "Date",
+    "columnSubject": "Subject",
+    "columnStatus": "Status",
+    "columnOrigin": "Origin",
+    "viewAction": "View",
+    "detailTitle": "Request details",
+    "fromLabel": "Requesting company",
+    "toLabel": "Target company",
+    "backToList": "Back to partnership requests",
+    "acceptAction": "Accept",
+    "declineAction": "Decline",
+    "withdrawAction": "Withdraw request",
+    "acceptedConfirmation": "You accepted this request.",
+    "declinedConfirmation": "You declined this request.",
+    "withdrawnConfirmation": "You withdrew this request.",
+    "notFound": "Request not found.",
+    "status": {
+      "pending": "Pending",
+      "pending_unclaimed": "Pending (profile not claimed)",
+      "accepted": "Accepted",
+      "declined": "Declined",
+      "withdrawn": "Withdrawn",
+      "expired": "Expired"
+    },
+    "source": {
+      "DIRECTORY": "Directory",
+      "MATCH": "Match suggestion",
+      "OPPORTUNITY": "Opportunity",
+      "OTHER": "Other"
+    }
+  },
+  "Notification": {
+    "pageTitle": "Notifications",
+    "empty": "No notifications yet.",
+    "markAsRead": "Mark as read",
+    "viewAction": "View",
+    "unreadCount": "{count, plural, =0 {} one {# unread} other {# unread}}",
+    "type": {
+      "partnership_request_received": {
+        "title": "New partnership request",
+        "message": "A company would like to connect with you."
+      },
+      "partnership_request_accepted": {
+        "title": "Request accepted",
+        "message": "Your partnership request was accepted."
+      },
+      "partnership_request_declined": {
+        "title": "Request declined",
+        "message": "Your partnership request was declined."
+      }
     }
   }
 }

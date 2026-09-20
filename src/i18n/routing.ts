@@ -28,6 +28,11 @@ export const routing = defineRouting({
     "/compte/entreprises/[id]/opportunites/[opportunityId]": {
       en: "/account/companies/[id]/opportunities/[opportunityId]",
     },
+    "/compte/mises-en-relation": { en: "/account/partnership-requests" },
+    "/compte/mises-en-relation/[id]": {
+      en: "/account/partnership-requests/[id]",
+    },
+    "/compte/notifications": { en: "/account/notifications" },
     "/opportunites": { en: "/opportunities" },
     "/opportunites/[slug]": { en: "/opportunities/[slug]" },
     // Annuaire public (Phase 7). Next.js interdit deux noms de segment

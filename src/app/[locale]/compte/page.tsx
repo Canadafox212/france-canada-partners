@@ -8,6 +8,7 @@ import {
   getCurrentUser,
   getCurrentUserCompanies,
 } from "@/lib/supabase/session";
+import { createClient } from "@/lib/supabase/server";
 import { ProfileForm } from "@/components/account/ProfileForm";
 import { SignOutButton } from "@/components/account/SignOutButton";
 import { ButtonLink } from "@/components/ui/Button";
@@ -19,13 +20,20 @@ export default async function AccountPage() {
     return null;
   }
 
-  const [t, tCommon, authUser, profile, companies] = await Promise.all([
-    getTranslations("Account"),
-    getTranslations("Common"),
-    getCurrentAuthUser(),
-    getCurrentProfile(),
-    getCurrentUserCompanies(),
-  ]);
+  const supabase = await createClient();
+  const [t, tCommon, authUser, profile, companies, { count: unreadCount }] =
+    await Promise.all([
+      getTranslations("Account"),
+      getTranslations("Common"),
+      getCurrentAuthUser(),
+      getCurrentProfile(),
+      getCurrentUserCompanies(),
+      supabase
+        .from("notifications")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .is("read_at", null),
+    ]);
 
   const roleLabel: Record<string, string> = {
     owner: t("roleOwner"),
@@ -41,6 +49,16 @@ export default async function AccountPage() {
           {t("title")}
         </h1>
         <SignOutButton />
+      </div>
+
+      <div className="flex flex-wrap gap-3">
+        <ButtonLink href="/compte/mises-en-relation" variant="secondary">
+          {t("partnershipRequestsLink")}
+        </ButtonLink>
+        <ButtonLink href="/compte/notifications" variant="secondary">
+          {t("notificationsLink")}
+          {unreadCount ? ` (${unreadCount})` : ""}
+        </ButtonLink>
       </div>
 
       <section className="flex flex-col gap-2 rounded-lg border border-slate-200 p-6 dark:border-slate-800">

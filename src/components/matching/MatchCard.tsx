@@ -22,6 +22,7 @@ export function MatchCard({
   level,
   confidenceLevel,
   breakdown,
+  actions,
 }: {
   title: ReactNode;
   subtitle?: string;
@@ -30,6 +31,8 @@ export function MatchCard({
   level: ReturnType<typeof getMatchLevel>;
   confidenceLevel: ReturnType<typeof getConfidenceLevel>;
   breakdown: CriterionResult[];
+  /** Emplacement libre pour une action contextuelle (ex. "Demander une mise en relation", Phase 9) — MatchCard reste un composant d'affichage générique, il ne connaît pas partnership_requests. */
+  actions?: ReactNode;
 }) {
   const t = useTranslations("Matching");
 
@@ -84,6 +87,7 @@ export function MatchCard({
           </ul>
         </details>
       ) : null}
+      {actions ? <div>{actions}</div> : null}
     </li>
   );
 }

@@ -37,18 +37,24 @@ export interface MatchDisplayItem {
   companyId: string;
   companyName: string;
   companyCountryCode: string;
+  /** Slug de la fiche publique — null si l'entreprise n'a pas de fiche (ne devrait pas arriver pour un candidat actif, gardé optionnel par prudence). */
+  companySlug: string | null;
   /** Identifie la paire à l'origine du match, pour l'explication contextuelle. */
   sourceLabel: string;
+  /** Ligne `matches` correspondant à CE match précis — voir Phase 9, "Demander une mise en relation" référence sa provenance sans jamais recopier le score. */
+  matchId: string | null;
 }
 
 async function attachCompanyDisplayInfo(
   supabase: SupabaseClient,
   companyIds: string[],
-): Promise<Map<string, { display_name: string; country_code: string }>> {
+): Promise<
+  Map<string, { display_name: string; country_code: string; slug: string | null }>
+> {
   if (companyIds.length === 0) return new Map();
   const { data } = await supabase
     .from("companies")
-    .select("id, display_name, country_code")
+    .select("id, display_name, country_code, slug")
     .in("id", [...new Set(companyIds)]);
   return new Map((data ?? []).map((c) => [c.id, c]));
 }
@@ -58,8 +64,9 @@ function toDisplayItem(
   confidence: number,
   breakdown: CriterionResult[],
   companyId: string,
-  names: Map<string, { display_name: string; country_code: string }>,
+  names: Map<string, { display_name: string; country_code: string; slug: string | null }>,
   sourceLabel: string,
+  matchId: string | null = null,
 ): MatchDisplayItem {
   const info = names.get(companyId);
   return {
@@ -71,7 +78,9 @@ function toDisplayItem(
     companyId,
     companyName: info?.display_name ?? "",
     companyCountryCode: info?.country_code ?? "",
+    companySlug: info?.slug ?? null,
     sourceLabel,
+    matchId,
   };
 }
 
@@ -111,6 +120,7 @@ export async function getPartnersForCompany(
     breakdown: CriterionResult[];
     companyId: string;
     sourceLabel: string;
+    matchId: string | null;
   }[] = [];
 
   for (const need of needs ?? []) {
@@ -140,7 +150,7 @@ export async function getPartnersForCompany(
         providerCompany: candidate.company,
         compatibilityRatio: candidate.compatibilityRatio,
       });
-      await upsertMatch({
+      const matchId = await upsertMatch({
         companyId,
         needId: need.id,
         candidateCompanyId: candidate.company.companyId,
@@ -154,6 +164,7 @@ export async function getPartnersForCompany(
           breakdown: result.breakdown,
           companyId: candidate.company.companyId,
           sourceLabel: `need:${need.capability_type_code}`,
+          matchId,
         });
       }
     }
@@ -187,7 +198,7 @@ export async function getPartnersForCompany(
         providerCompany: selfProfile,
         compatibilityRatio: candidate.compatibilityRatio,
       });
-      await upsertMatch({
+      const matchId = await upsertMatch({
         companyId: candidate.company.companyId,
         needId: candidate.needId,
         candidateCompanyId: companyId,
@@ -201,6 +212,7 @@ export async function getPartnersForCompany(
           breakdown: result.breakdown,
           companyId: candidate.company.companyId,
           sourceLabel: `offer:${offer.capability_type_code}`,
+          matchId,
         });
       }
     }
@@ -222,6 +234,7 @@ export async function getPartnersForCompany(
         r.companyId,
         names,
         r.sourceLabel,
+        r.matchId,
       ),
     );
 }
