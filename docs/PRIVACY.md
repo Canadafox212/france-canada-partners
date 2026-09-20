@@ -20,6 +20,22 @@ Le détail des tables et de l'architecture de confidentialité est dans `PROJECT
 
 Tout le reste (nom d'entreprise, courriel professionnel générique, téléphone d'entreprise, adresse commerciale) est traité comme donnée **professionnelle**, pas personnelle — voir le principe de séparation en tête de `PROJECT_SPEC.md` §4.
 
+## Import de données de sourcing (Phase 8)
+
+L'audit des fichiers `data/raw/` (voir `docs/DATA_MAPPING.md` §6) a
+identifié des colonnes contenant potentiellement des **données
+personnelles** : noms de dirigeants/responsables, et certaines adresses
+courriel **nominatives** (`prenom.nom@...`, par opposition aux adresses
+génériques `info@`/`contact@`). Aucun pipeline d'import n'est construit à
+ce stade, mais la règle déjà actée pour sa future conception est :
+
+- ces colonnes ne sont jamais copiées vers une table publique
+  (`companies` ou ses tables liées) sans un mécanisme de
+  consentement/visibilité dédié ;
+- au mieux, elles resteraient en usage interne (staging), par exemple
+  pour identifier qui contacter afin de proposer une revendication de
+  fiche — jamais affichées publiquement par défaut.
+
 ## Principe de minimisation
 
 On ne demande, à l'inscription, que ce qui est strictement nécessaire pour créer un compte (courriel, nom). Toute information supplémentaire est liée à l'entreprise, pas à la personne.

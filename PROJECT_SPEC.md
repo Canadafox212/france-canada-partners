@@ -2,7 +2,7 @@
 
 > Document de référence permanent du projet. Toute décision structurante importante doit être reflétée ici avant/pendant son implémentation. Ce document est mis à jour au fil des phases, pas figé.
 
-**Statut** : Phase 7 — annuaire public, recherche, fiche entreprise et revendication, testés en conditions réelles.
+**Statut** : Phase 8 — audit des données de sourcing (France/Québec) et conception du pipeline d'import ; en attente d'autorisation pour le lot pilote.
 **Dernière mise à jour** : 2026-09-19
 **Propriétaire produit** : non-développeur — toute section technique doit rester accompagnée d'une explication en langage clair dans les échanges de suivi.
 
@@ -408,12 +408,13 @@ URLs préfixées par langue (`/fr/...`, `/en/...`) pour un balisage `hreflang` p
 
 ---
 
-## 12. Stratégie d'importation des données
+## 12. Stratégie d'importation des données _(✅ audité en Phase 8 — voir docs/DATA_INVENTORY.md, docs/DATA_MAPPING.md, docs/DATA_SOURCES.md, docs/IMPORT_PIPELINE.md)_
 
 - Sources autorisées : saisie directe, CSV/Excel, API et Open Data sous licence compatible, partenaires.
 - **Aucun scraper** contournant les conditions d'utilisation d'un site n'est développé.
 - Chaque enregistrement importé conserve : `source_name`, `source_url`, `source_license`, `source_date`, `import_date`, `last_verified_at`.
 - Détection de doublons par rapprochement (nom légal normalisé + pays + code postal, ou domaine du site web) ; la fusion reste **une action manuelle validée par un administrateur**, jamais automatique.
+- **Audit réel effectué en Phase 8** sur `data/raw/` (100 entreprises françaises réellement disponibles sur l'objectif de 5 000, ~659 candidates québécoises dont 100 enrichies sur l'objectif de 2 000) : seules 13 entreprises françaises disposent aujourd'hui d'une identité légale confirmée par une source `APPROVED_FOR_IMPORT` (SIRENE, Licence Ouverte 2.0) ; **aucune source québécoise n'est actuellement approuvée pour un usage commercial** (voir docs/DATA_SOURCES.md). Le pipeline complet (tables de staging, batches, dry run, dédoublonnage) est conçu (docs/IMPORT_PIPELINE.md) mais pas encore construit, en attente d'autorisation.
 
 ---
 
@@ -465,15 +466,15 @@ PROJECT_SPEC.md
 5. Opportunités commerciales — **fait** : publication (brouillon/publiée/pause/clôture/archivage), réponses des entreprises (au nom d'une entreprise, jamais en son nom propre), auto-réponse interdite, confidentialité stricte des réponses, notifications internes, expiration administrable (90 jours par défaut), page publique + liste filtrée, pré-remplissage à partir d'un besoin/offre existant. `notifications` avancée depuis sa phase d'origine (9), comme `audit_logs`/`company_translations` l'ont été en Phase 3.
 6. Moteur de matching déterministe (entreprise↔entreprise, puis opportunité↔entreprise) — **fait** : voir docs/MATCHING.md.
 7. Annuaire public + recherche + filtres + fiche entreprise + revendication + SEO de base — **fait** : recherche plein texte PostgreSQL (`search_companies()`, insensible aux accents), filtres combinables, pagination, URLs géographiques/sectorielles (`/entreprises/france`, `/entreprises/quebec/[secteur]`), fiche entreprise (offres/besoins/opportunités actifs, compatibilité ciblée réutilisant le moteur Phase 6), revendication (`company_claims`, auto-approbation à domaine fort ou examen manuel admin), sitemap/robots/structured data. Voir docs/DIRECTORY.md et docs/CLAIMING.md. Import massif toujours PAS lancé (validé avec les données `[DEMO]` uniquement, comme demandé).
-8. Vérification de profil d'entreprise (`company_verifications`, distincte de la revendication déjà construite en Phase 7)
+8. Audit des données de sourcing + pipeline d'import (`data/raw/`) — **audit fait** (Phase 8, voir docs/DATA_INVENTORY.md, docs/DATA_MAPPING.md, docs/DATA_SOURCES.md), pipeline conçu mais pas construit (docs/IMPORT_PIPELINE.md), en attente d'autorisation pour un lot pilote. Explicitement reporté à une phase ultérieure sur demande du propriétaire du projet : le badge « entreprise vérifiée » avancé (`company_verifications`).
 9. Demandes de mise en relation + favoris
-10. Back-office admin complet (incluant le traitement des demandes RGPD/Loi 25) — `/admin/revendications` déjà posé en Phase 7 comme première page
-11. Import de données (pipeline réel, `data/raw/`) — devra respecter `companies.claimed_at` (Phase 7, voir docs/CLAIMING.md §7)
+10. Back-office admin complet (incluant le traitement des demandes RGPD/Loi 25) — `/admin/revendications` déjà posé en Phase 7 comme première page, `/admin/imports` à venir avec le pipeline d'import
+11. Vérification de profil d'entreprise (`company_verifications`, distincte de la revendication déjà construite en Phase 7) — reporté après l'import sur demande explicite
 12. Structure des abonnements, puis intégration Stripe
 13. SEO avancé + durcissement sécurité + performance
 14. Lancement bêta France-Québec
 
-Tables encore à ajouter, avec leur propre phase : `company_verifications` (8), `favorites` (9), `subscriptions` (12), `user_consents`/`data_subject_requests` (au plus tard avant le lancement commercial).
+Tables encore à ajouter, avec leur propre phase : `import_batches`/`staging_companies`/`import_errors`/`import_warnings` (8, conçues mais pas créées), `company_verifications` (11), `favorites` (9), `subscriptions` (12), `user_consents`/`data_subject_requests` (au plus tard avant le lancement commercial).
 
 ---
 
@@ -528,7 +529,10 @@ Tables encore à ajouter, avec leur propre phase : `company_verifications` (8), 
 | 2026-09-19 | Une revendication approuvée sur une entreprise déjà membre attribue le rôle `admin`, jamais `owner`                                                                           | Ne jamais déplacer un propriétaire déjà légitime (§18) — une entreprise peut accumuler plusieurs demandeurs légitimes sans perdre son premier propriétaire                                                                               |
 | 2026-09-19 | `companies.claimed_at` ajouté (sans système de versioning complet) pour protéger une entreprise revendiquée contre un futur réimport                                          | Une future Phase 10 (import massif) ne doit jamais écraser aveuglément les données d'une entreprise déjà prise en charge par un vrai représentant (§23) ; un système complet aurait été disproportionné pour le besoin actuel            |
 | 2026-09-19 | **Bug réel corrigé** (`0019_backfill_search_vectors.sql`) : les entreprises créées avant 0017 (dont les `[DEMO]`) avaient `search_vector` à `null`, invisibles à la recherche | Un déclencheur ne s'applique qu'aux changements futurs, jamais aux lignes déjà en base — trouvé en testant avec les vraies données de démonstration (§39), pas seulement en local                                                        |
+| 2026-09-19 | Phase 8 traitée en DEUX temps : audit complet (docs seulement, aucun code/migration) puis arrêt, avant toute construction du pipeline ou tout import réel                     | Demande explicite du cahier des charges (§44) ; le résultat de l'audit (statuts de licence très inégaux entre France et Québec) justifie de faire arbitrer le périmètre du pilote avant d'investir dans le pipeline                      |
+| 2026-09-19 | Aucune ligne québécoise classée `APPROVED_FOR_IMPORT` à ce stade (statut `REQ non intégré` sur les 659 lignes, aucune colonne de droits dans le registre des sources Québec)  | Constat factuel tiré des fichiers sources eux-mêmes, pas une prudence générique — confirme l'avertissement du cahier des charges (§4) sur la réutilisation commerciale incertaine des données québécoises                                |
+| 2026-09-19 | `france_quebec_besoins.csv`/`_offres.csv` exclus de tout mapping vers `company_needs`/`company_offers`                                                                        | Ces fichiers contiennent des besoins/offres **déduits automatiquement**, jamais déclarés par l'entreprise (le fichier source le précise lui-même) — les importer créerait de fausses données commerciales, contraire au §35              |
 
 ---
 
-_Prochaine révision prévue : au démarrage de la Phase 8._
+_Prochaine révision prévue : après votre décision sur le rapport d'audit ci-dessus._

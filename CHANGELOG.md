@@ -4,6 +4,23 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ## [Non publié]
 
+### Phase 8 — Audit des données de sourcing + conception du pipeline d'import (2026-09-19, en cours)
+
+**Audit uniquement — aucun code, migration ou import réel cette étape**, conformément à la demande explicite du cahier des charges.
+
+#### Ajouté (documentation)
+
+- `docs/DATA_INVENTORY.md` : inventaire réel de `data/raw/` (formats, tailles, nombre de lignes/colonnes, feuilles Excel, relations entre fichiers). Constat clé : 100 entreprises françaises réellement disponibles (sur l'objectif de 5 000, lot 1/50) et ~659 candidates québécoises dont 100 enrichies (sur l'objectif de 2 000) — pas 7 000 entreprises prêtes à l'import.
+- `docs/DATA_SOURCES.md` : statut de provenance/licence par source (`APPROVED_FOR_IMPORT`/`REVIEW_REQUIRED`/`DO_NOT_IMPORT`/`UNKNOWN`). 13 entreprises françaises couvertes par une source ouverte de bout en bout (SIRENE, Licence Ouverte 2.0) ; **aucune source québécoise approuvée pour un usage commercial** à ce jour.
+- `docs/DATA_MAPPING.md` : correspondance colonne par colonne vers le modèle existant, avec les cas qui ne se rattachent à aucun champ (à conserver en staging, jamais forcés).
+- `docs/IMPORT_PIPELINE.md` : conception proposée (staging, batches, dry run, dédoublonnage, quarantaine, rollback, garde-fou de licence) — **non construite**, en attente d'autorisation.
+
+#### Documenté (constats)
+
+- `france_quebec_besoins.csv`/`_offres.csv` contiennent des besoins/offres **déduits automatiquement**, jamais déclarés par une entreprise (le fichier source le précise lui-même) — exclus de tout mapping vers `company_needs`/`company_offers`.
+- `france_quebec_matching_prototype.xlsx`/`matching_france_quebec_top500.csv` : prototype de scoring antérieur, incompatible avec le moteur réel (Phase 6) — conservé pour référence, jamais importé dans `matches`.
+- `PROJECT_SPEC.md` (§12, §16), `docs/PRIVACY.md` mis à jour.
+
 ### Phase 7 — Annuaire public, recherche et revendication (2026-09-19)
 
 #### Ajouté
