@@ -9,6 +9,11 @@ import { z } from "zod";
 const publicEnvSchema = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().min(1),
+  // Utilisée pour les URLs absolues (sitemap, canonical, Open Graph — voir
+  // PROJECT_SPEC.md Phase 7 §24/§26). Optionnelle : un environnement de
+  // développement ou de test sans nom de domaine réel se replie sur
+  // localhost plutôt que d'échouer — voir getSiteUrl() ci-dessous.
+  NEXT_PUBLIC_SITE_URL: z.string().url().optional(),
 });
 
 /**
@@ -30,6 +35,7 @@ export function getPublicEnv() {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
   });
 
   if (!parsed.success) {
@@ -41,6 +47,12 @@ export function getPublicEnv() {
   }
 
   return parsed.data;
+}
+
+/** URL absolue du site (sans slash final), pour sitemap/canonical/Open Graph. */
+export function getSiteUrl(): string {
+  const configured = process.env.NEXT_PUBLIC_SITE_URL;
+  return (configured ?? "http://localhost:3000").replace(/\/$/, "");
 }
 
 /** À utiliser uniquement dans du code serveur (Server Components, Server Actions, routes API). */

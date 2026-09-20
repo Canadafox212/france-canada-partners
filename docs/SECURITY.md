@@ -60,7 +60,35 @@ une entreprise tierce), et aux administrateurs de la plateforme. Aucun
 accès public/anonyme aux scores internes, même pour une opportunité
 publique.
 
-## Tests de sécurité réels (Phases 3 à 6)
+## Annuaire public et revendication (Phase 7)
+
+`search_companies()` (voir `docs/DIRECTORY.md`) est `SECURITY INVOKER`
+(par défaut) : elle s'exécute avec les droits de l'appelant, la RLS de
+`companies` et de chaque table jointe continue donc de s'appliquer
+normalement en plus du filtre explicite `status = 'active'` déjà présent
+dans la fonction — défense en profondeur, pas une confiance aveugle dans
+un seul filtre. Aucune donnée personnelle (courriel de connexion, contenu
+privé) n'est exposée par cette fonction : seules les colonnes déjà
+publiques de `companies` sont retournées.
+
+`company_claims` suit le même principe que `matches`/`opportunity_matches`
+(Phase 6), en plus strict : **aucune** politique RLS d'insertion ni de
+mise à jour, pour un client normal comme pour un administrateur — toute
+écriture passe par `submit_company_claim()`, `cancel_company_claim()` ou
+`review_company_claim()` (toutes `SECURITY DEFINER`). `review_company_claim()`
+vérifie `is_platform_admin()` **à l'intérieur** de la fonction (pas
+seulement via la permission d'exécution SQL, accordée à `authenticated`
+en général) : un appel par un non-administrateur échoue proprement, sans
+aucun effet. Voir `docs/CLAIMING.md` pour le détail des garanties
+anti-usurpation (§19 du cahier des charges Phase 7) et la raison de
+chaque condition d'auto-approbation.
+
+La compatibilité affichée sur une fiche publique (`getCompatibilityBetweenCompanies`)
+réutilise `computeMatchScore` et `upsertMatch` tels quels (Phase 6) : les
+mêmes règles de sécurité s'appliquent, sans code parallèle à auditer
+séparément.
+
+## Tests de sécurité réels (Phases 3 à 7)
 
 Fichiers dans `tests/integration/` (`npm run test:integration`) exécutent des scénarios réels contre le vrai projet Supabase — pas de simulation locale, pas de mock : création de vrais utilisateurs de test, vraies tentatives d'action autorisée/interdite, vérification du résultat, puis suppression de toutes les données créées.
 
@@ -68,6 +96,7 @@ Fichiers dans `tests/integration/` (`npm run test:integration`) exécutent des s
 - `offers-needs.test.ts` : offres/besoins par rôle (owner/admin/member/viewer/extérieur/visiteur), contraintes de données (catégorie invalide, pays invalide, produit inexistant), statut actif/inactif, contenu du journal d'audit.
 - `opportunities.test.ts` : publication par rôle, visibilité des brouillons, réponse au nom d'une entreprise (jamais en son nom propre, jamais pour une entreprise inexistante ou étrangère), auto-réponse interdite, unicité de la réponse active, confidentialité des réponses (tiers/visiteur exclus), qui peut accepter/refuser/retirer, notifications, expiration administrable.
 - `matching.test.ts` : cohérence métier (candidat compatible proposé, incompatibilité fondamentale éliminée, offre inactive exclue, opportunité expirée exclue malgré un statut encore `published`, persistance avec version d'algorithme), et sécurité (visibilité d'un match par les deux entreprises concernées, exclusion d'une entreprise tierce, accès administrateur, aucun accès anonyme, impossibilité pour une entreprise de modifier elle-même un score).
+- `directory.test.ts` : recherche publique réelle (nom, accents, exclusion des entreprises non actives, pagination), revendication (auto-approbation à domaine fort, échec d'un courriel usurpé ne correspondant pas au compte réel, impossibilité de modifier `claim_status` directement, appel de `review_company_claim` par un non-administrateur sans effet, attribution correcte owner/admin selon l'historique de l'entreprise, refus n'accordant aucun droit), et compatibilité ciblée sur la fiche publique (persistée, invisible à un tiers).
 
 pgTAP aurait nécessité une instance Postgres locale via Docker, indisponible dans cet environnement ; ces suites jouent le même rôle de preuve en frappant directement le projet distant.
 

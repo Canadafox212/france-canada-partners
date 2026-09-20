@@ -2,7 +2,7 @@
 
 Le modèle de données complet, table par table, avec les raisons de chaque choix, est documenté dans `PROJECT_SPEC.md` (§4 "Modèle de données relationnel"). Ce fichier explique seulement où et comment les choses sont mises en œuvre techniquement.
 
-## Statut actuel (Phase 6)
+## Statut actuel (Phase 7)
 
 **Un vrai projet Supabase existe et est connecté** (région Canada Central, `ca-central-1`). Les migrations ci-dessous y sont appliquées et vérifiées.
 
@@ -24,6 +24,9 @@ Le modèle de données complet, table par table, avec les raisons de chaque choi
 | `0014_opportunities.sql`                           | `opportunities` (slug/titre/dates de publication générés automatiquement), `opportunity_products_services` ; fonction administrable `expire_stale_opportunities()` ; index ; RLS ; audit                                                                                                                                                                                                                           |
 | `0015_opportunity_responses_and_notifications.sql` | `notifications` (+ `create_notification()`), `opportunity_responses` ; déclencheurs d'auto-réponse interdite et de contrôle des transitions de statut ; RLS de confidentialité stricte ; audit + notifications automatiques                                                                                                                                                                                        |
 | `0016_matching_engine.sql`                         | `capability_compatibility` (matrice besoin↔offre administrable) ; `matches` (entreprise↔entreprise) et `opportunity_matches` (opportunité↔entreprise) avec score/confiance/détail/version d'algorithme ; écriture réservée à la clé secrète, déclencheur `protect_match_score_fields` empêchant toute fabrication de score par un client normal — voir `docs/MATCHING.md`                                          |
+| `0017_public_directory_search.sql`                 | `companies.search_vector` (tsvector, index GIN) tenu à jour par déclencheur sur les tables sources ; fonction `search_companies()` (recherche + filtres combinables + tri + pagination, un seul aller-retour base) ; index B-tree complémentaires (pays, région, ville, statut de vérification) — voir `docs/DIRECTORY.md`                                                                                         |
+| `0018_company_claims.sql`                          | `company_claims` ; `companies.claimed_at` ; fonctions `submit_company_claim()`, `cancel_company_claim()`, `review_company_claim()` (toutes SECURITY DEFINER, seul chemin d'écriture — aucune politique RLS d'insertion/mise à jour pour un client normal) — voir `docs/CLAIMING.md`                                                                                                                                |
+| `0019_backfill_search_vectors.sql`                 | **Correctif** : remplit `search_vector` pour les entreprises créées avant 0017 (dont les entreprises `[DEMO]`) — un déclencheur ne recalcule que pour les changements futurs, pas les lignes déjà existantes ; trouvé en testant la recherche avec les vraies données de démonstration (§39)                                                                                                                       |
 
 Chaque table a sa politique de sécurité (Row Level Security) écrite dans le même fichier que la table. Les corrections 0011 et 0012 n'ont été trouvées **qu'en testant contre le vrai projet** : la validation locale (Postgres embarqué) ne pouvait pas les révéler, car ce moteur de test s'exécute avec des droits complets et ne peut pas simuler l'application réelle de la RLS. C'est précisément pourquoi les tests contre le projet réel (`tests/integration/`) sont indispensables, pas seulement la validation locale.
 
@@ -51,13 +54,14 @@ Si un jour l'accès CLI est configuré (jeton d'accès personnel), `npx supabase
 - Les champs contrôlés par la plateforme (`profiles.platform_role`, `companies.subscription_level`, `companies.verification_status`) sont protégés par des déclencheurs, pas seulement par la RLS — voir `docs/SECURITY.md`.
 - Une offre/un besoin (`company_offers`/`company_needs`) appartient au profil **durable** de l'entreprise ; une opportunité (`opportunities`) est une publication **ponctuelle** avec échéance et durée de vie — voir PROJECT_SPEC.md §4.4/§4.5.
 - L'expiration d'une opportunité se calcule à la lecture (`expires_at`), pas via une tâche planifiée (aucun pg_cron configuré dans cet environnement) ; `expire_stale_opportunities()` permet de mettre à jour le statut affiché à la demande.
-- Tables encore à venir (par phase) : `claim_requests`/`company_verifications` (8), `favorites` (9), `subscriptions` (12), `user_consents`/`data_subject_requests` (avant le lancement commercial).
+- Tables encore à venir (par phase) : `company_verifications` (8), `favorites` (9), `subscriptions` (12), `user_consents`/`data_subject_requests` (avant le lancement commercial).
 - Moteur de matching (Phase 6) : génération de candidats en SQL (filtrage), scoring en TypeScript pur (testable sans base de données) — voir `docs/MATCHING.md` pour l'architecture complète, la pondération et les limites connues.
+- Annuaire public et revendication (Phase 7) : recherche plein texte PostgreSQL (`tsvector`/`unaccent`, jamais un `ILIKE` naïf), revendication réservée à trois fonctions SECURITY DEFINER (aucune écriture directe possible) — voir `docs/DIRECTORY.md` et `docs/CLAIMING.md`.
 
 ## Tests
 
-- `tests/unit/` : tests rapides, hors-ligne (`npm test`) — inclut désormais `tests/unit/matching/scoring.test.ts` (règles métier du moteur de matching, aucun accès réseau).
-- `tests/integration/` : tests réels contre le vrai projet Supabase (`npm run test:integration`) — créent et suppriment leurs propres utilisateurs/entreprises de test à chaque exécution. Nécessitent `.env.local`. Fichiers : `rls.test.ts` (comptes, entreprises, protection des champs sensibles), `offers-needs.test.ts` (offres/besoins, rôles, contraintes, audit), `opportunities.test.ts` (publication, réponses, confidentialité, auto-réponse interdite, expiration), `matching.test.ts` (cohérence métier du moteur + sécurité RLS de `matches`/`opportunity_matches`). Voir `docs/SECURITY.md` pour ce qu'ils couvrent.
+- `tests/unit/` : tests rapides, hors-ligne (`npm test`) — inclut `tests/unit/matching/scoring.test.ts` (règles métier du moteur de matching) et `tests/unit/directory/indexing.test.ts` (règles d'indexation SEO de l'annuaire), aucun accès réseau.
+- `tests/integration/` : tests réels contre le vrai projet Supabase (`npm run test:integration`) — créent et suppriment leurs propres utilisateurs/entreprises de test à chaque exécution. Nécessitent `.env.local`. Fichiers : `rls.test.ts` (comptes, entreprises, protection des champs sensibles), `offers-needs.test.ts` (offres/besoins, rôles, contraintes, audit), `opportunities.test.ts` (publication, réponses, confidentialité, auto-réponse interdite, expiration), `matching.test.ts` (cohérence métier du moteur + sécurité RLS de `matches`/`opportunity_matches`), `directory.test.ts` (recherche publique réelle, sécurité de la revendication, compatibilité ciblée sur la fiche publique). Voir `docs/SECURITY.md` pour ce qu'ils couvrent.
 
 ## Données de sourcing (pas encore importées)
 

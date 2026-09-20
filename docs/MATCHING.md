@@ -203,6 +203,21 @@ prédiction de succès commercial. Ce choix de mot est appliqué dans
 `messages/fr.json`/`messages/en.json` (`Matching.scoreLabel`) et doit être
 respecté dans tout futur ajout d'écran.
 
+## 15bis. Utilisation depuis l'annuaire public (Phase 7)
+
+`getCompatibilityBetweenCompanies()` (`src/lib/matching/service.ts`) ajoute
+un troisième point d'entrée au moteur : une comparaison CIBLÉE entre deux
+entreprises précises (utilisée sur la fiche publique d'une entreprise,
+voir docs/DIRECTORY.md §8), en plus de `getPartnersForCompany` et
+`getCompaniesForOpportunity`/`getOpportunitiesForCompany`. Elle réutilise
+`computeMatchScore()` et `upsertMatch()` sans aucune divergence — le
+résultat est persisté dans `matches` exactement comme n'importe quel autre
+calcul du moteur, avec les mêmes règles de confidentialité. Volontairement
+PAS utilisée dans la liste de résultats de l'annuaire (calculer un score
+pour chaque carte d'une page de résultats répéterait le problème de
+performance que le calcul ciblé cherche justement à éviter) — voir
+docs/DIRECTORY.md §8/§9 pour la justification complète.
+
 ## 15. Évolutivité prévue (non construite dans cette phase)
 
 - **Retour utilisateur sur un match** (`matches.feedback`,

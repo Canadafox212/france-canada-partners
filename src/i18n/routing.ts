@@ -30,9 +30,21 @@ export const routing = defineRouting({
     },
     "/opportunites": { en: "/opportunities" },
     "/opportunites/[slug]": { en: "/opportunities/[slug]" },
-    // Pas encore construite (voir PROJECT_SPEC.md §6, Phase 7+) : la page
-    // d'accueil y renvoie déjà, on déclare donc son URL dès maintenant.
+    // Annuaire public (Phase 7). Next.js interdit deux noms de segment
+    // dynamique différents à la même profondeur ("/entreprises/[slug]" et
+    // "/entreprises/[geo]" ne peuvent pas coexister) : un seul segment
+    // "[geoOrSlug]" sert donc à la fois de fiche entreprise (slug non
+    // reconnu comme zone géographique) et d'entrée géographique (slug
+    // reconnu, voir src/lib/directory/geoSlugs.ts) — désambiguïsation faite
+    // dans la page elle-même, pas dans le routage. Pas de traduction du
+    // segment secteur (§8 : même identifiant technique quelle que soit la
+    // langue, comme pour les slugs d'entreprise/opportunité).
     "/entreprises": { en: "/companies" },
+    "/entreprises/[geoOrSlug]": { en: "/companies/[geoOrSlug]" },
+    "/entreprises/[geoOrSlug]/[industry]": {
+      en: "/companies/[geoOrSlug]/[industry]",
+    },
+    "/admin/revendications": { en: "/admin/claims" },
   },
 });
 

@@ -4,6 +4,37 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ## [Non publié]
 
+### Phase 7 — Annuaire public, recherche et revendication (2026-09-19)
+
+#### Ajouté
+
+- Annuaire public (`/entreprises`, `/companies`) : recherche plein texte PostgreSQL (`search_companies()`, `tsvector`/GIN + `unaccent`, insensible aux accents — "Québec"/"Quebec" équivalents), filtres combinables (pays, région, ville, secteur, sous-secteur, produit/service, type proposé/recherché, marché cible, vérifiée, opportunités actives), tri (pertinence/nom/plus récentes), pagination "limit+1" (aucun `COUNT(*)` séparé).
+- URLs géographiques/sectorielles (`/entreprises/france`, `/entreprises/canada`, `/entreprises/quebec`, `/entreprises/[geo]/[industry]`) via un ensemble fixe et restreint (`geoSlugs.ts`) — jamais de génération automatique de combinaisons.
+- Fiche entreprise publique (`/entreprises/[slug]`) : identité, description, secteurs, produits/services, langues, certifications, offres/besoins/opportunités actifs, coordonnées professionnelles (jamais l'adresse complète ni de donnée personnelle), données structurées `schema.org` (Organization), bouton "Copier le lien".
+- Compatibilité ciblée sur la fiche publique (`getCompatibilityBetweenCompanies`, réutilise strictement le moteur Phase 6, jamais un score parallèle) avec sélecteur d'entreprise pour un utilisateur qui en possède plusieurs.
+- Revendication d'entreprise (`company_claims`) : méthode A (auto-approbation si le domaine du courriel professionnel correspond ET au domaine réel du compte connecté ET n'est pas un domaine grand public ET l'entreprise n'a encore aucun membre) et méthode B (examen manuel par un administrateur, `/admin/revendications`). Attribution `owner` si l'entreprise n'a aucun membre, `admin` sinon — un propriétaire déjà légitime n'est jamais déplacé. Écriture exclusivement via trois fonctions SECURITY DEFINER, aucune politique RLS d'insertion/mise à jour pour un client normal.
+- `companies.claimed_at` : protège une entreprise déjà revendiquée contre un futur réimport aveugle (Phase 10).
+- SEO : `sitemap.xml`/`robots.txt` générés, `generateMetadata` par page (titre/description/canonical/Open Graph), indexation conditionnelle des listes filtrées (`shouldIndexDirectoryPage()`), fil d'Ariane balisé, `metadataBase` ajouté (manquant depuis la Phase 5, corrigé ici).
+- Page d'accueil mise à jour : barre de recherche (redirection GET vers l'annuaire, aucune IA), CTA "Trouver une entreprise"/"Voir les opportunités"/"Inscrire mon entreprise".
+- Migrations `0017_public_directory_search.sql`, `0018_company_claims.sql` et `0019_backfill_search_vectors.sql` (correctif, voir ci-dessous), validées localement puis appliquées au projet réel.
+- Nouveaux tests unitaires (`tests/unit/directory/indexing.test.ts`) et tests d'intégration réels (`tests/integration/directory.test.ts` : recherche publique, sécurité de la revendication — y compris l'échec d'un courriel usurpé ne correspondant pas au compte réel et l'impossibilité de modifier `claim_status` directement —, compatibilité ciblée). Toutes les suites précédentes continuent de passer.
+- `docs/DIRECTORY.md` et `docs/CLAIMING.md`.
+
+#### Corrigé
+
+- `0019_backfill_search_vectors.sql` : les entreprises créées avant la migration 0017 (dont les entreprises `[DEMO]`) avaient `search_vector` à `null` — un déclencheur ne recalcule que pour les changements futurs, jamais pour les lignes déjà en base. Trouvé en testant la recherche avec les vraies données de démonstration (§39 du cahier des charges), pas seulement en local.
+
+#### Documenté
+
+- `PROJECT_SPEC.md` (§4.8, §6, §8, §10, §16) mis à jour pour refléter le schéma et l'arborescence réellement construits ; `docs/DATABASE.md`, `docs/ARCHITECTURE.md`, `docs/SECURITY.md`, `docs/MATCHING.md` complétés.
+
+#### Décidé
+
+- Recherche en plein texte PostgreSQL plutôt qu'`ILIKE`, pour rester performant à l'échelle visée (100 000+ entreprises).
+- Compatibilité affichée uniquement sur la fiche d'une entreprise, jamais dans la liste de résultats (évite de recalculer des dizaines de scores par page vue).
+- Un seul segment de route `[geoOrSlug]` pour fiches entreprise ET entrées géographiques (contrainte Next.js sur les segments dynamiques).
+- Pas de logo d'entreprise ni de favoris cette phase (aucun stockage de fichiers configuré ; `favorites` reste une table de la Phase 9).
+
 ### Phase 6 — Moteur de matching (2026-09-19)
 
 #### Ajouté

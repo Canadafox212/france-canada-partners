@@ -326,6 +326,188 @@ export async function getCompaniesForOpportunity(
     );
 }
 
+const NEED_SELECT =
+  "id, capability_type_code, industry_id, target_country_code, target_region, sought_employee_range, products:company_need_products_services(product_service_id), langs:company_need_languages(language_code)";
+const OFFER_SELECT =
+  "id, capability_type_code, industry_id, target_country_code, target_region, products:company_offer_products_services(product_service_id), langs:company_offer_languages(language_code)";
+
+type NeedRow = {
+  id: string;
+  capability_type_code: string;
+  industry_id: string | null;
+  target_country_code: string | null;
+  target_region: string | null;
+  sought_employee_range: string | null;
+  products: { product_service_id: string }[] | null;
+  langs: { language_code: string }[] | null;
+};
+type OfferRow = Omit<NeedRow, "sought_employee_range">;
+
+function needRowToIntent(row: NeedRow, companyId: string): MatchableIntent {
+  return {
+    id: row.id,
+    kind: "need",
+    companyId,
+    capabilityTypeCode: row.capability_type_code,
+    industryId: row.industry_id,
+    targetCountryCode: row.target_country_code,
+    targetRegion: row.target_region,
+    productServiceIds: (row.products ?? []).map((p) => p.product_service_id),
+    languageCodes: (row.langs ?? []).map((l) => l.language_code),
+    soughtEmployeeRange: row.sought_employee_range,
+  };
+}
+
+function offerRowToIntent(row: OfferRow, companyId: string): MatchableIntent {
+  return {
+    id: row.id,
+    kind: "offer",
+    companyId,
+    capabilityTypeCode: row.capability_type_code,
+    industryId: row.industry_id,
+    targetCountryCode: row.target_country_code,
+    targetRegion: row.target_region,
+    productServiceIds: (row.products ?? []).map((p) => p.product_service_id),
+    languageCodes: (row.langs ?? []).map((l) => l.language_code),
+  };
+}
+
+export interface CompanyCompatibilityResult {
+  score: number;
+  confidence: number;
+  level: ReturnType<typeof getMatchLevel>;
+  confidenceLevel: ReturnType<typeof getConfidenceLevel>;
+  breakdown: CriterionResult[];
+}
+
+/**
+ * Compatibilité CIBLÉE entre deux entreprises précises (§10/§28 du cahier
+ * des charges Phase 7 : "ne recalcule pas un autre score pour l'annuaire",
+ * "calcul ciblé" plutôt que d'évaluer des centaines de candidats). Utilisée
+ * par la fiche publique d'une entreprise — jamais par la liste de
+ * résultats (qui resterait alors bornée à un nombre de calculs non
+ * maîtrisé). Réutilise scoring.ts telle quelle, et persiste le meilleur
+ * résultat trouvé dans `matches` comme n'importe quel autre calcul du
+ * moteur Phase 6 — pas un score parallèle.
+ */
+export async function getCompatibilityBetweenCompanies(
+  supabase: SupabaseClient,
+  viewerCompanyId: string,
+  targetCompanyId: string,
+): Promise<CompanyCompatibilityResult | null> {
+  if (viewerCompanyId === targetCompanyId) return null;
+
+  const lookup = await loadCompatibilityLookup(supabase);
+  const [viewerProfile, targetProfile] = await Promise.all([
+    fetchCompanyProfile(supabase, viewerCompanyId),
+    fetchCompanyProfile(supabase, targetCompanyId),
+  ]);
+
+  const [
+    { data: viewerNeeds },
+    { data: viewerOffers },
+    { data: targetNeeds },
+    { data: targetOffers },
+  ] = await Promise.all([
+    supabase
+      .from("company_needs")
+      .select(NEED_SELECT)
+      .eq("company_id", viewerCompanyId)
+      .eq("status", "active"),
+    supabase
+      .from("company_offers")
+      .select(OFFER_SELECT)
+      .eq("company_id", viewerCompanyId)
+      .eq("status", "active"),
+    supabase
+      .from("company_needs")
+      .select(NEED_SELECT)
+      .eq("company_id", targetCompanyId)
+      .eq("status", "active"),
+    supabase
+      .from("company_offers")
+      .select(OFFER_SELECT)
+      .eq("company_id", targetCompanyId)
+      .eq("status", "active"),
+  ]);
+
+  let best: CompanyCompatibilityResult | null = null;
+
+  for (const need of (viewerNeeds ?? []) as NeedRow[]) {
+    const needIntent = needRowToIntent(need, viewerCompanyId);
+    for (const offer of (targetOffers ?? []) as OfferRow[]) {
+      const offerIntent = offerRowToIntent(offer, targetCompanyId);
+      const ratio =
+        need.capability_type_code === offer.capability_type_code
+          ? 1
+          : (lookup
+              .get(need.capability_type_code)
+              ?.get(offer.capability_type_code) ?? 0);
+      const result = computeMatchScore({
+        seekerIntent: needIntent,
+        seekerCompany: viewerProfile,
+        providerIntent: offerIntent,
+        providerCompany: targetProfile,
+        compatibilityRatio: ratio,
+      });
+      await upsertMatch({
+        companyId: viewerCompanyId,
+        needId: need.id,
+        candidateCompanyId: targetCompanyId,
+        offerId: offer.id,
+        result,
+      });
+      if (!result.eliminated && (!best || result.score > best.score)) {
+        best = {
+          score: result.score,
+          confidence: result.confidence,
+          level: getMatchLevel(result.score),
+          confidenceLevel: getConfidenceLevel(result.confidence),
+          breakdown: result.breakdown,
+        };
+      }
+    }
+  }
+
+  for (const need of (targetNeeds ?? []) as NeedRow[]) {
+    const needIntent = needRowToIntent(need, targetCompanyId);
+    for (const offer of (viewerOffers ?? []) as OfferRow[]) {
+      const offerIntent = offerRowToIntent(offer, viewerCompanyId);
+      const ratio =
+        need.capability_type_code === offer.capability_type_code
+          ? 1
+          : (lookup
+              .get(need.capability_type_code)
+              ?.get(offer.capability_type_code) ?? 0);
+      const result = computeMatchScore({
+        seekerIntent: needIntent,
+        seekerCompany: targetProfile,
+        providerIntent: offerIntent,
+        providerCompany: viewerProfile,
+        compatibilityRatio: ratio,
+      });
+      await upsertMatch({
+        companyId: targetCompanyId,
+        needId: need.id,
+        candidateCompanyId: viewerCompanyId,
+        offerId: offer.id,
+        result,
+      });
+      if (!result.eliminated && (!best || result.score > best.score)) {
+        best = {
+          score: result.score,
+          confidence: result.confidence,
+          level: getMatchLevel(result.score),
+          confidenceLevel: getConfidenceLevel(result.confidence),
+          breakdown: result.breakdown,
+        };
+      }
+    }
+  }
+
+  return best;
+}
+
 export interface OpportunityDisplayItem {
   score: number;
   confidence: number;

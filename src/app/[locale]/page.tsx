@@ -1,12 +1,22 @@
+import { locale } from "next/root-params";
 import { getTranslations } from "next-intl/server";
 import { ButtonLink } from "@/components/ui/Button";
+import { HomeSearchBar } from "@/components/directory/HomeSearchBar";
 import { getCurrentUser } from "@/lib/supabase/session";
+import { getPathname } from "@/i18n/navigation";
+import type { AppLocale } from "@/i18n/routing";
 
 export default async function HomePage() {
-  const [t, user] = await Promise.all([
+  const [t, user, activeLocaleValue] = await Promise.all([
     getTranslations("HomePage"),
     getCurrentUser(),
+    locale(),
   ]);
+  const activeLocale = activeLocaleValue as AppLocale;
+  const directoryPath = getPathname({
+    href: "/entreprises",
+    locale: activeLocale,
+  });
 
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-10 bg-slate-50 px-6 py-24 text-center dark:bg-slate-950">
@@ -19,9 +29,15 @@ export default async function HomePage() {
         </p>
       </div>
 
+      <HomeSearchBar
+        actionPath={directoryPath}
+        placeholder={t("searchPlaceholder")}
+        buttonLabel={t("searchButton")}
+      />
+
       <div className="flex flex-wrap items-center justify-center gap-4">
         <ButtonLink href="/entreprises" variant="primary">
-          {t("ctaFindPartner")}
+          {t("ctaFindCompany")}
         </ButtonLink>
         <ButtonLink href="/opportunites" variant="secondary">
           {t("ctaPublishOpportunity")}
@@ -33,10 +49,6 @@ export default async function HomePage() {
           {user ? t("ctaMyAccount") : t("ctaRegisterCompany")}
         </ButtonLink>
       </div>
-
-      <p className="max-w-md text-sm text-slate-400 dark:text-slate-500">
-        {t("comingSoon")}
-      </p>
     </main>
   );
 }

@@ -25,19 +25,26 @@ src/
         entreprises/nouvelle/, entreprises/[id]/
           opportunites/nouvelle/, opportunites/[opportunityId]/
       opportunites/, opportunites/[slug]/   pages publiques des opportunités
+      entreprises/, entreprises/[geoOrSlug]/, entreprises/[geoOrSlug]/[industry]/
+        annuaire public (liste, entrée géographique/sectorielle, fiche entreprise — un seul
+        segment "[geoOrSlug]" sert les deux rôles, voir docs/DIRECTORY.md)
+      admin/revendications/   première page du futur back-office (examen des revendications)
       not-found.tsx, error.tsx      pages d'erreur génériques
+    sitemap.ts, robots.ts   SEO (hors [locale] : couvre les deux langues) — voir docs/DIRECTORY.md
     globals.css        styles globaux + configuration Tailwind
     favicon.ico
   components/
-    ui/                composants génériques (Button, FormField)
+    ui/                composants génériques (Button, FormField, Breadcrumbs)
     layout/            Header (barre de navigation, conscient de la session)
     auth/              formulaires d'authentification (Client Components)
     account/           formulaire de profil, bouton de déconnexion
     companies/         formulaires et affichage liés à une entreprise (profil, produits/services, offres, besoins, membres)
     opportunities/     formulaires et affichage liés aux opportunités (publication, réponses, filtres)
     matching/          affichage d'un résultat de matching (MatchCard, "Pourquoi ce score ?")
+    directory/         annuaire public (carte entreprise, pagination, corps de page partagé, barre de recherche d'accueil)
+    claims/            revendication (formulaire, liste d'examen admin)
   lib/
-    env.ts             lecture + validation des variables d'environnement
+    env.ts             lecture + validation des variables d'environnement (+ getSiteUrl())
     utils.ts            fonctions utilitaires pures (ex. slugify)
     companies.ts         repli de langue pour les descriptions d'entreprise
     offersNeeds.ts        composition automatique du titre d'une offre/d'un besoin/d'une opportunité
@@ -47,13 +54,19 @@ src/
       scoring.ts             calcul pur, testable sans base de données
       candidateGeneration.ts (serveur) génération de candidats en SQL
       persistence.ts          (serveur) écriture via la clé secrète uniquement
-      service.ts               (serveur) orchestration, appelée par les pages
+      service.ts               (serveur) orchestration ; inclut getCompatibilityBetweenCompanies
+                                (calcul ciblé pour la fiche publique, Phase 7)
+    directory/            annuaire public (Phase 7) — voir docs/DIRECTORY.md
+      geoSlugs.ts           ensemble fixe d'URLs géographiques (france/canada/quebec)
+      search.ts              appel de la fonction SQL search_companies() + shouldIndexDirectoryPage()
+      pageData.ts             mémoïsation (React.cache) entre generateMetadata() et la page
+      companyPageData.ts       idem, pour la fiche entreprise
     supabase/
       client.ts          client Supabase pour le navigateur
       server.ts           client Supabase pour le code serveur (respecte la RLS)
       serviceRole.ts        client avec la clé secrète (contourne la RLS, serveur uniquement)
       session.ts           utilisateur/profil/entreprises courants (serveur uniquement)
-  validations/         schémas Zod partagés entre formulaires (auth, entreprise, offre/besoin, opportunité, communs)
+  validations/         schémas Zod partagés entre formulaires (auth, entreprise, offre/besoin, opportunité, revendication, communs)
   i18n/
     routing.ts          langues supportées, langue par défaut, segments d'URL traduits
     navigation.ts        Link/redirect/useRouter conscients de la langue
@@ -92,6 +105,32 @@ Côté base de données, l'identité repose sur `auth.users` (géré par Supabas
 ## Pourquoi des composants "…Client.tsx" intermédiaires (ex. `EditOpportunityClient`) ?
 
 Une page (Server Component) ne peut pas passer une fonction (`onCancel={() => ...}`) directement à un composant client comme `OpportunityForm` — Next.js interdit de sérialiser une fonction à travers la frontière serveur/client. Quand une page a besoin de fournir ce genre de gestionnaire (navigation, rafraîchissement), elle passe par un petit composant client intermédiaire qui définit la fonction lui-même (ex. `src/components/opportunities/EditOpportunityClient.tsx`, `CreateOpportunityClient.tsx`) et se contente de transmettre les données à la page.
+
+## Pourquoi un seul segment `[geoOrSlug]` pour l'annuaire (Phase 7) ?
+
+Next.js interdit deux noms de segment dynamique différents à la même
+profondeur (`/entreprises/[slug]` et `/entreprises/[geo]` ne peuvent pas
+coexister comme deux dossiers séparés — erreur au build). Comme l'annuaire
+a besoin à la fois de fiches entreprise (`/entreprises/metallerie-du-rhone`)
+et d'entrées géographiques (`/entreprises/quebec`) au même niveau d'URL,
+les deux sont servis par le MÊME dossier `[geoOrSlug]` : la page elle-même
+regarde si le segment correspond à une zone connue
+(`src/lib/directory/geoSlugs.ts`) et bascule entre les deux rendus. Voir
+`docs/DIRECTORY.md` §5.
+
+## Pourquoi `React.cache()` dans `src/lib/directory/pageData.ts`/`companyPageData.ts` ?
+
+`generateMetadata()` (pour le titre/la balise `robots`) et le composant de
+page ont besoin des mêmes données (résultat de recherche, fiche
+entreprise), mais Next.js les exécute comme deux fonctions indépendantes
+sans partager entre elles un appel réseau qui n'est pas fait via `fetch()`
+— notre client Supabase. Sans précaution, la même recherche s'exécuterait
+deux fois par page vue. `React.cache()` mémoïse un appel pour la durée
+d'une seule requête, à condition de ne lui passer que des arguments
+PRIMITIFS (une chaîne, un nombre) — un objet reconstruit à chaque appel
+serait toujours considéré différent (comparaison par référence) et
+casserait la mémoïsation, d'où la signature "à plat" de
+`loadDirectoryResults()` plutôt qu'un unique objet de paramètres.
 
 ## Conventions de nommage
 
