@@ -3,6 +3,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import {
   getPartnersForCompany,
   getCompaniesForOpportunity,
+  getCompatibilityBetweenCompanies,
 } from "@/lib/matching/service";
 
 /**
@@ -316,5 +317,68 @@ describe("Sécurité — visibilité des matchs (§35)", () => {
       .update({ score: 100 })
       .eq("id", (existing as { id: string }).id);
     expect(error).not.toBeNull();
+  });
+});
+
+/**
+ * Vérification demandée par une revue externe (Phase 9, §18/§7) : "une
+ * entreprise sans offre et sans besoin pourrait recevoir un score de
+ * matching uniquement grâce aux valeurs neutres des données manquantes".
+ * Test en LECTURE SEULE du comportement déjà existant : ne modifie ni
+ * scoring.ts, ni les pondérations, ni les seuils, ni la génération de
+ * candidats. Complète la lecture de code déjà faite (candidateGeneration.ts
+ * part toujours de company_offers/company_needs, jamais de companies —
+ * une entreprise sans aucun des deux ne peut structurellement générer
+ * aucun candidat) par une preuve d'exécution réelle contre le vrai moteur.
+ */
+describe("Régression — une entreprise sans offre et sans besoin ne peut recevoir aucun score (§18 de la demande)", () => {
+  let emptyOwner: Awaited<ReturnType<typeof createConfirmedUser>>;
+  let withNeedOwner: Awaited<ReturnType<typeof createConfirmedUser>>;
+  let emptyCompanyId: string;
+  let withNeedCompanyId: string;
+  const localCreatedCompanyIds: string[] = [];
+  const localCreatedUserIds: string[] = [];
+
+  beforeAll(async () => {
+    emptyOwner = await createConfirmedUser("empty-company");
+    withNeedOwner = await createConfirmedUser("with-need-company");
+    localCreatedUserIds.push(emptyOwner.id, withNeedOwner.id);
+
+    emptyCompanyId = await createCompany(emptyOwner, "Match Entreprise Vide", "FR");
+    withNeedCompanyId = await createCompany(withNeedOwner, "Match Entreprise Avec Besoin", "CA");
+    localCreatedCompanyIds.push(emptyCompanyId, withNeedCompanyId);
+
+    // withNeedCompany a un besoin actif ; emptyCompany n'a NI offre NI
+    // besoin, actif ou non — c'est le cas précis de la question posée.
+    await withNeedOwner.client.from("company_needs").insert({
+      company_id: withNeedCompanyId,
+      capability_type_code: "DISTRIBUTOR",
+    });
+  }, 30000);
+
+  afterAll(async () => {
+    for (const id of localCreatedCompanyIds) {
+      await admin.from("companies").delete().eq("id", id);
+    }
+    for (const id of localCreatedUserIds) {
+      await admin.auth.admin.deleteUser(id);
+    }
+  }, 30000);
+
+  it("getCompatibilityBetweenCompanies() retourne null quand une des deux entreprises n'a ni offre ni besoin actif", async () => {
+    const result = await getCompatibilityBetweenCompanies(
+      admin,
+      withNeedCompanyId,
+      emptyCompanyId,
+    );
+    expect(result).toBeNull();
+  });
+
+  it("aucune ligne matches n'est créée impliquant l'entreprise sans offre ni besoin", async () => {
+    const { data } = await admin
+      .from("matches")
+      .select("id")
+      .or(`company_id.eq.${emptyCompanyId},candidate_company_id.eq.${emptyCompanyId}`);
+    expect(data ?? []).toEqual([]);
   });
 });
