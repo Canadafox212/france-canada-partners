@@ -87,7 +87,7 @@ export function OffersNeedsSection({
   }
 
   return (
-    <section className="flex flex-col gap-4 rounded-lg border border-slate-200 p-6 dark:border-slate-800">
+    <section id={kind === "offer" ? "offers" : "needs"} className="flex flex-col gap-4 rounded-lg border border-slate-200 p-6 dark:border-slate-800">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
           {kind === "offer" ? t("weOfferTitle") : t("weSeekTitle")}

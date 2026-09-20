@@ -61,7 +61,7 @@ export function CompanyProductsServicesForm({
   }
 
   return (
-    <section className="flex flex-col gap-4 rounded-lg border border-slate-200 p-6 dark:border-slate-800">
+    <section id="products-services" className="flex flex-col gap-4 rounded-lg border border-slate-200 p-6 dark:border-slate-800">
       <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
         {t("title")}
       </h2>

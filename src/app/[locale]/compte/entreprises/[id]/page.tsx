@@ -24,6 +24,13 @@ import {
   getOpportunitiesForCompany,
 } from "@/lib/matching/service";
 import { RequestPartnershipButton } from "@/components/partnerships/RequestPartnershipButton";
+import { CompanyMarketsForm } from "@/components/companies/CompanyMarketsForm";
+import { ActivationChecklist } from "@/components/companies/ActivationChecklist";
+import {
+  computeCompanyCompleteness,
+  computeCompanyActivation,
+  buildActivationChecklist,
+} from "@/lib/companies/completeness";
 
 type OfferNeedRow = {
   id: string;
@@ -76,7 +83,7 @@ export default async function EditCompanyPage({
   const { data: company } = await supabase
     .from("companies")
     .select(
-      "id, display_name, legal_name, website, professional_email, phone, company_locations(id, region, city, is_primary), company_translations(locale, description, tagline)",
+      "id, display_name, legal_name, website, professional_email, phone, company_locations(id, region, city, is_primary), company_translations(locale, description, tagline), company_industries(industry_id)",
     )
     .eq("id", id)
     .single();
@@ -113,6 +120,7 @@ export default async function EditCompanyPage({
     { data: offerRows },
     { data: needRows },
     { data: opportunityRows },
+    { data: marketRows },
   ] = await Promise.all([
     supabase
       .from("company_members")
@@ -155,6 +163,12 @@ export default async function EditCompanyPage({
       .select("id, title, status, opportunity_responses(count)")
       .eq("company_id", id)
       .order("created_at", { ascending: false }),
+    supabase
+      .from("company_markets")
+      .select("id, market_type, country_code, region, city")
+      .eq("company_id", id)
+      .eq("market_type", "target")
+      .order("created_at"),
   ]);
 
   const [partners, opportunitiesForYou] = await Promise.all([
@@ -179,12 +193,49 @@ export default async function EditCompanyPage({
 
   const t = await getTranslations("Company");
   const tMatching = await getTranslations("Matching");
+  const tChecklist = await getTranslations("ActivationChecklist");
   const primaryLocation =
     company.company_locations?.find((loc) => loc.is_primary) ?? null;
   const translation = pickCompanyTranslation(
     company.company_translations ?? [],
     activeLocale,
   );
+
+  // Complétude/activation (Phase 10C, §1) : deux notions distinctes,
+  // jamais fusionnées — voir src/lib/companies/completeness.ts.
+  const hasActiveOffer = (offerRows ?? []).some((o) => o.status === "active");
+  const hasActiveNeed = (needRows ?? []).some((n) => n.status === "active");
+  const completenessInput = {
+    hasDescription: Boolean(translation?.description),
+    hasIndustry: (company.company_industries ?? []).length > 0,
+    hasLocation: Boolean(primaryLocation),
+    hasActiveOfferOrNeed: hasActiveOffer || hasActiveNeed,
+  };
+  const completeness = computeCompanyCompleteness(completenessInput);
+  // "Revendiquée" = a un owner/admin actif — jamais companies.claimed_at,
+  // qui ne se remplit que via le workflow company_claims (Phase 7) et
+  // reste NULL indéfiniment pour une entreprise auto-créée (voir le
+  // commentaire sur CompanyActivationInput.isClaimed).
+  const hasOwnerOrAdmin = (members ?? []).some(
+    (m) => m.role === "owner" || m.role === "admin",
+  );
+  const activation = computeCompanyActivation({
+    ...completenessInput,
+    isClaimed: hasOwnerOrAdmin,
+  });
+  const activationMissingText = activation.missingCriteria
+    .map((key) => t(`missingCriterion.${key}`))
+    .join(", ");
+  const checklistItems = buildActivationChecklist({
+    hasDescription: completenessInput.hasDescription,
+    hasIndustry: completenessInput.hasIndustry,
+    hasLocation: completenessInput.hasLocation,
+    hasProductsServices: (companyProductsServices ?? []).length > 0,
+    hasActiveOffer,
+    hasActiveNeed,
+    hasTargetMarket: (marketRows ?? []).length > 0,
+    hasPotentialPartners: partners.length > 0,
+  });
 
   const labelFor = (row: {
     label_fr?: string;
@@ -221,7 +272,38 @@ export default async function EditCompanyPage({
         {company.display_name}
       </h1>
 
-      <section className="flex flex-col gap-4">
+      <section className="flex flex-col gap-3 rounded-lg border border-slate-200 p-6 dark:border-slate-800">
+        <p className="text-sm font-medium text-slate-900 dark:text-white">
+          {t("completenessLabel", { percent: completeness.percent })}
+        </p>
+        <p
+          className={
+            activation.isActivated
+              ? "text-sm text-green-700 dark:text-green-400"
+              : "text-sm text-amber-700 dark:text-amber-400"
+          }
+        >
+          {activation.isActivated
+            ? t("activatedLabel")
+            : t("notActivatedLabel", { missing: activationMissingText })}
+        </p>
+        <h2 className="mt-2 text-sm font-semibold text-slate-900 dark:text-white">
+          {tChecklist("title")}
+        </h2>
+        <ActivationChecklist
+          items={checklistItems}
+          labels={{
+            profile: tChecklist("item.profile"),
+            productsServices: tChecklist("item.productsServices"),
+            offer: tChecklist("item.offer"),
+            need: tChecklist("item.need"),
+            markets: tChecklist("item.markets"),
+            viewPartners: tChecklist("item.viewPartners"),
+          }}
+        />
+      </section>
+
+      <section id="profile" className="flex flex-col gap-4">
         <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
           {t("profileSectionTitle")}
         </h2>
@@ -281,6 +363,17 @@ export default async function EditCompanyPage({
         canManage={canManageOffersNeeds}
       />
 
+      <CompanyMarketsForm
+        companyId={company.id}
+        markets={(marketRows ?? []).map((m) => ({
+          id: m.id,
+          countryCode: m.country_code,
+          region: m.region,
+          city: m.city,
+        }))}
+        canManage={canManageOffersNeeds}
+      />
+
       <OpportunitiesListSection
         companyId={company.id}
         items={(opportunityRows ?? []).map((o): CompanyOpportunityItem => ({
@@ -294,7 +387,7 @@ export default async function EditCompanyPage({
         canManage={canManageOffersNeeds}
       />
 
-      <section className="flex flex-col gap-4 rounded-lg border border-slate-200 p-6 dark:border-slate-800">
+      <section id="partners" className="flex flex-col gap-4 rounded-lg border border-slate-200 p-6 dark:border-slate-800">
         <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
           {tMatching("partnersTitle")}
         </h2>

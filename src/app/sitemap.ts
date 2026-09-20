@@ -46,6 +46,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   addForEachLocale("/");
   addForEachLocale("/entreprises");
   addForEachLocale("/opportunites");
+  addForEachLocale("/quebec");
 
   for (const geoSlug of Object.keys(GEO_SLUGS)) {
     addForEachLocale({

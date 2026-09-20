@@ -50,6 +50,9 @@ export const routing = defineRouting({
       en: "/companies/[geoOrSlug]/[industry]",
     },
     "/admin/revendications": { en: "/admin/claims" },
+    // Page de recrutement dédiée au Québec (Phase 10C) — même segment dans
+    // les deux langues, comme "/" (rien à traduire ici).
+    "/quebec": "/quebec",
   },
 });
 

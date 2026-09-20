@@ -33,6 +33,7 @@
     "loading": "Loading…",
     "cancel": "Cancel",
     "edit": "Edit",
+    "delete": "Delete",
     "save": "Save",
     "saved": "Saved.",
     "errorGeneric": "Something went wrong. Please try again.",
@@ -124,11 +125,40 @@
     "membersTitle": "Company members",
     "statusInvited": "Invited",
     "statusActive": "Active",
-    "statusRemoved": "Removed"
+    "statusRemoved": "Removed",
+    "completenessLabel": "Matching readiness: {percent}%",
+    "activatedLabel": "Activated — visible in matching",
+    "notActivatedLabel": "Not activated — add {missing} to appear in matching.",
+    "missingCriterion": {
+      "claimed": "a responsible member (owner or admin)",
+      "description": "a description",
+      "industry": "an industry",
+      "location": "a location",
+      "offerOrNeed": "an active offer or need"
+    }
   },
   "ProductsServices": {
     "title": "Products & services",
     "empty": "No product or service is referenced on the platform yet."
+  },
+  "CompanyMarkets": {
+    "title": "Target markets",
+    "empty": "No target market yet.",
+    "addAction": "Add a target market",
+    "countryLabel": "Country (2-letter code, e.g. FR, CA)",
+    "regionLabel": "Region / province (optional)",
+    "cityLabel": "City (optional)"
+  },
+  "ActivationChecklist": {
+    "title": "Complete my profile",
+    "item": {
+      "profile": "Present my company",
+      "productsServices": "Add my products/services",
+      "offer": "Declare what we offer",
+      "need": "Declare what we're looking for",
+      "markets": "Indicate our target markets",
+      "viewPartners": "View my potential partners"
+    }
   },
   "OfferNeed": {
     "weOfferTitle": "We offer",
@@ -430,5 +460,24 @@
         "message": "Your partnership request was declined."
       }
     }
+  },
+  "QuebecLanding": {
+    "metaTitle": "Join France Canada Partners — Quebec Companies",
+    "metaDescription": "Find French partners, declare what you offer and what you're looking for, and get explainable matches. Free signup for Quebec companies.",
+    "heroTitle": "Grow your Quebec business into France",
+    "heroSubtitle": "France Canada Partners helps French and Quebec companies find each other: declare what you offer or need, and discover potential partners scored on clear, explainable criteria.",
+    "ctaPrimary": "Create my company for free",
+    "ctaSecondary": "Discover French companies",
+    "howItWorksTitle": "How it works",
+    "step1Title": "Create your account and company profile",
+    "step1Text": "Free, in a few minutes — name, industry, location.",
+    "step2Title": "Declare what you offer and what you're looking for",
+    "step2Text": "Offers, needs, target markets: this is what lets us suggest real matches.",
+    "step3Title": "Get explainable matches",
+    "step3Text": "A compatibility score with the criteria behind it, never a black box.",
+    "step4Title": "Request an introduction",
+    "step4Text": "Reach out directly to a compatible company to explore a partnership.",
+    "freeNoticeTitle": "Free at launch",
+    "freeNoticeText": "Quebec companies are among the network's first members — signup and most features are free during this phase."
   }
 }

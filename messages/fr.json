@@ -33,6 +33,7 @@
     "loading": "Chargement…",
     "cancel": "Annuler",
     "edit": "Modifier",
+    "delete": "Supprimer",
     "save": "Enregistrer",
     "saved": "Enregistré.",
     "errorGeneric": "Une erreur est survenue. Merci de réessayer.",
@@ -124,11 +125,40 @@
     "membersTitle": "Membres de l'entreprise",
     "statusInvited": "Invité",
     "statusActive": "Actif",
-    "statusRemoved": "Retiré"
+    "statusRemoved": "Retiré",
+    "completenessLabel": "Préparation au matching : {percent} %",
+    "activatedLabel": "Activée — visible dans le matching",
+    "notActivatedLabel": "Non activée — ajoutez {missing} pour apparaître dans le matching.",
+    "missingCriterion": {
+      "claimed": "un membre responsable (propriétaire ou administrateur)",
+      "description": "une description",
+      "industry": "un secteur",
+      "location": "une localisation",
+      "offerOrNeed": "une offre ou un besoin actif"
+    }
   },
   "ProductsServices": {
     "title": "Produits & services",
     "empty": "Aucun produit ou service n'est encore référencé sur la plateforme."
+  },
+  "CompanyMarkets": {
+    "title": "Marchés ciblés",
+    "empty": "Aucun marché ciblé pour l'instant.",
+    "addAction": "Ajouter un marché ciblé",
+    "countryLabel": "Pays (code à 2 lettres, ex. FR, CA)",
+    "regionLabel": "Région / province (optionnel)",
+    "cityLabel": "Ville (optionnel)"
+  },
+  "ActivationChecklist": {
+    "title": "Compléter mon profil",
+    "item": {
+      "profile": "Présenter mon entreprise",
+      "productsServices": "Ajouter mes produits/services",
+      "offer": "Déclarer ce que nous proposons",
+      "need": "Déclarer ce que nous recherchons",
+      "markets": "Indiquer nos marchés cibles",
+      "viewPartners": "Voir mes partenaires potentiels"
+    }
   },
   "OfferNeed": {
     "weOfferTitle": "Nous proposons",
@@ -430,5 +460,24 @@
         "message": "Votre demande de mise en relation a été refusée."
       }
     }
+  },
+  "QuebecLanding": {
+    "metaTitle": "Rejoindre France Canada Partners — Entreprises du Québec",
+    "metaDescription": "Trouvez des partenaires français, déclarez ce que vous proposez et recherchez, et recevez des correspondances explicables. Inscription gratuite pour les entreprises québécoises.",
+    "heroTitle": "Développez votre entreprise québécoise vers la France",
+    "heroSubtitle": "France Canada Partners aide les entreprises françaises et québécoises à se trouver : déclarez ce que vous proposez ou recherchez, et découvrez des partenaires potentiels évalués selon des critères clairs.",
+    "ctaPrimary": "Créer gratuitement mon entreprise",
+    "ctaSecondary": "Découvrir les entreprises françaises",
+    "howItWorksTitle": "Comment ça fonctionne",
+    "step1Title": "Créez votre compte et votre fiche entreprise",
+    "step1Text": "Gratuit, en quelques minutes — nom, secteur, localisation.",
+    "step2Title": "Déclarez ce que vous proposez et ce que vous recherchez",
+    "step2Text": "Offres, besoins, marchés ciblés : c'est ce qui permet de vous proposer de vraies correspondances.",
+    "step3Title": "Recevez des correspondances explicables",
+    "step3Text": "Un score de compatibilité avec le détail des critères pris en compte, jamais une boîte noire.",
+    "step4Title": "Demandez une mise en relation",
+    "step4Text": "Contactez directement une entreprise compatible pour explorer un partenariat.",
+    "freeNoticeTitle": "Gratuit au lancement",
+    "freeNoticeText": "Les entreprises québécoises font partie des premières membres du réseau — l'inscription et l'essentiel des fonctionnalités sont gratuits pendant cette phase."
   }
 }
