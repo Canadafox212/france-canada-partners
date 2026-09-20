@@ -23,22 +23,7 @@ import path from "node:path";
 import { createClient } from "@supabase/supabase-js";
 import { runImportBatch } from "../src/lib/import/pipeline";
 import { buildBatchReport } from "../src/lib/import/report";
-
-const PILOT_APPROVED_SIRENS = new Set([
-  "349357343",
-  "314397696",
-  "562082909",
-  "778127613",
-  "560801706",
-  "552059024",
-  "572050169",
-  "384711909",
-  "414969584",
-  "500212188",
-  "819252701",
-  "818791840",
-  "414127605",
-]);
+import { PILOT_APPROVED_SIRENS } from "../src/lib/import/pilotAllowlist";
 
 const APPROVED_SOURCE_NAME =
   "Annuaire des Entreprises / API Recherche d'entreprises";

@@ -52,6 +52,35 @@ Aucune ligne source ne passe jamais directement de `data/raw/` à
 - **`company_source_records`** (Phase 2, étendue) : `import_batch_id`
   ajouté pour la traçabilité (§14).
 
+## 2bis. Mapping sectoriel et provenance éditoriale (migration 0021)
+
+Deux ajouts indépendants, construits pour terminer le cycle des 13
+entreprises déjà importées (jamais pour les 87 restantes ni pour le
+Québec) :
+
+- **`industry_code_mappings`** : correspondance entre un code de
+  nomenclature OFFICIEL (`NAF_APE` aujourd'hui, `NAICS_SCIAN` prévu pour
+  le Québec plus tard — jamais mélangés, voir `docs/DATA_MAPPING.md` §4)
+  et un `industries.id` interne, avec un niveau de confiance explicite
+  (`HIGH`/`MEDIUM`/`LOW`/`REQUIRES_REVIEW`). Remplie uniquement pour les
+  8 codes APE réellement présents dans le lot pilote — jamais une
+  généralisation à toute la nomenclature APE/NAF. **Aucun rapprochement
+  par mot-clé** : un code administratif ambigu (70.10Z, "activités des
+  sièges sociaux", partagé par Safran/Thales/CLAYENS dans ce lot) est
+  volontairement laissé `REQUIRES_REVIEW` avec `internal_industry_id`
+  NULL plutôt que deviné à partir de la notoriété de l'entreprise —
+  arbitrage humain nécessaire avant tout rattachement.
+- **`company_translations.content_source`** (`COMPANY_PROVIDED` par
+  défaut / `EDITORIAL` / `SOURCE_PROVIDED`) : distingue un contenu saisi
+  par l'entreprise elle-même d'un contenu rédigé par l'équipe éditoriale
+  à partir de faits vérifiables — jamais confondu avec une donnée SIRENE
+  ni avec une saisie d'entreprise. Voir `docs/EDITORIAL_CONTENT.md`.
+
+Cette migration ne rattache encore AUCUNE entreprise à un secteur
+(`company_industries` non touché) et n'écrit encore AUCUN contenu
+éditorial — seule l'infrastructure de référence est en place, en attente
+de l'autorisation explicite de publication.
+
 ## 3. Pourquoi des colonnes structurées, pas un gros JSON
 
 Cohérent avec le principe déjà appliqué à tout le reste du projet (voir
@@ -220,16 +249,43 @@ optimisation supplémentaire — à mesurer avant d'en ajouter si un futur
 batch atteint plusieurs milliers de lignes (§42 : ne pas sur-optimiser
 avant mesure).
 
-## 15. Ce qui n'est pas construit cette phase (limites documentées)
+## 15. Vérification SIRENE des 87 entreprises restantes (§15 de la demande — RÉALISÉE)
 
-- Vérification des 87 entreprises françaises restantes contre la SIRENE
-  (§15 de la demande) — conçue (statuts `CONFIRMED`/`NOT_FOUND`/
-  `AMBIGUOUS`/`IDENTIFIER_MISMATCH`/`SOURCE_ERROR`), pas implémentée :
-  nécessite d'appeler l'API officielle en conditions réelles, prévu pour
-  une étape séparée après ce livrable.
-- Table de correspondance secteur source → `industries.id` (texte libre
-  conservé dans `staging_companies.raw_sector_code`/`raw_sector_label`,
-  jamais copié vers `company_industries`).
+`scripts/verify-siren-87.ts` interroge en LECTURE SEULE l'API officielle
+`recherche-entreprises.api.gouv.fr` (Base Sirene/RNE) pour les 87 lignes
+du fichier source hors du lot pilote déjà importé. Ce script ne fait
+QU'UN RAPPORT — aucune écriture en base, aucun import, quel que soit le
+résultat.
+
+**Constat majeur** : les 87 lignes n'ont en réalité AUCUN SIREN
+exploitable dans le fichier source (valeur littérale `"Non disponible"`)
+— voir la correction apportée à `docs/DATA_INVENTORY.md` §2. Une
+vérification par identifiant, comme pour les 13 déjà importées, est donc
+structurellement impossible ici. Le script tente en secours une
+recherche par NOM auprès de la même API officielle, mais ne promeut
+jamais un résultat au rang `CONFIRMED` par ce biais seul (trop de
+risque d'homonymie sans ville/code postal pour trancher — ces deux
+colonnes sont elles aussi vides pour les 87 lignes).
+
+Résultat réel (exécuté le 2026-09-20, rapport complet dans
+`docs/reports/rapport-siren-87.json`) :
+
+| Statut                                                | Nombre |
+| ------------------------------------------------------ | -----: |
+| `AMBIGUOUS` — candidat officiel unique trouvé par nom   |     40 |
+| `AMBIGUOUS` — plusieurs candidats homonymes             |     37 |
+| `AMBIGUOUS` — aucun candidat plausible trouvé           |     10 |
+| `CONFIRMED` / `NOT_FOUND` / `IDENTIFIER_MISMATCH`       |      0 |
+
+Aucune des 87 entreprises n'est importée à la suite de ce rapport,
+quel que soit son contenu — une décision séparée, jamais automatique.
+
+## 16. Ce qui n'est pas construit cette phase (limites documentées)
+
+- Table de correspondance secteur source → `industries.id` : réalisée
+  pour les 8 codes APE du lot pilote uniquement (migration
+  `0021_industry_code_mappings.sql`), jamais généralisée aux 87 lignes
+  restantes (dont le `Code_APE` est de toute façon absent — voir §15).
 - Rapprochement produits/services vers la taxonomie structurée.
 - Interface web `/admin/imports` (voir §12).
 - Détection de doublons ENTRE deux lignes d'un même batch (la colonne

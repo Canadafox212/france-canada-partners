@@ -31,6 +31,16 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 - Méthode de rollback confirmée : chaque entreprise du batch est retrouvable via `company_source_records.import_batch_id`/`staging_companies.created_company_id` — pas exécuté, seulement vérifié comme possible.
 - 1 nouveau test d'intégration réel (exclusion de la description). 94 tests d'intégration au total, tous verts.
 
+#### Étape 4 — Mapping sectoriel, contenu éditorial, vérification des 87 restantes (2026-09-20)
+
+- Migration `0021_industry_code_mappings.sql` (validée localement via pglite, pas encore appliquée) : table `industry_code_mappings` (code officiel APE/NAF ou futur NAICS/SCIAN → secteur interne, niveau de confiance explicite, jamais de rapprochement par mot-clé) remplie pour les 8 codes APE réellement présents dans le lot pilote ; colonne `company_translations.content_source` (`COMPANY_PROVIDED`/`EDITORIAL`/`SOURCE_PROVIDED`) pour ne jamais confondre un contenu rédigé par la plateforme avec une saisie d'entreprise ou une donnée SIRENE. Code APE 70.10Z (Safran, Thales, CLAYENS — "activités des sièges sociaux") volontairement classé `REQUIRES_REVIEW`, sans secteur deviné.
+- `docs/EDITORIAL_CONTENT.md` (nouveau) : règles de rédaction du contenu `EDITORIAL` — jamais de copie/paraphrase d'un site tiers, jamais d'invention d'un fait non vérifiable.
+- **Correction de `docs/DATA_INVENTORY.md`** : l'affirmation initiale "100 % des lignes ont un SIREN/SIRET renseigné" était inexacte — seules les 13 entreprises déjà importées ont un SIREN réel ; les 87 autres portent la valeur littérale "Non disponible".
+- `scripts/verify-siren-87.ts` (nouveau, lecture seule, aucune écriture en base) : vérifie les 87 entreprises restantes contre l'API officielle `recherche-entreprises.api.gouv.fr`. Exécuté réellement le 2026-09-20 (rapport dans `docs/reports/rapport-siren-87.json`) : 0 SIREN exploitable trouvé dans la source pour ces 87 lignes ; recherche de secours par nom (jamais promue au rang `CONFIRMED`) : 40 candidats uniques, 37 lots d'homonymes, 10 sans résultat. **Aucune des 87 n'est importée.**
+- `src/lib/import/pilotAllowlist.ts` (nouveau) : extraction de la liste des 13 SIREN approuvés en source de vérité unique, partagée par `scripts/import-companies.ts` et `scripts/verify-siren-87.ts`.
+- Nouveaux tests d'intégration réels (`tests/integration/sector-mapping.test.ts`, en attente de l'application de la migration 0021 pour être exécutés) : correspondances APE du lot pilote, non-déduction pour 70.10Z, RLS de `industry_code_mappings` (lecture publique, écriture admin), provenance `content_source`, et préparation à la publication (bascule `draft` → `active` sur une entreprise jetable de test — jamais une des 13 réelles — confirmant l'absence d'offres/besoins inférés).
+- Mapping proposé, descriptions éditoriales rédigées et sources documentées pour les 5 fiches prioritaires (FIGEAC AERO, Safran, Airbus Atlantic, STMicroelectronics Rousset SAS, MAF AGROBOTIC) — présentés pour validation, **aucune écriture en base, aucune publication**.
+
 ### Phase 7 — Annuaire public, recherche et revendication (2026-09-19)
 
 #### Ajouté

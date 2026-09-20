@@ -1,0 +1,2345 @@
+{
+  "generated_at": "2026-09-20T14:44:51.478Z",
+  "synthesis": {
+    "CONFIRMED": 0,
+    "NOT_FOUND": 0,
+    "IDENTIFIER_MISMATCH": 0,
+    "AMBIGUOUS": 87,
+    "ERROR": 0
+  },
+  "results": [
+    {
+      "row_number": 3,
+      "declared_name": "Daher",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 5 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "751325002",
+          "name": "DAHER",
+          "city": "SAINT-ETIENNE",
+          "status": "A"
+        },
+        {
+          "siren": "068803055",
+          "name": "DAHER LOGISTICS",
+          "city": "ORLY",
+          "status": "A"
+        },
+        {
+          "siren": "597020841",
+          "name": "DAHER AEROSPACE",
+          "city": "ORLY",
+          "status": "A"
+        },
+        {
+          "siren": "451273932",
+          "name": "DAHER",
+          "city": "MARSEILLE 7",
+          "status": "C"
+        },
+        {
+          "siren": "814226528",
+          "name": "GEORGES DAHER",
+          "city": "PARIS",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 6,
+      "declared_name": "Radiall",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 3 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "552124984",
+          "name": "RADIALL",
+          "city": "AUBERVILLIERS",
+          "status": "A"
+        },
+        {
+          "siren": "982470973",
+          "name": "RADIALL GMBH",
+          "city": null,
+          "status": "A"
+        },
+        {
+          "siren": "531303253",
+          "name": "RADIAL",
+          "city": "STRASBOURG",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 7,
+      "declared_name": "Mecachrome",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 5 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "429853351",
+          "name": "MECACHROME FRANCE",
+          "city": "BLAGNAC",
+          "status": "A"
+        },
+        {
+          "siren": "329936793",
+          "name": "MECACHROME TOULOUSE",
+          "city": "LAUNAGUET",
+          "status": "A"
+        },
+        {
+          "siren": "931711311",
+          "name": "MECACHROME SAINT ANDRE",
+          "city": "BLAGNAC",
+          "status": "A"
+        },
+        {
+          "siren": "499291763",
+          "name": "MECACHROME INTERNATIONAL",
+          "city": null,
+          "status": "A"
+        },
+        {
+          "siren": "927642769",
+          "name": "MECACHROME CANADA INC.",
+          "city": null,
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 8,
+      "declared_name": "ADF",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 5 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "907541247",
+          "name": "ADF (ADF) (ADF)",
+          "city": "VAUJOURS",
+          "status": "A"
+        },
+        {
+          "siren": "433015542",
+          "name": "ADF",
+          "city": "PARIS",
+          "status": "A"
+        },
+        {
+          "siren": "351057252",
+          "name": "ADF",
+          "city": "LA SELLE-EN-LUITRE",
+          "status": "A"
+        },
+        {
+          "siren": "939603015",
+          "name": "ADF",
+          "city": "LA CIOTAT",
+          "status": "A"
+        },
+        {
+          "siren": "930949102",
+          "name": "ADF (FUNEO)",
+          "city": "PANTIN",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 9,
+      "declared_name": "Ametra Group",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source (\"Non disponible\") ; recherche par nom sans résultat officiel plausible — identité à établir manuellement."
+    },
+    {
+      "row_number": 10,
+      "declared_name": "Aubert & Duval",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 3 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "380342808",
+          "name": "AUBERT & DUVAL (AD)",
+          "city": "ISSY-LES-MOULINEAUX",
+          "status": "A"
+        },
+        {
+          "siren": "978198927",
+          "name": "AUBERT DUVAL",
+          "city": "CAEN",
+          "status": "A"
+        },
+        {
+          "siren": "775554520",
+          "name": "COMITE D'ENTREPRISE AUBERT DUVAL FORTECH",
+          "city": "PAMIERS",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 12,
+      "declared_name": "Liebherr-Aerospace Toulouse SAS",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 552016834, TOULOUSE, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "552016834",
+          "name": "LIEBHERR-AEROSPACE TOULOUSE SAS",
+          "city": "TOULOUSE",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 13,
+      "declared_name": "LISI Aerospace",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 5 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "320152333",
+          "name": "LISI AEROSPACE",
+          "city": "PARIS",
+          "status": "A"
+        },
+        {
+          "siren": "979841939",
+          "name": "LISI AEROSPACE",
+          "city": "PARIS",
+          "status": "C"
+        },
+        {
+          "siren": "845420280",
+          "name": "LISI AEROSPACE FORGED INTEGRATED SOLUTIONS",
+          "city": "BOLOGNE",
+          "status": "A"
+        },
+        {
+          "siren": "818403917",
+          "name": "LISI AEROSPACE ADDITIVE MANUFACTURING",
+          "city": "PARIS",
+          "status": "A"
+        },
+        {
+          "siren": "494253396",
+          "name": "LISI AEROSPACE STRUCTURAL COMPONENTS",
+          "city": "PARIS",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 14,
+      "declared_name": "FACTEM",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 2 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "498660448",
+          "name": "FACTEM",
+          "city": "BAYEUX",
+          "status": "A"
+        },
+        {
+          "siren": "807974845",
+          "name": "FACTEM",
+          "city": "PEROLS",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 15,
+      "declared_name": "Mecapole",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 4 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "514783265",
+          "name": "MECAPOLE",
+          "city": "LYON",
+          "status": "A"
+        },
+        {
+          "siren": "434417853",
+          "name": "MECAPOLE",
+          "city": "TRELAZE",
+          "status": "A"
+        },
+        {
+          "siren": "413615865",
+          "name": "MECAPOLE",
+          "city": "SAINT-ETIENNE",
+          "status": "C"
+        },
+        {
+          "siren": "433550985",
+          "name": "MECAPOLE",
+          "city": "OLEMPS",
+          "status": "C"
+        }
+      ]
+    },
+    {
+      "row_number": 17,
+      "declared_name": "Thales Aerospace Communications",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 4 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "412162448",
+          "name": "THALES AEROSPACE COMMUNICATIONS DOURDAN",
+          "city": "DOURDAN",
+          "status": "A"
+        },
+        {
+          "siren": "552018152",
+          "name": "THALES AEROSPACE COMMUNICATIONS RUNGIS ET TROYES",
+          "city": "RUNGIS",
+          "status": "A"
+        },
+        {
+          "siren": "889218707",
+          "name": "THALES AEROSPACE COMMUNICATIONS FRANCE",
+          "city": "RUNGIS",
+          "status": "A"
+        },
+        {
+          "siren": "891263782",
+          "name": "THALES AEROSPACE COMMUNICATIONS HOLDING S.A R.L.",
+          "city": null,
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 18,
+      "declared_name": "Safran Nacelles",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 5 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "352050512",
+          "name": "SAFRAN NACELLES (SAFRAN NACELLES)",
+          "city": "GONFREVILLE L'ORCHER",
+          "status": "A"
+        },
+        {
+          "siren": "882423122",
+          "name": "SAFRAN NACELLES MOROCCO",
+          "city": null,
+          "status": "A"
+        },
+        {
+          "siren": "880219878",
+          "name": "SAFRAN NACELLES LTD",
+          "city": null,
+          "status": "A"
+        },
+        {
+          "siren": "449585900",
+          "name": "CE SAFRAN NACELLES TOULOUSE",
+          "city": "COLOMIERS",
+          "status": "A"
+        },
+        {
+          "siren": "904758356",
+          "name": "SAFRAN NACELLES NORMANDIE SPORTS",
+          "city": "GONFREVILLE L'ORCHER",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 19,
+      "declared_name": "Trescal",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 5 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "562047050",
+          "name": "TRESCAL",
+          "city": "RUNGIS",
+          "status": "A"
+        },
+        {
+          "siren": "914295373",
+          "name": "TRESCAL",
+          "city": "PARIS",
+          "status": "A"
+        },
+        {
+          "siren": "793206053",
+          "name": "TRESCAL INTERNATIONAL",
+          "city": "RUNGIS",
+          "status": "A"
+        },
+        {
+          "siren": "103252839",
+          "name": "LES TRESCALLES ET LA LEVADE",
+          "city": "EYGUIERES",
+          "status": "A"
+        },
+        {
+          "siren": "814556676",
+          "name": "TRESCAL DEVELOPPEMENT",
+          "city": "RUNGIS",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 20,
+      "declared_name": "Ratier-Figeac",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 5 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "309954006",
+          "name": "RATIER-FIGEAC (RF)",
+          "city": "FIGEAC",
+          "status": "A"
+        },
+        {
+          "siren": "777064387",
+          "name": "COMITE SOCIAL ET ECONOMIQUE RATIER FIGEAC",
+          "city": "FIGEAC",
+          "status": "A"
+        },
+        {
+          "siren": "777098013",
+          "name": "COMITE D'ENTREPRISE RATIER FIGEAC",
+          "city": "VIAZAC",
+          "status": "A"
+        },
+        {
+          "siren": "332866367",
+          "name": "RATIER-FIGEAC ET CIE",
+          "city": "FIGEAC",
+          "status": "C"
+        },
+        {
+          "siren": "611650185",
+          "name": "COOPERATIVE RATIER FIGEAC S A",
+          "city": "FIGEAC",
+          "status": "C"
+        }
+      ]
+    },
+    {
+      "row_number": 22,
+      "declared_name": "Sodern",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 2 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "572089795",
+          "name": "SODERN",
+          "city": "LIMEIL-BREVANNES",
+          "status": "A"
+        },
+        {
+          "siren": "450076179",
+          "name": "CLUB OMNISPORT SODERN",
+          "city": "LIMEIL-BREVANNES",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 23,
+      "declared_name": "Saft",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 5 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "383703873",
+          "name": "SAFT",
+          "city": "LEVALLOIS-PERRET",
+          "status": "A"
+        },
+        {
+          "siren": "911461366",
+          "name": "SAFT",
+          "city": "BAGNOLET",
+          "status": "A"
+        },
+        {
+          "siren": "444767107",
+          "name": "STPA FORAGE DIRIGE ET TARIERE (SAFT)",
+          "city": "FRETIN",
+          "status": "A"
+        },
+        {
+          "siren": "538579723",
+          "name": "SOCIETE D'ALESAGE-FRAISAGE- TOURNAGE (SAFT)",
+          "city": "CONDREN",
+          "status": "A"
+        },
+        {
+          "siren": "422999045",
+          "name": "SOC ACTIVITES FACADES & TOITURES (SAFT)",
+          "city": "BRIE-COMTE-ROBERT",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 24,
+      "declared_name": "Sabena technics",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 5 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "397776766",
+          "name": "SABENA TECHNICS",
+          "city": "ORLY",
+          "status": "A"
+        },
+        {
+          "siren": "487706046",
+          "name": "SABENA TECHNICS BOD",
+          "city": "MERIGNAC",
+          "status": "A"
+        },
+        {
+          "siren": "378331144",
+          "name": "SABENA TECHNICS HELICOPTERS",
+          "city": "TOUSSUS-LE-NOBLE",
+          "status": "A"
+        },
+        {
+          "siren": "478287196",
+          "name": "SABENA TECHNICS",
+          "city": null,
+          "status": "A"
+        },
+        {
+          "siren": "328905997",
+          "name": "SABENA TECHNICS DNR",
+          "city": "SAINT-LUNAIRE",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 25,
+      "declared_name": "Ascendance Flight Technologies",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 834577215, TOULOUSE, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "834577215",
+          "name": "ASCENDANCE FLIGHT TECHNOLOGIES",
+          "city": "TOULOUSE",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 27,
+      "declared_name": "Asygn",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 501914998, GRENOBLE, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "501914998",
+          "name": "ASYGN",
+          "city": "GRENOBLE",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 28,
+      "declared_name": "CARL Software",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 384841250, LIMONEST, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "384841250",
+          "name": "CARL INTERNATIONAL (CARL SOFTWARE)",
+          "city": "LIMONEST",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 29,
+      "declared_name": "Dracula Technologies",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 538758236, VALENCE, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "538758236",
+          "name": "DRACULA TECHNOLOGIES",
+          "city": "VALENCE",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 30,
+      "declared_name": "Inceptive",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 3 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "833016504",
+          "name": "INCEPTIVE",
+          "city": "GRENOBLE",
+          "status": "A"
+        },
+        {
+          "siren": "888655081",
+          "name": "INCEPTIVE PURPLE (INCEPTIVE PURPLE) (IP)",
+          "city": "PARIS",
+          "status": "A"
+        },
+        {
+          "siren": "811788678",
+          "name": "INCEPTIVE CONSULTING",
+          "city": "PARIS 2",
+          "status": "C"
+        }
+      ]
+    },
+    {
+      "row_number": 31,
+      "declared_name": "Manutech USD",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 753487164, SAINT-ETIENNE, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "753487164",
+          "name": "MANUTECH-USD",
+          "city": "SAINT-ETIENNE",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 32,
+      "declared_name": "Meanwhile",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 5 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "833685043",
+          "name": "MEANWHILE",
+          "city": "VILLEURBANNE",
+          "status": "A"
+        },
+        {
+          "siren": "995071370",
+          "name": "MEANWHILE",
+          "city": "LYON",
+          "status": "A"
+        },
+        {
+          "siren": "815143649",
+          "name": "MEANWHILE",
+          "city": "FONTAINE-ETOUPEFOUR",
+          "status": "C"
+        },
+        {
+          "siren": "910333533",
+          "name": "MEANWHILE BOUTIQUE",
+          "city": "PARIS",
+          "status": "A"
+        },
+        {
+          "siren": "877525816",
+          "name": "ASSOCIATION THE MEANWHILES",
+          "city": "MAGNAC-SUR-TOUVRE",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 33,
+      "declared_name": "MGA Technologies",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 440170561, CIVRIEUX-D'AZERGUES, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "440170561",
+          "name": "MGA TECHNOLOGIES",
+          "city": "CIVRIEUX-D'AZERGUES",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 34,
+      "declared_name": "Neovision",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 5 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "939879045",
+          "name": "NEOVISION (NEOVISION)",
+          "city": "LA ROCHELLE",
+          "status": "A"
+        },
+        {
+          "siren": "511940686",
+          "name": "NEOVISION (NEOVISION)",
+          "city": "SAINT-THIBAULT-DES-VIGNES",
+          "status": "A"
+        },
+        {
+          "siren": "750282337",
+          "name": "NEOVISION",
+          "city": "LALINDE",
+          "status": "A"
+        },
+        {
+          "siren": "799679709",
+          "name": "NEOVISION",
+          "city": "GRENOBLE",
+          "status": "A"
+        },
+        {
+          "siren": "410922314",
+          "name": "NEOVISION",
+          "city": "NICE",
+          "status": "C"
+        }
+      ]
+    },
+    {
+      "row_number": 35,
+      "declared_name": "Zero Carbon Emission",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 2 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "922347331",
+          "name": "ZERO CARBON EMISSION",
+          "city": "GRENOBLE",
+          "status": "A"
+        },
+        {
+          "siren": "928291079",
+          "name": "ZERO CARBON EMISSION HOLDING",
+          "city": "SAINT-ISMIER",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 38,
+      "declared_name": "Schneider Electric",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 5 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "803086586",
+          "name": "SCHNEIDER ELECTRIC",
+          "city": null,
+          "status": "A"
+        },
+        {
+          "siren": "421106709",
+          "name": "SCHNEIDER ELECTRIC FRANCE",
+          "city": "RUEIL-MALMAISON",
+          "status": "A"
+        },
+        {
+          "siren": "954503439",
+          "name": "SCHNEIDER ELECTRIC INDUSTRIES SAS",
+          "city": "RUEIL-MALMAISON",
+          "status": "A"
+        },
+        {
+          "siren": "494438096",
+          "name": "SCHNEIDER ELECTRIC",
+          "city": null,
+          "status": "A"
+        },
+        {
+          "siren": "444769798",
+          "name": "SCHNEIDER ELECTRIC INTERNATIONAL",
+          "city": "RUEIL-MALMAISON",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 39,
+      "declared_name": "Dolphin Semiconductor",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 932368764, MEYLAN, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "932368764",
+          "name": "DOLPHIN SEMICONDUCTOR",
+          "city": "MEYLAN",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 40,
+      "declared_name": "ITEN",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 5 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "438791899",
+          "name": "ITEN",
+          "city": "PARIS",
+          "status": "A"
+        },
+        {
+          "siren": "894440445",
+          "name": "ITEN",
+          "city": "BRON",
+          "status": "C"
+        },
+        {
+          "siren": "309974012",
+          "name": "JEAN ITEN",
+          "city": "NANTIAT",
+          "status": "A"
+        },
+        {
+          "siren": "984130013",
+          "name": "PIERRE-FRANCOIS ITEN (ITEN)",
+          "city": "TOULOUSE",
+          "status": "A"
+        },
+        {
+          "siren": "820970465",
+          "name": "TAHRI-ITEN",
+          "city": "METZ",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 41,
+      "declared_name": "Keysom",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 917687501, BLESIGNAC, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "917687501",
+          "name": "KEYSOM",
+          "city": "BLESIGNAC",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 42,
+      "declared_name": "Menta",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 5 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "902768480",
+          "name": "MENTA (LIBRAIRIE CAFE MENTA)",
+          "city": "OSSES",
+          "status": "A"
+        },
+        {
+          "siren": "100766054",
+          "name": "MENTA",
+          "city": "MONTELIMAR",
+          "status": "A"
+        },
+        {
+          "siren": "899530604",
+          "name": "MENTA",
+          "city": "PESSAC",
+          "status": "A"
+        },
+        {
+          "siren": "489298992",
+          "name": "MENTA",
+          "city": "AIX-EN-PROVENCE",
+          "status": "A"
+        },
+        {
+          "siren": "498271907",
+          "name": "MENTA",
+          "city": "VALBONNE",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 43,
+      "declared_name": "Presto Engineering",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 3 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "811737113",
+          "name": "PRESTO ENGINEERING FRANCE",
+          "city": "MEYREUIL",
+          "status": "A"
+        },
+        {
+          "siren": "817631310",
+          "name": "PRESTO ENGINEERING GROUP",
+          "city": "MEYREUIL",
+          "status": "A"
+        },
+        {
+          "siren": "512878125",
+          "name": "PRESTO ENGINEERING EUROPE",
+          "city": "COLOMBELLES",
+          "status": "C"
+        }
+      ]
+    },
+    {
+      "row_number": 44,
+      "declared_name": "IC'Alps",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 837902444, SAINT-MARTIN-D'HERES, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "837902444",
+          "name": "IC'ALPS (IC'ALPS)",
+          "city": "SAINT-MARTIN-D'HERES",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 45,
+      "declared_name": "Teledyne e2v",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 4 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "341470656",
+          "name": "TELEDYNE E2V SEMICONDUCTORS SAS",
+          "city": "SAINT-EGREVE",
+          "status": "A"
+        },
+        {
+          "siren": "389331661",
+          "name": "CSE ROCHEPLEINE TELEDYNE E2V",
+          "city": "SAINT-EGREVE",
+          "status": "A"
+        },
+        {
+          "siren": "443132204",
+          "name": "TELEDYNE E2V SAS",
+          "city": "SAINT-EGREVE",
+          "status": "C"
+        },
+        {
+          "siren": "492193669",
+          "name": "TELEDYNE E2V FRANCE SAS",
+          "city": "SAINT-EGREVE",
+          "status": "C"
+        }
+      ]
+    },
+    {
+      "row_number": 46,
+      "declared_name": "Thales DIS France SAS",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 844687749, MEUDON, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "844687749",
+          "name": "THALES DIS FRANCE SAS",
+          "city": "MEUDON",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 47,
+      "declared_name": "ADDIPLAST Group",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 381540434, SAINT-PAL-DE-MONS, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "381540434",
+          "name": "ADDIPLAST",
+          "city": "SAINT-PAL-DE-MONS",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 48,
+      "declared_name": "AG PLAST",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 422808311, NURIEUX-VOLOGNAT, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "422808311",
+          "name": "AG PLAST",
+          "city": "NURIEUX-VOLOGNAT",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 49,
+      "declared_name": "GEORGES PERNOUD SAS",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source (\"Non disponible\") ; recherche par nom sans résultat officiel plausible — identité à établir manuellement."
+    },
+    {
+      "row_number": 50,
+      "declared_name": "LAB PLASTICS",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 834048043, AUREC SUR LOIRE, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "834048043",
+          "name": "LAB PLASTICS",
+          "city": "AUREC SUR LOIRE",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 51,
+      "declared_name": "LE JOINT TECHNIQUE",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 2 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "303829964",
+          "name": "LE JOINT TECHNIQUE (LJT)",
+          "city": "SAINT-GENIS-L'ARGENTIERE",
+          "status": "A"
+        },
+        {
+          "siren": "922652037",
+          "name": "LE JOINT TECH",
+          "city": "SAINT-GENIS-L'ARGENTIERE",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 52,
+      "declared_name": "MATERI'ACT",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 479438574, NANTERRE, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "479438574",
+          "name": "MATERI'ACT",
+          "city": "NANTERRE",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 53,
+      "declared_name": "MICROPOLYMERS",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 450972401, SAINT-FORGEOT, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "450972401",
+          "name": "MICROPOLYMERS",
+          "city": "SAINT-FORGEOT",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 54,
+      "declared_name": "MP2I",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 5 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "837803089",
+          "name": "MP2I (MP2I)",
+          "city": "LA ROCHE-SUR-FORON",
+          "status": "A"
+        },
+        {
+          "siren": "814361036",
+          "name": "MP2I",
+          "city": "LA FRETTE-SUR-SEINE",
+          "status": "A"
+        },
+        {
+          "siren": "904366556",
+          "name": "MP2I",
+          "city": "TOURNEFEUILLE",
+          "status": "A"
+        },
+        {
+          "siren": "951569227",
+          "name": "MP2I",
+          "city": "VERTOU",
+          "status": "A"
+        },
+        {
+          "siren": "985109321",
+          "name": "MP2I",
+          "city": "VINCENNES",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 55,
+      "declared_name": "NATUREPLAST SAS",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source (\"Non disponible\") ; recherche par nom sans résultat officiel plausible — identité à établir manuellement."
+    },
+    {
+      "row_number": 56,
+      "declared_name": "OPTIMISTIK",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 2 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "812683282",
+          "name": "OPTIMISTIK",
+          "city": "CHAMBERY",
+          "status": "A"
+        },
+        {
+          "siren": "797930864",
+          "name": "BELINY BONNARD (OPTIMISTIK)",
+          "city": "SAINT-OUEN-SUR-SEINE",
+          "status": "C"
+        }
+      ]
+    },
+    {
+      "row_number": 57,
+      "declared_name": "ALPHA RECYCLAGE COMPOSITES",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 513077685, TOULOUSE, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "513077685",
+          "name": "ALPHA RECYCLAGE COMPOSITES (ALPHA RECYCLAGE COMPOSITES)",
+          "city": "TOULOUSE",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 58,
+      "declared_name": "BORFLEX",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 5 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "349498022",
+          "name": "BORFLEX SPCV (BORFLEX S.P.C.V)",
+          "city": "VOREY",
+          "status": "A"
+        },
+        {
+          "siren": "442846366",
+          "name": "BORFLEX CHERBOURG",
+          "city": "CHERBOURG-EN-COTENTIN",
+          "status": "A"
+        },
+        {
+          "siren": "500433289",
+          "name": "BORFLEX CORVOL",
+          "city": "CORVOL L ORGUEILLEUX",
+          "status": "A"
+        },
+        {
+          "siren": "453391922",
+          "name": "BORFLEX LILLE",
+          "city": "LILLE",
+          "status": "A"
+        },
+        {
+          "siren": "833121049",
+          "name": "BORFLEX HERMES",
+          "city": "HERMES",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 59,
+      "declared_name": "CALYXIA",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 4 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "811974724",
+          "name": "CALYXIA",
+          "city": "LIMEIL-BREVANNES",
+          "status": "A"
+        },
+        {
+          "siren": "922391511",
+          "name": "CALYXIA AGRICULTURE",
+          "city": "LIMEIL-BREVANNES",
+          "status": "A"
+        },
+        {
+          "siren": "922391479",
+          "name": "CALYXIA ADVANCED MATERIALS",
+          "city": "LIMEIL-BREVANNES",
+          "status": "A"
+        },
+        {
+          "siren": "922391552",
+          "name": "CALYXIA CONSUMER CARE",
+          "city": "LIMEIL-BREVANNES",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 60,
+      "declared_name": "CARBON WATERS",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 833714694, PESSAC, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "833714694",
+          "name": "CARBON WATERS",
+          "city": "PESSAC",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 62,
+      "declared_name": "CPI COATING PLASMA INNOVATION SAS",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source (\"Non disponible\") ; recherche par nom sans résultat officiel plausible — identité à établir manuellement."
+    },
+    {
+      "row_number": 63,
+      "declared_name": "CQFD COMPOSITES",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 482488475, MULHOUSE, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "482488475",
+          "name": "CQFD COMPOSITES",
+          "city": "MULHOUSE",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 64,
+      "declared_name": "DUQUEINE RHÔNE-ALPES",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 937591741, MASSIEUX, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "937591741",
+          "name": "DUQUEINE RHONE-ALPES",
+          "city": "MASSIEUX",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 65,
+      "declared_name": "EPSILON COMPOSITE",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 2 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "342320272",
+          "name": "EPSILON COMPOSITE",
+          "city": "GAILLAN-EN-MEDOC",
+          "status": "A"
+        },
+        {
+          "siren": "890874514",
+          "name": "EPSILON COMPOSITE CABLE",
+          "city": "GAILLAN-EN-MEDOC",
+          "status": "C"
+        }
+      ]
+    },
+    {
+      "row_number": 66,
+      "declared_name": "ROCTOOL",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 433278363, LE BOURGET-DU-LAC, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "433278363",
+          "name": "ROCTOOL",
+          "city": "LE BOURGET-DU-LAC",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 67,
+      "declared_name": "37 degrés",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 5 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "914727839",
+          "name": "37 DEGRES",
+          "city": "LA RICHE",
+          "status": "A"
+        },
+        {
+          "siren": "922353388",
+          "name": "37 DEGRES",
+          "city": "SARDIEU",
+          "status": "A"
+        },
+        {
+          "siren": "938217288",
+          "name": "37 DEGRES",
+          "city": "LILLE",
+          "status": "A"
+        },
+        {
+          "siren": "503510562",
+          "name": "37 DEGRES MA SANTE",
+          "city": "SAINT-ROMAIN-LA-MOTTE",
+          "status": "A"
+        },
+        {
+          "siren": "913139507",
+          "name": "37 DEGRES SUD",
+          "city": "PARIS",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 68,
+      "declared_name": "4P PHARMA (4MOVING BIOTECH)",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source (\"Non disponible\") ; recherche par nom sans résultat officiel plausible — identité à établir manuellement."
+    },
+    {
+      "row_number": 70,
+      "declared_name": "ABCELL-BIO",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 488428608, EVRY-COURCOURONNES, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "488428608",
+          "name": "ABCELL - BIO",
+          "city": "EVRY-COURCOURONNES",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 71,
+      "declared_name": "AbilyCare",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 2 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "901310920",
+          "name": "ABILYCARE",
+          "city": "ORGEVAL",
+          "status": "A"
+        },
+        {
+          "siren": "943476077",
+          "name": "ABILYCARE INVEST (ABILYCARE INVEST)",
+          "city": "ORGEVAL",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 72,
+      "declared_name": "MedinCell",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 444606750, JACOU, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "444606750",
+          "name": "MEDINCELL S.A.",
+          "city": "JACOU",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 73,
+      "declared_name": "Sêmeia",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 5 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "829055854",
+          "name": "SEMEIA",
+          "city": "PARIS",
+          "status": "A"
+        },
+        {
+          "siren": "800873614",
+          "name": "SEMEIA",
+          "city": "GRAZAC",
+          "status": "A"
+        },
+        {
+          "siren": "529369878",
+          "name": "SEMEIA CAPOEIRA",
+          "city": "INJOUX-GENISSIAT",
+          "status": "A"
+        },
+        {
+          "siren": "103556825",
+          "name": "SEMEIA CAPOEIRA YENNE",
+          "city": "YENNE",
+          "status": "A"
+        },
+        {
+          "siren": "101237006",
+          "name": "ASSOCIATION SEMEIA CAPOEIRA BELLEY",
+          "city": "BELLEY",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 74,
+      "declared_name": "DiappyMed",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 893114405, CLAPIERS, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "893114405",
+          "name": "DIAPPYMED",
+          "city": "CLAPIERS",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 75,
+      "declared_name": "Sensorion",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 512757725, MONTPELLIER, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "512757725",
+          "name": "SENSORION",
+          "city": "MONTPELLIER",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 76,
+      "declared_name": "Median Technologies",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 443676309, VALBONNE, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "443676309",
+          "name": "MEDIAN TECHNOLOGIES",
+          "city": "VALBONNE",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 77,
+      "declared_name": "Genoskin",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 535121933, TOULOUSE, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "535121933",
+          "name": "GENOSKIN",
+          "city": "TOULOUSE",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 78,
+      "declared_name": "MImAbs SAS",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source (\"Non disponible\") ; recherche par nom sans résultat officiel plausible — identité à établir manuellement."
+    },
+    {
+      "row_number": 79,
+      "declared_name": "PYLOTE",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 4 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "508481827",
+          "name": "PYLOTE",
+          "city": "DREMIL-LAFAGE",
+          "status": "A"
+        },
+        {
+          "siren": "803140664",
+          "name": "PYLOTE (BE UP)",
+          "city": "DIERRE",
+          "status": "A"
+        },
+        {
+          "siren": "910730795",
+          "name": "PYLOTE",
+          "city": "PARIS",
+          "status": "A"
+        },
+        {
+          "siren": "841722580",
+          "name": "PYLOT",
+          "city": "BAGNERES-DE-BIGORRE",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 80,
+      "declared_name": "RD-BIOTECH",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 442804266, BESANCON, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "442804266",
+          "name": "RD BIOTECH",
+          "city": "BESANCON",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 81,
+      "declared_name": "THERYQ",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 894194406, PARIS, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "894194406",
+          "name": "THERYQ",
+          "city": "PARIS",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 82,
+      "declared_name": "ABELIO",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 5 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "398157560",
+          "name": "ABELIO",
+          "city": "ETSAUT",
+          "status": "A"
+        },
+        {
+          "siren": "422869511",
+          "name": "ABELIO",
+          "city": "CAPVERN",
+          "status": "A"
+        },
+        {
+          "siren": "519067417",
+          "name": "ABELIO",
+          "city": "PARIS",
+          "status": "A"
+        },
+        {
+          "siren": "890474083",
+          "name": "ABELIO (ABELIO CONSEIL)",
+          "city": "RUEIL-MALMAISON",
+          "status": "A"
+        },
+        {
+          "siren": "841519747",
+          "name": "ABELIO",
+          "city": "TOULOUSE",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 83,
+      "declared_name": "ABSOGER",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 344803614, LES BARTHES, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "344803614",
+          "name": "ABSOGER (ABSOGER SAS)",
+          "city": "LES BARTHES",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 84,
+      "declared_name": "ACSIS",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 5 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "409160702",
+          "name": "ACSIS",
+          "city": "LAQUENEXY",
+          "status": "A"
+        },
+        {
+          "siren": "510809759",
+          "name": "ARCHITECTURE ET CONSTRUCTION SYSTEMES SECURITE INCENDIE ET SURETE (ACSIS)",
+          "city": "SAINT-OUEN-L'AUMONE",
+          "status": "A"
+        },
+        {
+          "siren": "321071623",
+          "name": "ACSIS",
+          "city": "PARIS",
+          "status": "A"
+        },
+        {
+          "siren": "408463099",
+          "name": "ACSIS",
+          "city": "BOULOGNE-BILLANCOURT",
+          "status": "C"
+        },
+        {
+          "siren": "430009878",
+          "name": "ACSIS",
+          "city": "SAINT-PRYVE-SAINT-MESMIN",
+          "status": "C"
+        }
+      ]
+    },
+    {
+      "row_number": 85,
+      "declared_name": "ACTE AGRI PLUS",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 894037951, ALBI, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "894037951",
+          "name": "ACTE AGRI PLUS (ACTE AGRI PLUS) (AA+)",
+          "city": "ALBI",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 86,
+      "declared_name": "ACTION PIN",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 399412683, CASTETS, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "399412683",
+          "name": "ACTION PIN",
+          "city": "CASTETS",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 87,
+      "declared_name": "ACTIV'INSIDE",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 509708483, BEYCHAC-ET-CAILLEAU, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "509708483",
+          "name": "ACTIV'INSIDE",
+          "city": "BEYCHAC-ET-CAILLEAU",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 88,
+      "declared_name": "AGRALIFE STUDIO",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source (\"Non disponible\") ; recherche par nom sans résultat officiel plausible — identité à établir manuellement."
+    },
+    {
+      "row_number": 89,
+      "declared_name": "AGRITERRA GROUP",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 979877495, PARIS, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "979877495",
+          "name": "AGRITERRA GROUP",
+          "city": "PARIS",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 91,
+      "declared_name": "AGRO SELECTIONS FRUITS",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 424044196, ELNE, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "424044196",
+          "name": "AGRO SELECTIONS FRUITS",
+          "city": "ELNE",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 92,
+      "declared_name": "AGROBYPHIL",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 994793149, MONTPELLIER, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "994793149",
+          "name": "AGROBYPHIL",
+          "city": "MONTPELLIER",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 93,
+      "declared_name": "AGROFUN",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source (\"Non disponible\") ; recherche par nom sans résultat officiel plausible — identité à établir manuellement."
+    },
+    {
+      "row_number": 94,
+      "declared_name": "AGRONUTRITION",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 3 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "428693352",
+          "name": "AGRONUTRITION",
+          "city": "CARBONNE",
+          "status": "A"
+        },
+        {
+          "siren": "478146335",
+          "name": "FINANCIERE AGRONUTRITION",
+          "city": "CARBONNE",
+          "status": "C"
+        },
+        {
+          "siren": "951373919",
+          "name": "ADELE GREMBOMBO ADELE (GREMBOMBO) (AGRONUTRITION - EXPERT)",
+          "city": "PARIS",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 95,
+      "declared_name": "LIDEA",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 5 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "917485872",
+          "name": "LIDEA",
+          "city": "MARLY",
+          "status": "A"
+        },
+        {
+          "siren": "808966550",
+          "name": "LIDEA",
+          "city": "PARIS",
+          "status": "A"
+        },
+        {
+          "siren": "882680168",
+          "name": "LIDEA",
+          "city": "BORDEAUX",
+          "status": "C"
+        },
+        {
+          "siren": "423296250",
+          "name": "LIDEA FRANCE (LIDEA)",
+          "city": "LESCAR",
+          "status": "A"
+        },
+        {
+          "siren": "378168207",
+          "name": "LIDEA HOLDING (LIDEA)",
+          "city": "MONDONVILLE",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 96,
+      "declared_name": "LIPHATECH",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 442688206, PONT-DU-CASSE, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "442688206",
+          "name": "LIPHATECH",
+          "city": "PONT-DU-CASSE",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 97,
+      "declared_name": "LUR BERRI",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 5 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "391430121",
+          "name": "LUR BERRI DISTRIBUTION",
+          "city": "AICIRITS-CAMOU-SUHAST",
+          "status": "A"
+        },
+        {
+          "siren": "384797890",
+          "name": "LUR BERRI JARDINERIES",
+          "city": "AICIRITS-CAMOU-SUHAST",
+          "status": "A"
+        },
+        {
+          "siren": "782369409",
+          "name": "LUR BERRI COOP AGRICOLE",
+          "city": "AICIRITS-CAMOU-SUHAST",
+          "status": "A"
+        },
+        {
+          "siren": "431788827",
+          "name": "LUR BERRI BRICOLAGE",
+          "city": "AICIRITS-CAMOU-SUHAST",
+          "status": "A"
+        },
+        {
+          "siren": "632720371",
+          "name": "LUR BERRI HOLDING",
+          "city": "AICIRITS-CAMOU-SUHAST",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 99,
+      "declared_name": "MAISADOUR",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 4 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "782092290",
+          "name": "MAISADOUR SOC COOP AGRICOLE",
+          "city": "HAUT-MAUCO",
+          "status": "A"
+        },
+        {
+          "siren": "841645153",
+          "name": "MAISADOUR FINANCES",
+          "city": "HAUT-MAUCO",
+          "status": "A"
+        },
+        {
+          "siren": "521743476",
+          "name": "MAISADOUR GASTRONOMIE",
+          "city": "SAINT-SEVER",
+          "status": "A"
+        },
+        {
+          "siren": "420935611",
+          "name": "SOCIETE MAISADOUR",
+          "city": "RHODON",
+          "status": "C"
+        }
+      ]
+    },
+    {
+      "row_number": 100,
+      "declared_name": "MAS Seeds",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; un seul candidat officiel trouvé par nom (SIREN 423000553, HAUT-MAUCO, statut A) — à confirmer manuellement avant toute utilisation, aucun identifiant source pour trancher.",
+      "name_search_candidates": [
+        {
+          "siren": "423000553",
+          "name": "MAS SEEDS",
+          "city": "HAUT-MAUCO",
+          "status": "A"
+        }
+      ]
+    },
+    {
+      "row_number": 101,
+      "declared_name": "MENGUY'S",
+      "declared_siren_raw": "Non disponible",
+      "declared_siren_normalized": null,
+      "official_name": null,
+      "official_siren": null,
+      "official_status": null,
+      "status": "AMBIGUOUS",
+      "detail": "Aucun SIREN dans la source ; 2 candidats homonymes trouvés par nom — aucun moyen fiable de trancher sans localisation.",
+      "name_search_candidates": [
+        {
+          "siren": "901907410",
+          "name": "MENGUY'S",
+          "city": "COULOMMES",
+          "status": "A"
+        },
+        {
+          "siren": "830513552",
+          "name": "MENGUY'S (BAR'INN)",
+          "city": "CHALON-SUR-SAONE",
+          "status": "C"
+        }
+      ]
+    }
+  ]
+}

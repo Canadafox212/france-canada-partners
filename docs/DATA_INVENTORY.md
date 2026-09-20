@@ -43,10 +43,19 @@ cours de constitution.
 
 **Qualité observée (lot de 100)** :
 
-- 100 % des lignes ont un SIREN/SIRET renseigné, mais seulement **13**
-  ont une identité légale confirmée via la source ouverte officielle
-  (`V3_Identite_Legale = "Oui"`, `Source_Identite = "Annuaire des
-Entreprises / SIRENE-RNE"`) — les 87 autres sont marquées `à confirmer`.
+- **Correction (Phase 8, suite)** : contrairement à ce qui était noté
+  ici initialement, seules les **13** lignes ayant une identité légale
+  confirmée (`V3_Identite_Legale = "Oui"`, `Source_Identite = "Annuaire
+  des Entreprises / SIRENE-RNE"`) ont un SIREN/SIRET réellement renseigné.
+  Les **87** autres portent la valeur littérale `"Non disponible"` dans
+  les colonnes `SIREN`/`SIRET`/`Code_APE` — aucun identifiant officiel
+  exploitable. Confirmé par `scripts/verify-siren-87.ts` (lecture seule,
+  aucun import), rapport détaillé dans `docs/reports/rapport-siren-87.json` :
+  une recherche par nom (moins fiable qu'un SIREN, jamais suffisante pour
+  un import) identifie un candidat officiel unique pour 40 des 87
+  entreprises, plusieurs candidats homonymes pour 37, et aucun résultat
+  plausible pour 10 — dans tous les cas, statut `AMBIGUOUS`, jamais promu
+  `CONFIRMED` sans identifiant source pour trancher.
 - Aucun doublon de SIREN ni de nom dans le lot.
 - Courriel présent pour seulement 1 entreprise sur 100 (99 % `Non
 disponible`) — l'essentiel des coordonnées de contact reste à

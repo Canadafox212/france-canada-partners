@@ -14,6 +14,7 @@
     "seed:demo": "node scripts/seed-demo-data.mjs",
     "import:dry-run": "tsx scripts/import-companies.ts --mode=dry-run",
     "import:run": "tsx scripts/import-companies.ts --mode=real",
+    "verify:siren-87": "tsx scripts/verify-siren-87.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
