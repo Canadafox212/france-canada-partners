@@ -88,7 +88,32 @@ réutilise `computeMatchScore` et `upsertMatch` tels quels (Phase 6) : les
 mêmes règles de sécurité s'appliquent, sans code parallèle à auditer
 séparément.
 
-## Tests de sécurité réels (Phases 3 à 7)
+## Pipeline d'import (Phase 8)
+
+`import_batches`, `staging_companies`, `import_row_issues`,
+`import_duplicate_candidates` : RLS réservée aux administrateurs de la
+plateforme (`is_platform_admin()`) — un utilisateur normal n'a aucun accès,
+vérifié réellement. Le pipeline lui-même s'exécute via un script de
+confiance (`scripts/import-companies.ts`, clé secrète), pas via une
+interface web exposée cette phase : ces politiques RLS sont une seconde
+barrière pour une éventuelle interface future, pas le mécanisme principal.
+
+**Garde-fou de licence appliqué par la base elle-même** (déclencheur
+`enforce_import_license_gate`, `before insert` sur `import_batches`) : un
+batch sur une source `DO_NOT_IMPORT`/`UNKNOWN`/`commercial_use_allowed =
+false` est rejeté à la création, sauf dérogation portant une justification
+ET référençant un profil `platform_role = 'admin'` — vérifié en base, pas
+seulement côté application, pour qu'un administrateur ne puisse pas
+contourner cela par accident. Toute dérogation est journalisée dans
+`audit_logs`. Aucune dérogation n'a été utilisée à ce jour.
+
+**Protection d'une entreprise déjà revendiquée** : `commit.ts` ne modifie
+jamais le contenu commercial (description, offres, besoins, produits)
+d'une entreprise existante — une correspondance `EXACT` ne fait que
+rattacher un enregistrement de traçabilité (`company_source_records`),
+jamais une mise à jour de champ. Testé réellement (voir ci-dessous).
+
+## Tests de sécurité réels (Phases 3 à 8)
 
 Fichiers dans `tests/integration/` (`npm run test:integration`) exécutent des scénarios réels contre le vrai projet Supabase — pas de simulation locale, pas de mock : création de vrais utilisateurs de test, vraies tentatives d'action autorisée/interdite, vérification du résultat, puis suppression de toutes les données créées.
 
@@ -97,6 +122,7 @@ Fichiers dans `tests/integration/` (`npm run test:integration`) exécutent des s
 - `opportunities.test.ts` : publication par rôle, visibilité des brouillons, réponse au nom d'une entreprise (jamais en son nom propre, jamais pour une entreprise inexistante ou étrangère), auto-réponse interdite, unicité de la réponse active, confidentialité des réponses (tiers/visiteur exclus), qui peut accepter/refuser/retirer, notifications, expiration administrable.
 - `matching.test.ts` : cohérence métier (candidat compatible proposé, incompatibilité fondamentale éliminée, offre inactive exclue, opportunité expirée exclue malgré un statut encore `published`, persistance avec version d'algorithme), et sécurité (visibilité d'un match par les deux entreprises concernées, exclusion d'une entreprise tierce, accès administrateur, aucun accès anonyme, impossibilité pour une entreprise de modifier elle-même un score).
 - `directory.test.ts` : recherche publique réelle (nom, accents, exclusion des entreprises non actives, pagination), revendication (auto-approbation à domaine fort, échec d'un courriel usurpé ne correspondant pas au compte réel, impossibilité de modifier `claim_status` directement, appel de `review_company_claim` par un non-administrateur sans effet, attribution correcte owner/admin selon l'historique de l'entreprise, refus n'accordant aucun droit), et compatibilité ciblée sur la fiche publique (persistée, invisible à un tiers).
+- `import.test.ts` : garde-fou de licence réel (source interdite/inconnue bloquée, source approuvée acceptée), dry run sans aucune écriture dans `companies`, dédoublonnage réel (EXACT rattaché sans recréation, POSSIBLE mis en quarantaine sans fusion automatique), idempotence (même fichier importé deux fois), protection d'une entreprise revendiquée (description jamais écrasée), courriel nominatif jamais publié automatiquement, valeur source conservée après normalisation, et sécurité RLS (utilisateur normal et visiteur anonyme sans accès, administrateur autorisé).
 
 pgTAP aurait nécessité une instance Postgres locale via Docker, indisponible dans cet environnement ; ces suites jouent le même rôle de preuve en frappant directement le projet distant.
 

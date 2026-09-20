@@ -4,22 +4,24 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ## [Non publié]
 
-### Phase 8 — Audit des données de sourcing + conception du pipeline d'import (2026-09-19, en cours)
+### Phase 8 — Audit des données de sourcing + pipeline d'import (2026-09-19/20)
 
-**Audit uniquement — aucun code, migration ou import réel cette étape**, conformément à la demande explicite du cahier des charges.
-
-#### Ajouté (documentation)
+#### Étape 1 — Audit (2026-09-19, docs seulement, aucun code/migration/import)
 
 - `docs/DATA_INVENTORY.md` : inventaire réel de `data/raw/` (formats, tailles, nombre de lignes/colonnes, feuilles Excel, relations entre fichiers). Constat clé : 100 entreprises françaises réellement disponibles (sur l'objectif de 5 000, lot 1/50) et ~659 candidates québécoises dont 100 enrichies (sur l'objectif de 2 000) — pas 7 000 entreprises prêtes à l'import.
 - `docs/DATA_SOURCES.md` : statut de provenance/licence par source (`APPROVED_FOR_IMPORT`/`REVIEW_REQUIRED`/`DO_NOT_IMPORT`/`UNKNOWN`). 13 entreprises françaises couvertes par une source ouverte de bout en bout (SIRENE, Licence Ouverte 2.0) ; **aucune source québécoise approuvée pour un usage commercial** à ce jour.
 - `docs/DATA_MAPPING.md` : correspondance colonne par colonne vers le modèle existant, avec les cas qui ne se rattachent à aucun champ (à conserver en staging, jamais forcés).
-- `docs/IMPORT_PIPELINE.md` : conception proposée (staging, batches, dry run, dédoublonnage, quarantaine, rollback, garde-fou de licence) — **non construite**, en attente d'autorisation.
+- Constats : `france_quebec_besoins.csv`/`_offres.csv` contiennent des besoins/offres **déduits automatiquement**, jamais déclarés par une entreprise — exclus de tout mapping ; `france_quebec_matching_prototype.xlsx`/`matching_france_quebec_top500.csv` : prototype de scoring antérieur, incompatible avec le moteur réel (Phase 6) — jamais importé dans `matches`.
 
-#### Documenté (constats)
+#### Étape 2 — Pipeline construit et testé (2026-09-20)
 
-- `france_quebec_besoins.csv`/`_offres.csv` contiennent des besoins/offres **déduits automatiquement**, jamais déclarés par une entreprise (le fichier source le précise lui-même) — exclus de tout mapping vers `company_needs`/`company_offers`.
-- `france_quebec_matching_prototype.xlsx`/`matching_france_quebec_top500.csv` : prototype de scoring antérieur, incompatible avec le moteur réel (Phase 6) — conservé pour référence, jamais importé dans `matches`.
-- `PROJECT_SPEC.md` (§12, §16), `docs/PRIVACY.md` mis à jour.
+- Migration `0020_import_pipeline.sql` : `data_sources.license_status`/`commercial_use_allowed` (+ 3 sources tranchées), `import_batches`, `staging_companies` (colonnes `raw_*`/`normalized_*` structurées, pas un JSON unique), `import_row_issues`, `import_duplicate_candidates`, `company_source_records.import_batch_id`, déclencheur `enforce_import_license_gate` (bloque un batch sur une source non approuvée sauf dérogation admin justifiée et auditée).
+- `src/lib/import/` : normalisation (jetons de valeur absente, domaine de site, téléphone, pays), classification des courriels (`GENERIC_BUSINESS`/`NAMED_BUSINESS`/`PUBLIC_PROVIDER`/`INVALID`/`UNKNOWN` — seul le premier publié automatiquement), validation (nom absent → rejeté, pays inconnu → quarantaine, URL invalide → avertissement), dédoublonnage (numéro officiel > domaine > nom+ville > nom seul, seul `EXACT` rattaché automatiquement), lecture CSV (`csv-parse`), commit (jamais de mise à jour du contenu commercial d'une entreprise existante), rapport lisible.
+- `scripts/import-companies.ts` (CLI via `tsx`, ajouté en dépendance de développement) : `npm run import:dry-run` / `npm run import:run`, restreint par une allowlist explicite des 13 numéros SIREN approuvés — jamais les 100 lignes du fichier.
+- `docs/QUEBEC_SOURCING_STRATEGY.md` : pistes alternatives pour une future source Québec compatible (Corporations Canada, sources partenaires, inscriptions volontaires, profils revendiqués), architecture déjà prête pour plusieurs sources par entreprise, démarche recommandée auprès du Registraire — documentation uniquement, aucun code.
+- **Dry run réel exécuté** sur les 13 entreprises françaises approuvées : 13 lignes valides, 0 avertissement, 0 rejet, 0 quarantaine, 0 doublon — aucune écriture dans `companies`, confirmé par vérification directe. **Aucun import réel exécuté.**
+- 40 nouveaux tests unitaires (`tests/unit/import/`) et 13 nouveaux tests d'intégration réels (`tests/integration/import.test.ts` : garde-fou de licence, dry run sans écriture, dédoublonnage EXACT/POSSIBLE, idempotence, protection d'une entreprise revendiquée, courriel nominatif jamais publié, valeur source conservée, RLS). Toutes les suites précédentes continuent de passer (93 tests d'intégration au total).
+- `PROJECT_SPEC.md`, `docs/DATABASE.md`, `docs/SECURITY.md`, `docs/IMPORT_PIPELINE.md` (réécrit pour refléter l'état réellement construit) mis à jour.
 
 ### Phase 7 — Annuaire public, recherche et revendication (2026-09-19)
 

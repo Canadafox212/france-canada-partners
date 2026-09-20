@@ -12,6 +12,8 @@
     "test:watch": "vitest",
     "test:integration": "vitest run --config vitest.integration.config.mts",
     "seed:demo": "node scripts/seed-demo-data.mjs",
+    "import:dry-run": "tsx scripts/import-companies.ts --mode=dry-run",
+    "import:run": "tsx scripts/import-companies.ts --mode=real",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
@@ -19,6 +21,7 @@
     "@hookform/resolvers": "^5.9.1",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.116.0",
+    "csv-parse": "^7.0.2",
     "next": "16.3.5",
     "next-intl": "^4.14.5",
     "react": "19.2.8",
@@ -37,6 +40,7 @@
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.9.8",
     "tailwindcss": "^4",
+    "tsx": "^4.23.13",
     "typescript": "^5",
     "vitest": "^5.0.1"
   }
