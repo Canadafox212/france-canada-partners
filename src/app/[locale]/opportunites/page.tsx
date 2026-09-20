@@ -23,6 +23,7 @@ export default async function OpportunitiesListPage({
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
   const params = await searchParams;
+  const activeLocale = (await locale()) as AppLocale;
   const t = await getTranslations("Opportunity");
   const supabase = await createClient();
 
@@ -93,7 +94,7 @@ export default async function OpportunitiesListPage({
           <option value="">{t("filterTypeAll")}</option>
           {(capabilityTypes ?? []).map((c) => (
             <option key={c.code} value={c.code}>
-              {c.label_fr}
+              {activeLocale === "en" ? c.label_en : c.label_fr}
             </option>
           ))}
         </select>
@@ -105,7 +106,7 @@ export default async function OpportunitiesListPage({
           <option value="">{t("filterIndustryAll")}</option>
           {(industries ?? []).map((i) => (
             <option key={i.id} value={i.id}>
-              {i.name_fr}
+              {activeLocale === "en" ? i.name_en : i.name_fr}
             </option>
           ))}
         </select>
@@ -137,7 +138,7 @@ export default async function OpportunitiesListPage({
           <option value="">{t("filterProductAll")}</option>
           {(productsServices ?? []).map((p) => (
             <option key={p.id} value={p.id}>
-              {p.label_fr}
+              {activeLocale === "en" ? p.label_en : p.label_fr}
             </option>
           ))}
         </select>
