@@ -119,6 +119,7 @@
     "submitCreate": "Créer l'entreprise",
     "submitEdit": "Enregistrer les modifications",
     "protectedFieldsNote": "Le niveau d'abonnement et le statut de vérification sont gérés par la plateforme et ne sont pas modifiables ici.",
+    "profileSectionTitle": "Informations de l'entreprise",
     "readOnlyNote": "Vous consultez cette fiche, mais seuls les propriétaires et administrateurs de l'entreprise peuvent la modifier.",
     "membersTitle": "Membres de l'entreprise",
     "statusInvited": "Invité",

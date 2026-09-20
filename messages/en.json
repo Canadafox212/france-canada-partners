@@ -119,6 +119,7 @@
     "submitCreate": "Create company",
     "submitEdit": "Save changes",
     "protectedFieldsNote": "Subscription level and verification status are managed by the platform and can't be edited here.",
+    "profileSectionTitle": "Company information",
     "readOnlyNote": "You're viewing this company's profile, but only its owners and admins can edit it.",
     "membersTitle": "Company members",
     "statusInvited": "Invited",

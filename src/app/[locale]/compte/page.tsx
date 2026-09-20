@@ -10,7 +10,6 @@ import {
 } from "@/lib/supabase/session";
 import { createClient } from "@/lib/supabase/server";
 import { ProfileForm } from "@/components/account/ProfileForm";
-import { SignOutButton } from "@/components/account/SignOutButton";
 import { ButtonLink } from "@/components/ui/Button";
 
 export default async function AccountPage() {
@@ -44,12 +43,9 @@ export default async function AccountPage() {
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-10 px-6 py-16">
-      <div className="flex items-start justify-between gap-4">
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">
-          {t("title")}
-        </h1>
-        <SignOutButton />
-      </div>
+      <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">
+        {t("title")}
+      </h1>
 
       <div className="flex flex-wrap gap-3">
         <ButtonLink href="/compte/mises-en-relation" variant="secondary">

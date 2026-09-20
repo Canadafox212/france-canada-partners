@@ -35,6 +35,7 @@ export default async function NotificationsPage({
 
   const t = await getTranslations("Notification");
   const tPartnership = await getTranslations("PartnershipRequest");
+  const tAccount = await getTranslations("Account");
   const supabase = await createClient();
 
   const currentPage = Math.max(1, Number(page) || 1);
@@ -53,7 +54,7 @@ export default async function NotificationsPage({
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-6 py-16">
-      <Breadcrumbs items={[{ label: t("pageTitle"), href: "/compte" }, { label: t("pageTitle") }]} />
+      <Breadcrumbs items={[{ label: tAccount("title"), href: "/compte" }, { label: t("pageTitle") }]} />
       <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">
         {t("pageTitle")}
       </h1>

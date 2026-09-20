@@ -24,8 +24,9 @@ export default async function PartnershipRequestsPage({
     return null;
   }
 
-  const [t, memberships] = await Promise.all([
+  const [t, tAccount, memberships] = await Promise.all([
     getTranslations("PartnershipRequest"),
+    getTranslations("Account"),
     getCurrentUserCompanies(),
   ]);
   const supabase = await createClient();
@@ -74,7 +75,7 @@ export default async function PartnershipRequestsPage({
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-6 py-16">
       <Breadcrumbs
-        items={[{ label: t("listTitle"), href: "/compte" }, { label: t("listTitle") }]}
+        items={[{ label: tAccount("title"), href: "/compte" }, { label: t("listTitle") }]}
       />
       <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">
         {t("listTitle")}
