@@ -115,20 +115,22 @@ export async function generateMetadata({
   const company = await loadCompanyBySlug(geoOrSlug);
   if (!company || company.status !== "active") return {};
 
+  const activeLocale = (await locale()) as AppLocale;
   const translation = pickCompanyTranslation(
     company.company_translations ?? [],
-    "fr",
+    activeLocale,
   );
   const description = (
     translation?.tagline ||
     translation?.description ||
     ""
   ).slice(0, 160);
+  const canonicalPath = `${getPathname({ href: "/entreprises", locale: activeLocale })}/${company.slug}`;
 
   return {
     title: company.display_name,
     description,
-    alternates: { canonical: `/entreprises/${company.slug}` },
+    alternates: { canonical: canonicalPath },
     openGraph: {
       title: company.display_name,
       description,
@@ -383,9 +385,18 @@ export default async function EntrepriseOrGeoPage({
               {t("sectorsLabel")}
             </dt>
             <dd className="text-slate-900 dark:text-white">
-              {activeLocale === "en"
-                ? one(primaryIndustry.industries)?.name_en
-                : one(primaryIndustry.industries)?.name_fr}
+              {[
+                activeLocale === "en"
+                  ? one(primaryIndustry.industries)?.name_en
+                  : one(primaryIndustry.industries)?.name_fr,
+                ...(company.company_subindustries ?? []).map((csi) =>
+                  activeLocale === "en"
+                    ? one(csi.subindustries)?.name_en
+                    : one(csi.subindustries)?.name_fr,
+                ),
+              ]
+                .filter(Boolean)
+                .join(" — ")}
             </dd>
           </div>
         ) : null}

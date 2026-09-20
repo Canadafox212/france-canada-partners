@@ -24,7 +24,7 @@
     "retry": "Try again"
   },
   "Header": {
-    "login": "Log in",
+    "login": "Sign in",
     "account": "My account",
     "signOut": "Sign out"
   },
@@ -294,13 +294,13 @@
     "compatibilityLabel": "Compatibility with your company"
   },
   "CompanyPublic": {
-    "backToDirectory": "Directory",
+    "backToDirectory": "Companies",
     "weOfferTitle": "We offer",
     "weSeekTitle": "We are looking for",
     "activeOpportunitiesTitle": "Active opportunities",
     "noOffers": "No offers published yet.",
     "noNeeds": "No needs published yet.",
-    "noActiveOpportunities": "No active opportunities yet.",
+    "noActiveOpportunities": "No active opportunities at the moment.",
     "sectorsLabel": "Sector(s)",
     "productsLabel": "Products/services",
     "languagesLabel": "Working languages",
@@ -314,7 +314,7 @@
     "sourceLabel": "Information source",
     "lastVerifiedLabel": "Last verified",
     "claimQuestion": "Do you represent this company?",
-    "claimCta": "Claim this listing",
+    "claimCta": "Claim this profile",
     "compatibilityTitle": "Compatibility with your company",
     "compatibilityCompareWith": "Compare with:",
     "compatibilityCompareAction": "Compare",
