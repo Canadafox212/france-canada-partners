@@ -2,10 +2,15 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 /**
- * Tests d'intégration réels (Phase 8, suite) pour :
+ * Tests d'intégration réels (Phase 8, suite) pour la migration
+ * 0021_industry_mapping_and_content_source.sql :
  * - `industry_code_mappings` (correspondance code APE/NAF -> secteur interne,
- *   jamais un rapprochement par mot-clé — voir migration 0021 et
- *   docs/DATA_MAPPING.md §4) ;
+ *   jamais un rapprochement par mot-clé, jamais de mapping global pour un
+ *   code trop générique — voir docs/DATA_MAPPING.md §4) ;
+ * - `company_industries.classification_source` (COMPANY_DECLARED par défaut /
+ *   CODE_MAPPING / EDITORIAL_VERIFIED — distingue un secteur déduit
+ *   automatiquement d'une classification éditoriale vérifiée propre à une
+ *   entreprise, voir docs/EDITORIAL_CONTENT.md §4) ;
  * - `company_translations.content_source` (provenance du contenu :
  *   COMPANY_PROVIDED / EDITORIAL / SOURCE_PROVIDED, jamais confondue).
  *
@@ -184,6 +189,89 @@ describe("company_translations.content_source — provenance du contenu (migrati
       .eq("company_id", testCompanyId)
       .eq("locale", "fr");
     expect(error).not.toBeNull();
+  });
+});
+
+describe("company_industries.classification_source — mapping automatique vs classification éditoriale vérifiée (migration 0021)", () => {
+  let industryId: string;
+  let codeMappingId: string;
+
+  beforeAll(async () => {
+    const { data: industry } = await admin
+      .from("industries")
+      .select("id")
+      .eq("slug", "aeronautique-spatial")
+      .single();
+    industryId = industry!.id;
+    const { data: mapping } = await admin
+      .from("industry_code_mappings")
+      .select("id")
+      .eq("scheme", "NAF_APE")
+      .eq("code", "25.62B")
+      .single();
+    codeMappingId = mapping!.id;
+  });
+
+  afterAll(async () => {
+    await admin
+      .from("company_industries")
+      .delete()
+      .eq("company_id", testCompanyId);
+  });
+
+  it("vaut COMPANY_DECLARED par défaut (comportement Phase 3 inchangé)", async () => {
+    const { data, error } = await admin
+      .from("company_industries")
+      .insert({ company_id: testCompanyId, industry_id: industryId })
+      .select("classification_source, source_code_mapping_id")
+      .single();
+    expect(error).toBeNull();
+    expect(data!.classification_source).toBe("COMPANY_DECLARED");
+    expect(data!.source_code_mapping_id).toBeNull();
+    await admin
+      .from("company_industries")
+      .delete()
+      .eq("company_id", testCompanyId)
+      .eq("industry_id", industryId);
+  });
+
+  it("refuse CODE_MAPPING sans source_code_mapping_id", async () => {
+    const { error } = await admin
+      .from("company_industries")
+      .insert({
+        company_id: testCompanyId,
+        industry_id: industryId,
+        classification_source: "CODE_MAPPING",
+      });
+    expect(error).not.toBeNull();
+  });
+
+  it("refuse EDITORIAL_VERIFIED avec source_code_mapping_id renseigné", async () => {
+    const { error } = await admin
+      .from("company_industries")
+      .insert({
+        company_id: testCompanyId,
+        industry_id: industryId,
+        classification_source: "EDITORIAL_VERIFIED",
+        source_code_mapping_id: codeMappingId,
+      });
+    expect(error).not.toBeNull();
+  });
+
+  it("accepte EDITORIAL_VERIFIED sans code — cas SAFRAN : secteur propre à l'entreprise, jamais déduit de 70.10Z", async () => {
+    const { data, error } = await admin
+      .from("company_industries")
+      .insert({
+        company_id: testCompanyId,
+        industry_id: industryId,
+        classification_source: "EDITORIAL_VERIFIED",
+        notes: "Test : sources officielles de l'entreprise, jamais le code APE seul",
+      })
+      .select("classification_source, source_code_mapping_id")
+      .single();
+    expect(error).toBeNull();
+    expect(data!.classification_source).toBe("EDITORIAL_VERIFIED");
+    expect(data!.source_code_mapping_id).toBeNull();
   });
 });
 

@@ -57,14 +57,25 @@ vide à l'import.
 | `Secteur`, `Sous_Secteur` | `Secteur`, `Sous_Secteur` | Texte libre, **pas encore rattaché** à la table `industries` existante                                                              |
 | `Code_APE` (France)       | `SCIAN` (Québec)          | Codes de nomenclature **officielle mais différente** (NAF/APE vs SCIAN/NAICS) — §18 du cahier des charges : ne jamais les confondre |
 
-**Recommandation (non implémentée cette phase)** : conserver `Code_APE`/
-`SCIAN` tels quels dans une colonne dédiée (ex. `company_source_records`
-ou une extension de staging), et construire une table de correspondance
-`Secteur` (texte source) → `industries.id` **validée manuellement**, plutôt
-que de créer une ligne `industries` par valeur unique rencontrée (5
-valeurs distinctes côté France, 7 côté Québec sur les lots actuels — gérable
-manuellement, mais la table de correspondance doit rester administrable
-pour la suite).
+**Réalisé (migration `0021_industry_mapping_and_content_source.sql`)** :
+`Code_APE`/`SCIAN` sont conservés tels quels dans
+`staging_companies.raw_sector_code`, et une table de correspondance
+`industry_code_mappings` (code officiel `NAF_APE`/`NAICS_SCIAN` →
+`industries.id`, avec un niveau de confiance explicite) a été construite
+**validée manuellement**, jamais par simple rapprochement de mot-clé.
+Remplie à ce stade uniquement pour les 8 codes APE du lot pilote (13
+entreprises françaises) — pas une généralisation à toute la nomenclature.
+
+Un code trop générique pour être fiable pour toutes les entreprises qui
+le partagent (ex. `70.10Z`, "activités des sièges sociaux") ne reçoit
+JAMAIS de mapping global vers un secteur : il reste `REQUIRES_REVIEW`
+dans `industry_code_mappings`, quelle que soit l'entreprise. Une
+entreprise concernée peut néanmoins recevoir un secteur qui lui est
+**propre**, via `company_industries.classification_source =
+'EDITORIAL_VERIFIED'` (fondé sur les sources officielles de CETTE
+entreprise, jamais sur le code seul) — voir `docs/EDITORIAL_CONTENT.md`
+§4 pour la distinction complète entre mapping automatique de code et
+classification éditoriale vérifiée par entreprise.
 
 ## 5. Produits/services, technologies, spécialités
 

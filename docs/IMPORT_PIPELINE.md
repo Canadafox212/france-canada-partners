@@ -52,9 +52,9 @@ Aucune ligne source ne passe jamais directement de `data/raw/` à
 - **`company_source_records`** (Phase 2, étendue) : `import_batch_id`
   ajouté pour la traçabilité (§14).
 
-## 2bis. Mapping sectoriel et provenance éditoriale (migration 0021)
+## 2bis. Mapping sectoriel et provenance éditoriale (migration 0021_industry_mapping_and_content_source.sql)
 
-Deux ajouts indépendants, construits pour terminer le cycle des 13
+Trois ajouts indépendants, construits pour terminer le cycle des 13
 entreprises déjà importées (jamais pour les 87 restantes ni pour le
 Québec) :
 
@@ -65,21 +65,41 @@ Québec) :
   (`HIGH`/`MEDIUM`/`LOW`/`REQUIRES_REVIEW`). Remplie uniquement pour les
   8 codes APE réellement présents dans le lot pilote — jamais une
   généralisation à toute la nomenclature APE/NAF. **Aucun rapprochement
-  par mot-clé** : un code administratif ambigu (70.10Z, "activités des
-  sièges sociaux", partagé par Safran/Thales/CLAYENS dans ce lot) est
-  volontairement laissé `REQUIRES_REVIEW` avec `internal_industry_id`
-  NULL plutôt que deviné à partir de la notoriété de l'entreprise —
-  arbitrage humain nécessaire avant tout rattachement.
+  par mot-clé, et jamais de mapping GLOBAL pour un code trop générique** :
+  70.10Z ("activités des sièges sociaux", partagé par Safran/Thales/
+  CLAYENS dans ce lot) reste volontairement `REQUIRES_REVIEW` avec
+  `internal_industry_id` NULL, quelle que soit l'entreprise — un même
+  code de holding couvre des groupes de secteurs très différents, un
+  mapping automatique par code serait donc faux pour certains d'entre
+  eux (voir le point suivant pour la solution par entreprise).
+- **`company_industries.classification_source`** (`COMPANY_DECLARED` par
+  défaut / `CODE_MAPPING` / `EDITORIAL_VERIFIED`, avec une contrainte de
+  cohérence en base) : distingue TROIS façons dont une entreprise se
+  retrouve rattachée à un secteur — choix de l'entreprise elle-même
+  (comportement Phase 3 inchangé), déduction automatique d'un
+  `industry_code_mappings` fiable lors d'un import, ou **classification
+  éditoriale vérifiée propre à une entreprise précise**, fondée sur SES
+  sources officielles à elle plutôt que sur son code APE seul. C'est ce
+  dernier mécanisme qui permet à SAFRAN de recevoir un secteur
+  "Aéronautique et spatial" alors que son code 70.10Z reste
+  `REQUIRES_REVIEW` : la classification est vérifiée entreprise par
+  entreprise, jamais généralisée au code. Voir `docs/EDITORIAL_CONTENT.md`
+  §4 pour la distinction complète, importante pour tout futur import.
 - **`company_translations.content_source`** (`COMPANY_PROVIDED` par
   défaut / `EDITORIAL` / `SOURCE_PROVIDED`) : distingue un contenu saisi
   par l'entreprise elle-même d'un contenu rédigé par l'équipe éditoriale
   à partir de faits vérifiables — jamais confondu avec une donnée SIRENE
   ni avec une saisie d'entreprise. Voir `docs/EDITORIAL_CONTENT.md`.
 
-Cette migration ne rattache encore AUCUNE entreprise à un secteur
-(`company_industries` non touché) et n'écrit encore AUCUN contenu
-éditorial — seule l'infrastructure de référence est en place, en attente
-de l'autorisation explicite de publication.
+Un sous-secteur "Équipements agricoles et agro-industriels" a également
+été ajouté sous "Agroalimentaire et AgTech", pour distinguer un
+fabricant de machines de tri/conditionnement (MAF AGROBOTIC) d'un
+producteur ou transformateur agroalimentaire.
+
+Cette migration ne rattache encore AUCUNE des 13 entreprises à un
+secteur et n'écrit encore AUCUN contenu éditorial — seule
+l'infrastructure de référence est en place, en attente de l'autorisation
+explicite de publication.
 
 ## 3. Pourquoi des colonnes structurées, pas un gros JSON
 
@@ -284,7 +304,7 @@ quel que soit son contenu — une décision séparée, jamais automatique.
 
 - Table de correspondance secteur source → `industries.id` : réalisée
   pour les 8 codes APE du lot pilote uniquement (migration
-  `0021_industry_code_mappings.sql`), jamais généralisée aux 87 lignes
+  `0021_industry_mapping_and_content_source.sql`), jamais généralisée aux 87 lignes
   restantes (dont le `Code_APE` est de toute façon absent — voir §15).
 - Rapprochement produits/services vers la taxonomie structurée.
 - Interface web `/admin/imports` (voir §12).

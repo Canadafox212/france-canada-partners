@@ -2,7 +2,7 @@
 
 > Document de référence permanent du projet. Toute décision structurante importante doit être reflétée ici avant/pendant son implémentation. Ce document est mis à jour au fil des phases, pas figé.
 
-**Statut** : Phase 8 — pipeline d'import construit et testé ; **import réel exécuté** pour les 13 entreprises françaises approuvées (statut `draft`, non publiées) ; **vérification SIRENE des 87 entreprises restantes réalisée** (aucune n'a de SIREN exploitable dans la source, aucune importée) ; **mapping sectoriel + descriptions éditoriales proposés** pour les 13 (migration `0021_industry_code_mappings.sql`, en attente d'application) ; en attente d'autorisation explicite de publication (aucune des 13 n'est publique).
+**Statut** : Phase 8 — pipeline d'import construit et testé ; **import réel exécuté** pour les 13 entreprises françaises approuvées (statut `draft`, non publiées) ; **vérification SIRENE des 87 entreprises restantes réalisée** (aucune n'a de SIREN exploitable dans la source, aucune importée) ; **mapping sectoriel + descriptions éditoriales validés (avec corrections)** pour les 13 (migration `0021_industry_mapping_and_content_source.sql`, autorisée, application sur Supabase demandée séparément) ; en attente d'autorisation explicite de publication (aucune des 13 n'est publique).
 **Dernière mise à jour** : 2026-09-20
 **Propriétaire produit** : non-développeur — toute section technique doit rester accompagnée d'une explication en langage clair dans les échanges de suivi.
 
