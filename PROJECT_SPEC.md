@@ -2,7 +2,7 @@
 
 > Document de référence permanent du projet. Toute décision structurante importante doit être reflétée ici avant/pendant son implémentation. Ce document est mis à jour au fil des phases, pas figé.
 
-**Statut** : Phase 8 — pipeline d'import construit et testé ; dry run réel exécuté sur les 13 entreprises françaises approuvées ; en attente d'autorisation pour l'import réel.
+**Statut** : Phase 8 — pipeline d'import construit et testé ; **import réel exécuté** pour les 13 entreprises françaises approuvées (statut `draft`, non publiées) ; en attente de décision sur la publication et sur la vérification des 87 entreprises restantes.
 **Dernière mise à jour** : 2026-09-20
 **Propriétaire produit** : non-développeur — toute section technique doit rester accompagnée d'une explication en langage clair dans les échanges de suivi.
 

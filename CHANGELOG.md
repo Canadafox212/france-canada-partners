@@ -23,6 +23,14 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 - 40 nouveaux tests unitaires (`tests/unit/import/`) et 13 nouveaux tests d'intégration réels (`tests/integration/import.test.ts` : garde-fou de licence, dry run sans écriture, dédoublonnage EXACT/POSSIBLE, idempotence, protection d'une entreprise revendiquée, courriel nominatif jamais publié, valeur source conservée, RLS). Toutes les suites précédentes continuent de passer (93 tests d'intégration au total).
 - `PROJECT_SPEC.md`, `docs/DATABASE.md`, `docs/SECURITY.md`, `docs/IMPORT_PIPELINE.md` (réécrit pour refléter l'état réellement construit) mis à jour.
 
+#### Étape 3 — Import réel du lot pilote (2026-09-20)
+
+- Ajout d'un indicateur `includeDescription` (`commitStagingRow()`) : le statut `APPROVED_FOR_IMPORT` de la source française couvre l'identité légale (SIRENE), pas nécessairement le champ `Description` du fichier (probablement issu du site propre de chaque entreprise) — exclu par précaution pour ce pilote, conservé en staging pour traçabilité. Vérifié par un nouveau test d'intégration.
+- **Import réel exécuté** (batch `FRANCE_PILOT_001`) : 13 entreprises créées, toutes en statut `draft`, non revendiquées, sans offre/besoin/opportunité, sans donnée personnelle publiée, chacune reliée à sa source SIRENE (identifiant, batch, date, licence). Vérifié : invisibles à la recherche publique et à la lecture anonyme directe ; secteur (code APE) conservé en staging, pas encore relié à `industries` (décision documentée, pas un oubli).
+- Workflow de revendication vérifié techniquement sur une entreprise importée (FIGEAC AERO) : soumission d'une demande réelle (statut `pending`, aucune auto-approbation), puis annulée — aucune trace laissée.
+- Méthode de rollback confirmée : chaque entreprise du batch est retrouvable via `company_source_records.import_batch_id`/`staging_companies.created_company_id` — pas exécuté, seulement vérifié comme possible.
+- 1 nouveau test d'intégration réel (exclusion de la description). 94 tests d'intégration au total, tous verts.
+
 ### Phase 7 — Annuaire public, recherche et revendication (2026-09-19)
 
 #### Ajouté

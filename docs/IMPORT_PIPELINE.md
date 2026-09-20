@@ -1,10 +1,11 @@
 # Pipeline d'import — architecture construite (Phase 8)
 
-**Statut : CONSTRUIT et testé (migration `0020_import_pipeline.sql` +
-`src/lib/import/` + `scripts/import-companies.ts`).** Le lot pilote (13
-entreprises françaises) a été traité en **dry run uniquement** — voir le
-rapport livré séparément. Aucun import réel n'a été exécuté sans
-autorisation explicite distincte (§12 de la demande).
+**Statut : CONSTRUIT, testé, et EXÉCUTÉ RÉELLEMENT pour le lot pilote**
+(migration `0020_import_pipeline.sql` + `src/lib/import/` +
+`scripts/import-companies.ts`). Les 13 entreprises françaises approuvées
+ont été importées le 2026-09-20 (batch `FRANCE_PILOT_001`), toutes en
+statut `draft`, non publiées. Aucune n'a été rendue publique — cela reste
+une décision séparée, jamais automatique.
 
 ## 1. Principe général
 
@@ -78,6 +79,18 @@ confirmer`, `à enrichir`, `N/A`...) reconnus indépendamment de la
   non reconnue → `NULL`, jamais devinée.
 - La valeur `raw_*` d'origine n'est jamais écrasée par la normalisation —
   les deux colonnes coexistent toujours en staging.
+
+## 4bis. Description exclue pour le pilote (licence non couvrante)
+
+Le statut `APPROVED_FOR_IMPORT` de la source française a été accordé pour
+l'**identité légale** (SIRENE, Licence Ouverte 2.0) — pas nécessairement
+pour la colonne `Description` du fichier, probablement issue du site
+propre de chaque entreprise (contenu commercial de tiers). `commitStagingRow()`
+accepte un indicateur `includeDescription` (par défaut `true`) ; le script
+CLI le met à `false` pour ce pilote, afin qu'aucun texte commercial dont
+la licence n'est pas explicitement vérifiée ne soit copié. La valeur
+reste visible dans `staging_companies.normalized_description` (traçabilité),
+simplement jamais recopiée dans `company_translations`.
 
 ## 5. Classification des courriels (`emailClassification.ts`, §6)
 
