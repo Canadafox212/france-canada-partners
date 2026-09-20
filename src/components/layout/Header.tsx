@@ -1,7 +1,9 @@
+import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { getCurrentUser } from "@/lib/supabase/session";
 import { SignOutButton } from "@/components/account/SignOutButton";
+import { LocaleSwitcher } from "@/components/layout/LocaleSwitcher";
 
 export async function Header() {
   const [t, user] = await Promise.all([
@@ -14,7 +16,10 @@ export async function Header() {
       <Link href="/" className="font-semibold text-slate-900 dark:text-white">
         France-Canada Partners
       </Link>
-      <nav className="flex items-center gap-4">
+      <nav className="flex flex-wrap items-center gap-4">
+        <Suspense fallback={null}>
+          <LocaleSwitcher />
+        </Suspense>
         {user ? (
           <>
             <Link

@@ -10,6 +10,7 @@ import {
 } from "@/lib/directory/pageData";
 import { shouldIndexDirectoryPage } from "@/lib/directory/search";
 import { DirectoryPageBody } from "@/components/directory/DirectoryPageBody";
+import { buildLocaleAlternates } from "@/lib/seo/alternates";
 
 type SearchParams = Record<string, string | undefined>;
 
@@ -88,6 +89,7 @@ export async function generateMetadata({
   searchParams: Promise<SearchParams>;
 }) {
   const params = await searchParams;
+  const activeLocale = (await locale()) as AppLocale;
   const t = await getTranslations("Directory");
   const result = await runSearch(params);
 
@@ -110,7 +112,7 @@ export async function generateMetadata({
   return {
     title: t("listTitle"),
     description: t("listSubtitle"),
-    alternates: { canonical: "/entreprises" },
+    alternates: buildLocaleAlternates("/entreprises", activeLocale),
     robots: index ? undefined : { index: false, follow: true },
   };
 }

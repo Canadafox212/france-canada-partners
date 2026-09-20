@@ -5,9 +5,10 @@ import { notFound } from "next/navigation";
 import { hasLocale } from "next-intl";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
-import { routing } from "@/i18n/routing";
+import { routing, type AppLocale } from "@/i18n/routing";
 import { Header } from "@/components/layout/Header";
 import { getSiteUrl } from "@/lib/env";
+import { buildLocaleAlternates } from "@/lib/seo/alternates";
 import "../globals.css";
 
 const geistSans = Geist({
@@ -25,6 +26,7 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
+  const activeLocale = (await locale()) as AppLocale;
   const t = await getTranslations("Metadata");
   return {
     // Permet aux `alternates.canonical`/`openGraph` relatifs des pages
@@ -33,6 +35,12 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(getSiteUrl()),
     title: t("title"),
     description: t("description"),
+    // Valeur par défaut pour toute page qui ne définit pas ses propres
+    // `alternates` (ex. la page d'accueil) — les pages qui les définissent
+    // explicitement (annuaire, fiche entreprise, opportunités...) les
+    // remplacent entièrement, Next.js fusionnant les métadonnées niveau
+    // par niveau de la mise en page vers la page.
+    alternates: buildLocaleAlternates("/", activeLocale),
   };
 }
 

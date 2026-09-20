@@ -26,7 +26,8 @@
   "Header": {
     "login": "Sign in",
     "account": "My account",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "languageSwitcherLabel": "Switch language"
   },
   "Common": {
     "loading": "Loading…",

@@ -20,6 +20,7 @@ import { ClaimCompanyForm } from "@/components/claims/ClaimCompanyForm";
 import { CopyLinkButton } from "@/components/directory/CopyLinkButton";
 import { MatchCard } from "@/components/matching/MatchCard";
 import { getCompatibilityBetweenCompanies } from "@/lib/matching/service";
+import { buildLocaleAlternates } from "@/lib/seo/alternates";
 
 type Params = { geoOrSlug: string };
 type SearchParams = Record<string, string | undefined>;
@@ -60,10 +61,12 @@ export async function generateMetadata({
 }) {
   const { geoOrSlug } = await params;
   const geo = resolveGeoSlug(geoOrSlug);
+  const activeLocale = (await locale()) as AppLocale;
 
   if (geo) {
     const rawSearchParams = await searchParams;
     const t = await getTranslations("Directory");
+    const geoLabel = activeLocale === "en" ? geo.labelEn : geo.labelFr;
     const fixedParams = directoryParamsFromSearchParams(rawSearchParams, {
       countryCode: geo.countryCode,
       region: geo.region,
@@ -105,9 +108,12 @@ export async function generateMetadata({
     });
 
     return {
-      title: `${t("listTitle")} — ${geo.labelFr}`,
+      title: `${t("listTitle")} — ${geoLabel}`,
       description: t("listSubtitle"),
-      alternates: { canonical: `/entreprises/${geoOrSlug}` },
+      alternates: buildLocaleAlternates(
+        { pathname: "/entreprises/[geoOrSlug]", params: { geoOrSlug } },
+        activeLocale,
+      ),
       robots: index ? undefined : { index: false, follow: true },
     };
   }
@@ -115,7 +121,6 @@ export async function generateMetadata({
   const company = await loadCompanyBySlug(geoOrSlug);
   if (!company || company.status !== "active") return {};
 
-  const activeLocale = (await locale()) as AppLocale;
   const translation = pickCompanyTranslation(
     company.company_translations ?? [],
     activeLocale,
@@ -125,12 +130,14 @@ export async function generateMetadata({
     translation?.description ||
     ""
   ).slice(0, 160);
-  const canonicalPath = `${getPathname({ href: "/entreprises", locale: activeLocale })}/${company.slug}`;
 
   return {
     title: company.display_name,
     description,
-    alternates: { canonical: canonicalPath },
+    alternates: buildLocaleAlternates(
+      { pathname: "/entreprises/[geoOrSlug]", params: { geoOrSlug: company.slug } },
+      activeLocale,
+    ),
     openGraph: {
       title: company.display_name,
       description,
@@ -182,14 +189,15 @@ export default async function EntrepriseOrGeoPage({
       fixedParams.page ?? 1,
     );
     const basePath = `${getPathname({ href: "/entreprises", locale: activeLocale })}/${geoOrSlug}`;
+    const geoLabel = activeLocale === "en" ? geo.labelEn : geo.labelFr;
 
     return (
       <DirectoryPageBody
-        title={`${t("listTitle")} — ${geo.labelFr}`}
+        title={`${t("listTitle")} — ${geoLabel}`}
         subtitle={t("listSubtitle")}
         breadcrumbs={[
           { label: t("listTitle"), href: "/entreprises" },
-          { label: geo.labelFr },
+          { label: geoLabel },
         ]}
         basePath={basePath}
         rawSearchParams={rawSearchParams}

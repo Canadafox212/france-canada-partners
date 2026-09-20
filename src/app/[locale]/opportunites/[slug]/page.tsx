@@ -1,9 +1,12 @@
 import { notFound } from "next/navigation";
+import { locale } from "next/root-params";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/session";
 import { RespondToOpportunityForm } from "@/components/opportunities/RespondToOpportunityForm";
 import { Link } from "@/i18n/navigation";
+import type { AppLocale } from "@/i18n/routing";
+import { buildLocaleAlternates } from "@/lib/seo/alternates";
 
 export async function generateMetadata({
   params,
@@ -11,6 +14,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const activeLocale = (await locale()) as AppLocale;
   const supabase = await createClient();
   const { data: opportunity } = await supabase
     .from("opportunities")
@@ -23,7 +27,10 @@ export async function generateMetadata({
   return {
     title: opportunity.title,
     description: opportunity.description?.slice(0, 160),
-    alternates: { canonical: `/opportunites/${slug}` },
+    alternates: buildLocaleAlternates(
+      { pathname: "/opportunites/[slug]", params: { slug } },
+      activeLocale,
+    ),
     // Restée consultable, mais retirée de l'indexation une fois clôturée/expirée.
     robots:
       opportunity.status === "published"

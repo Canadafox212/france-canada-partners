@@ -1,12 +1,20 @@
+import { locale } from "next/root-params";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import type { AppLocale } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/server";
 import { inputClasses } from "@/components/ui/FormField";
 import { SubmitButton } from "@/components/ui/Button";
+import { buildLocaleAlternates } from "@/lib/seo/alternates";
 
 export async function generateMetadata() {
+  const activeLocale = (await locale()) as AppLocale;
   const t = await getTranslations("Opportunity");
-  return { title: t("listTitle"), description: t("listSubtitle") };
+  return {
+    title: t("listTitle"),
+    description: t("listSubtitle"),
+    alternates: buildLocaleAlternates("/opportunites", activeLocale),
+  };
 }
 
 export default async function OpportunitiesListPage({

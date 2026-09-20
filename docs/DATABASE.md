@@ -28,6 +28,8 @@ Le modèle de données complet, table par table, avec les raisons de chaque choi
 | `0018_company_claims.sql`                          | `company_claims` ; `companies.claimed_at` ; fonctions `submit_company_claim()`, `cancel_company_claim()`, `review_company_claim()` (toutes SECURITY DEFINER, seul chemin d'écriture — aucune politique RLS d'insertion/mise à jour pour un client normal) — voir `docs/CLAIMING.md`                                                                                                                                                          |
 | `0019_backfill_search_vectors.sql`                 | **Correctif** : remplit `search_vector` pour les entreprises créées avant 0017 (dont les entreprises `[DEMO]`) — un déclencheur ne recalcule que pour les changements futurs, pas les lignes déjà existantes ; trouvé en testant la recherche avec les vraies données de démonstration (§39)                                                                                                                                                 |
 | `0020_import_pipeline.sql`                         | Pipeline d'import : `data_sources.license_status`/`commercial_use_allowed` (+ 3 sources déjà tranchées par l'audit) ; `import_batches`, `staging_companies`, `import_row_issues`, `import_duplicate_candidates` ; `company_source_records.import_batch_id` ; déclencheur `enforce_import_license_gate` bloquant tout batch sur une source non approuvée sans dérogation administrateur justifiée et auditée — voir `docs/IMPORT_PIPELINE.md` |
+| `0021_industry_mapping_and_content_source.sql`     | `industry_code_mappings` (code officiel APE/NAF → secteur interne, confiance explicite) ; `company_industries.classification_source` (`COMPANY_DECLARED`/`CODE_MAPPING`/`EDITORIAL_VERIFIED`, avec contrainte de cohérence) ; `company_translations.content_source` (`COMPANY_PROVIDED`/`EDITORIAL`/`SOURCE_PROVIDED`) ; sous-secteur "Équipements agricoles et agro-industriels" — voir `docs/EDITORIAL_CONTENT.md`. **Appliquée et figée** (voir règle d'immutabilité ci-dessous). |
+| `0022_fix_subindustry_agro_equipment_label_en.sql` | **Correctif** de 0021 : libellé anglais du sous-secteur agro-équipement (`name_en`), sans toucher à 0021 elle-même — exemple de référence pour la règle d'immutabilité ci-dessous. |
 
 Chaque table a sa politique de sécurité (Row Level Security) écrite dans le même fichier que la table. Les corrections 0011 et 0012 n'ont été trouvées **qu'en testant contre le vrai projet** : la validation locale (Postgres embarqué) ne pouvait pas les révéler, car ce moteur de test s'exécute avec des droits complets et ne peut pas simuler l'application réelle de la RLS. C'est précisément pourquoi les tests contre le projet réel (`tests/integration/`) sont indispensables, pas seulement la validation locale.
 
@@ -45,6 +47,28 @@ Aucun accès direct (jeton CLI, mot de passe de connexion à la base) n'a été 
 
 Si un jour l'accès CLI est configuré (jeton d'accès personnel), `npx supabase db push` permettrait d'automatiser cette étape — non fait à ce stade.
 
+### Règle : une migration appliquée est immuable
+
+**Une migration déjà appliquée en production/Supabase ne doit plus jamais
+être modifiée**, même pour corriger une erreur mineure (libellé, faute de
+frappe, valeur seedée incorrecte). Toute correction passe par une
+**migration suivante**, jamais par une édition du fichier déjà appliqué :
+
+- l'historique des migrations doit rester un journal fidèle de ce qui a
+  réellement été exécuté, dans l'ordre — le modifier après coup casse
+  cette garantie pour quiconque relit l'historique ou réapplique les
+  migrations sur un nouvel environnement ;
+- une migration déjà appliquée n'est de toute façon pas rejouée par
+  Supabase si son fichier change : modifier son contenu ne corrigerait
+  rien en production, seulement dans le dépôt, créant un écart trompeur
+  entre le code et la base réelle.
+
+**Exemple réel (Phase 8, suite)** : `0021_industry_mapping_and_content_source.sql`
+a été appliquée avec un libellé anglais incorrect pour un sous-secteur.
+Correction faite dans `0022_fix_subindustry_agro_equipment_label_en.sql`
+(une simple mise à jour de la ligne concernée), sans toucher un seul
+caractère de `0021`.
+
 ## Rappels de conception (voir PROJECT_SPEC.md pour le détail)
 
 - Pas de gros champs JSON pour des données structurées/filtrables : les relations plusieurs-à-plusieurs (secteurs, produits, langues, marchés) passent par de vraies tables de jointure.
@@ -61,9 +85,9 @@ Si un jour l'accès CLI est configuré (jeton d'accès personnel), `npx supabase
 
 ## Tests
 
-- `tests/unit/` : tests rapides, hors-ligne (`npm test`) — inclut `tests/unit/matching/` (moteur de matching), `tests/unit/directory/` (indexation SEO), `tests/unit/import/` (normalisation, classification des courriels, dédoublonnage, validation, compteurs de batch), aucun accès réseau.
-- `tests/integration/` : tests réels contre le vrai projet Supabase (`npm run test:integration`) — créent et suppriment leurs propres utilisateurs/entreprises de test à chaque exécution. Nécessitent `.env.local`. Fichiers : `rls.test.ts` (comptes, entreprises, protection des champs sensibles), `offers-needs.test.ts` (offres/besoins, rôles, contraintes, audit), `opportunities.test.ts` (publication, réponses, confidentialité, auto-réponse interdite, expiration), `matching.test.ts` (cohérence métier du moteur + sécurité RLS de `matches`/`opportunity_matches`), `directory.test.ts` (recherche publique réelle, sécurité de la revendication, compatibilité ciblée sur la fiche publique), `import.test.ts` (garde-fou de licence, dry run sans écriture, dédoublonnage EXACT/POSSIBLE, idempotence, protection d'une entreprise revendiquée, courriel nominatif jamais publié, RLS du pipeline). Voir `docs/SECURITY.md` pour ce qu'ils couvrent.
+- `tests/unit/` : tests rapides, hors-ligne (`npm test`) — inclut `tests/unit/matching/` (moteur de matching), `tests/unit/directory/` (indexation SEO), `tests/unit/import/` (normalisation, classification des courriels, dédoublonnage, validation, compteurs de batch), `tests/unit/seo/alternates.test.ts` (canonical/hreflang fr/en/x-default, indépendant de next-intl en test via un mock déterministe — voir le commentaire du fichier), aucun accès réseau.
+- `tests/integration/` : tests réels contre le vrai projet Supabase (`npm run test:integration`) — créent et suppriment leurs propres utilisateurs/entreprises de test à chaque exécution. Nécessitent `.env.local`. Fichiers : `rls.test.ts` (comptes, entreprises, protection des champs sensibles), `offers-needs.test.ts` (offres/besoins, rôles, contraintes, audit), `opportunities.test.ts` (publication, réponses, confidentialité, auto-réponse interdite, expiration), `matching.test.ts` (cohérence métier du moteur + sécurité RLS de `matches`/`opportunity_matches`), `directory.test.ts` (recherche publique réelle, sécurité de la revendication, compatibilité ciblée sur la fiche publique), `import.test.ts` (garde-fou de licence, dry run sans écriture, dédoublonnage EXACT/POSSIBLE, idempotence, protection d'une entreprise revendiquée, courriel nominatif jamais publié, RLS du pipeline), `sector-mapping.test.ts` (mapping code→secteur, `classification_source`, provenance éditoriale, préparation à la publication), `seo.test.ts` (le filtre de statut utilisé par le sitemap exclut bien une entreprise `draft`). Voir `docs/SECURITY.md` pour ce qu'ils couvrent.
 
 ## Données de sourcing et pipeline d'import (Phase 8)
 
-`data/raw/` contient des fichiers d'entreprises déjà collectés (France, Québec) et un prototype de matching — voir `data/README.md`. Un audit complet a été réalisé (`docs/DATA_INVENTORY.md`, `docs/DATA_SOURCES.md`, `docs/DATA_MAPPING.md`), puis un pipeline d'import réel construit et testé (`docs/IMPORT_PIPELINE.md`, `src/lib/import/`, `scripts/import-companies.ts`, migration `0020_import_pipeline.sql`). Un **dry run réel** a été exécuté sur les 13 entreprises françaises approuvées (`npm run import:dry-run`) — aucune écriture dans `companies`. **Aucun import réel n'a été exécuté** : reste soumis à une autorisation séparée. La base Québec (659 lignes) reste hors de tout import — voir `docs/QUEBEC_SOURCING_STRATEGY.md` pour la piste future, documentée sans code.
+`data/raw/` contient des fichiers d'entreprises déjà collectés (France, Québec) et un prototype de matching — voir `data/README.md`. Un audit complet a été réalisé (`docs/DATA_INVENTORY.md`, `docs/DATA_SOURCES.md`, `docs/DATA_MAPPING.md`), puis un pipeline d'import réel construit et testé (`docs/IMPORT_PIPELINE.md`, `src/lib/import/`, `scripts/import-companies.ts`, migration `0020_import_pipeline.sql`). **État réel** : le batch `FRANCE_PILOT_001` a été exécuté réellement, important les 13 entreprises françaises approuvées (statut `draft` à l'import) ; 3 sont aujourd'hui publiées (FIGEAC AERO, Airbus Atlantic, MAF AGROBOTIC), les 10 autres restent `draft` (dont Safran et STMicroelectronics Rousset SAS). Les 87 entreprises françaises restantes n'ont pas été importées, faute d'identification suffisamment fiable (`scripts/verify-siren-87.ts`, lecture seule, aucun SIREN exploitable trouvé — voir `docs/reports/rapport-siren-87.json`). La base Québec (659 lignes) reste entièrement hors de tout import — voir `docs/QUEBEC_SOURCING_STRATEGY.md` pour la piste future, documentée sans code.

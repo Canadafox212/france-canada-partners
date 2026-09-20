@@ -26,7 +26,8 @@
   "Header": {
     "login": "Se connecter",
     "account": "Mon compte",
-    "signOut": "Se déconnecter"
+    "signOut": "Se déconnecter",
+    "languageSwitcherLabel": "Changer de langue"
   },
   "Common": {
     "loading": "Chargement…",

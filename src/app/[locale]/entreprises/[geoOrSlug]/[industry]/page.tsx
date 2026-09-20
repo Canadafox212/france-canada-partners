@@ -12,6 +12,7 @@ import {
 } from "@/lib/directory/pageData";
 import { shouldIndexDirectoryPage } from "@/lib/directory/search";
 import { DirectoryPageBody } from "@/components/directory/DirectoryPageBody";
+import { buildLocaleAlternates } from "@/lib/seo/alternates";
 
 type Params = { geoOrSlug: string; industry: string };
 type SearchParams = Record<string, string | undefined>;
@@ -48,6 +49,10 @@ export async function generateMetadata({
   const industry = await resolveIndustryBySlug(industrySlug);
   if (!industry) return {};
 
+  const activeLocale = (await locale()) as AppLocale;
+  const geoLabel = activeLocale === "en" ? geo.labelEn : geo.labelFr;
+  const industryLabel =
+    activeLocale === "en" ? industry.name_en : industry.name_fr;
   const rawSearchParams = await searchParams;
   const t = await getTranslations("Directory");
   const fixedParams = directoryParamsFromSearchParams(rawSearchParams, {
@@ -88,9 +93,15 @@ export async function generateMetadata({
   });
 
   return {
-    title: `${t("listTitle")} — ${industry.name_fr} — ${geo.labelFr}`,
+    title: `${t("listTitle")} — ${industryLabel} — ${geoLabel}`,
     description: t("listSubtitle"),
-    alternates: { canonical: `/entreprises/${geoOrSlug}/${industrySlug}` },
+    alternates: buildLocaleAlternates(
+      {
+        pathname: "/entreprises/[geoOrSlug]/[industry]",
+        params: { geoOrSlug, industry: industrySlug },
+      },
+      activeLocale,
+    ),
     robots: index ? undefined : { index: false, follow: true },
   };
 }
@@ -141,16 +152,17 @@ export default async function EntrepriseGeoIndustryPage({
 
   const industryLabel =
     activeLocale === "en" ? industry.name_en : industry.name_fr;
+  const geoLabel = activeLocale === "en" ? geo.labelEn : geo.labelFr;
   const basePath = `${getPathname({ href: "/entreprises", locale: activeLocale })}/${geoOrSlug}/${industrySlug}`;
 
   return (
     <DirectoryPageBody
-      title={`${t("listTitle")} — ${industryLabel} — ${geo.labelFr}`}
+      title={`${t("listTitle")} — ${industryLabel} — ${geoLabel}`}
       subtitle={t("listSubtitle")}
       breadcrumbs={[
         { label: t("listTitle"), href: "/entreprises" },
         {
-          label: geo.labelFr,
+          label: geoLabel,
           href: { pathname: "/entreprises/[geoOrSlug]", params: { geoOrSlug } },
         },
         { label: industryLabel },
