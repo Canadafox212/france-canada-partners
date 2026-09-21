@@ -15,6 +15,8 @@ const KNOWN_TYPES = [
   "partnership_request_received",
   "partnership_request_accepted",
   "partnership_request_declined",
+  "company_publication_approved",
+  "company_publication_rejected",
 ] as const;
 
 export default async function NotificationsPage({

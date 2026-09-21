@@ -127,8 +127,15 @@
     "statusActive": "Active",
     "statusRemoved": "Removed",
     "completenessLabel": "Matching readiness: {percent}%",
-    "activatedLabel": "Activated — visible in matching",
-    "notActivatedLabel": "Not activated — add {missing} to appear in matching.",
+    "readyForPublication": "Profile ready for publication",
+    "notReadyForPublication": "Complete your profile to request publication: add {missing}.",
+    "requestPublicationAction": "Request publication",
+    "publicationNotPublishedNotice": "Your company is not published yet.",
+    "publicationPending": "Publication under review",
+    "publicationRejected": "Your publication request was declined: {note}",
+    "publicationRejectedNoNote": "Your publication request was declined.",
+    "companyPublished": "Company published",
+    "viewPublicProfileAction": "View public profile",
     "missingCriterion": {
       "claimed": "a responsible member (owner or admin)",
       "description": "a description",
@@ -417,6 +424,11 @@
     "alreadyPending": "A request is already in progress with this company.",
     "alreadyPendingUnclaimed": "A request is already on file; it will be delivered once this company claims its profile.",
     "rateLimitError": "Too many requests have been sent recently. Please try again a little later.",
+    "requesterNotActiveError": "Your company must be published to send a partnership request.",
+    "targetNotActiveError": "This company is not available for a partnership request.",
+    "duplicateActiveRequestError": "A request is already in progress between these two companies.",
+    "notAuthorizedError": "You must be authorized to act on behalf of this company.",
+    "publishFirstNotice": "Publish your company first to request a partnership.",
     "listTitle": "Partnership requests",
     "receivedTab": "Received",
     "sentTab": "Sent",
@@ -472,8 +484,30 @@
       "partnership_request_declined": {
         "title": "Request declined",
         "message": "Your partnership request was declined."
+      },
+      "company_publication_approved": {
+        "title": "Company published",
+        "message": "Your company has been published."
+      },
+      "company_publication_rejected": {
+        "title": "Publication declined",
+        "message": "Your publication request needs changes."
       }
     }
+  },
+  "CompanyPublication": {
+    "adminTitle": "Publication requests",
+    "adminEmpty": "No pending publication request.",
+    "adminColumnCompany": "Company",
+    "adminColumnRequester": "Requester",
+    "adminColumnDate": "Date",
+    "adminColumnReady": "Profile ready",
+    "adminReadyYes": "Yes",
+    "adminReadyNo": "No",
+    "adminApprove": "Approve",
+    "adminReject": "Reject",
+    "adminNotesLabel": "Rejection note (optional)",
+    "adminRequesterUnknown": "— (account deleted)"
   },
   "QuebecLanding": {
     "metaTitle": "Join France Canada Partners — Quebec Companies",

@@ -68,14 +68,19 @@ export function RequestPartnershipButton({
       p_source_opportunity_id: sourceOpportunityId,
     });
     if (error) {
-      // Marqueur stable renvoyé par create_partnership_request() (Phase 10C,
-      // LOT 10C-2) — traduit ici plutôt que renvoyé déjà en français/anglais
-      // depuis la fonction, pour rester bilingue sans changer la convention
-      // des autres messages de cette RPC (restés en français, voir 0024).
+      // Marqueurs stables renvoyés par create_partnership_request()
+      // (Phase 10C, LOT 10C-2 pour RATE_LIMIT_EXCEEDED, LOT 10C-4 pour les
+      // quatre autres) — traduits ici plutôt que renvoyés déjà en
+      // français/anglais depuis la fonction.
+      const stableErrors: Record<string, string> = {
+        RATE_LIMIT_EXCEEDED: t("rateLimitError"),
+        REQUESTER_NOT_ACTIVE: t("requesterNotActiveError"),
+        TARGET_NOT_ACTIVE: t("targetNotActiveError"),
+        DUPLICATE_ACTIVE_REQUEST: t("duplicateActiveRequestError"),
+        NOT_AUTHORIZED: t("notAuthorizedError"),
+      };
       setFormError(
-        error.message === "RATE_LIMIT_EXCEEDED"
-          ? t("rateLimitError")
-          : error.message || tCommon("errorGeneric"),
+        stableErrors[error.message] ?? error.message ?? tCommon("errorGeneric"),
       );
       return;
     }

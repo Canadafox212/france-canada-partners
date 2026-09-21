@@ -24,6 +24,7 @@ import {
   getOpportunitiesForCompany,
 } from "@/lib/matching/service";
 import { RequestPartnershipButton } from "@/components/partnerships/RequestPartnershipButton";
+import { RequestPublicationButton } from "@/components/companies/RequestPublicationButton";
 import { CompanyMarketsForm } from "@/components/companies/CompanyMarketsForm";
 import { ActivationChecklist } from "@/components/companies/ActivationChecklist";
 import {
@@ -83,7 +84,7 @@ export default async function EditCompanyPage({
   const { data: company } = await supabase
     .from("companies")
     .select(
-      "id, display_name, legal_name, website, company_locations(id, region, city, is_primary), company_translations(locale, description, tagline), company_industries(industry_id)",
+      "id, slug, status, display_name, legal_name, website, company_locations(id, region, city, is_primary), company_translations(locale, description, tagline), company_industries(industry_id)",
     )
     .eq("id", id)
     .single();
@@ -122,6 +123,7 @@ export default async function EditCompanyPage({
     { data: opportunityRows },
     { data: marketRows },
     { data: contact },
+    { data: latestPublicationRequest },
   ] = await Promise.all([
     supabase
       .from("company_members")
@@ -177,6 +179,16 @@ export default async function EditCompanyPage({
       .from("company_contacts")
       .select("professional_email, phone")
       .eq("company_id", id)
+      .maybeSingle(),
+    // Phase 10C (LOT 10C-4) : dernière demande de publication de cette
+    // entreprise, quel que soit son statut — pour afficher "en cours de
+    // validation" (pending) ou le motif d'un refus précédent (rejected).
+    supabase
+      .from("company_publication_requests")
+      .select("status, review_note")
+      .eq("company_id", id)
+      .order("requested_at", { ascending: false })
+      .limit(1)
       .maybeSingle(),
   ]);
 
@@ -282,34 +294,87 @@ export default async function EditCompanyPage({
       </h1>
 
       <section className="flex flex-col gap-3 rounded-lg border border-slate-200 p-6 dark:border-slate-800">
-        <p className="text-sm font-medium text-slate-900 dark:text-white">
-          {t("completenessLabel", { percent: completeness.percent })}
-        </p>
-        <p
-          className={
-            activation.isActivated
-              ? "text-sm text-green-700 dark:text-green-400"
-              : "text-sm text-amber-700 dark:text-amber-400"
-          }
-        >
-          {activation.isActivated
-            ? t("activatedLabel")
-            : t("notActivatedLabel", { missing: activationMissingText })}
-        </p>
-        <h2 className="mt-2 text-sm font-semibold text-slate-900 dark:text-white">
-          {tChecklist("title")}
-        </h2>
-        <ActivationChecklist
-          items={checklistItems}
-          labels={{
-            profile: tChecklist("item.profile"),
-            productsServices: tChecklist("item.productsServices"),
-            offer: tChecklist("item.offer"),
-            need: tChecklist("item.need"),
-            markets: tChecklist("item.markets"),
-            viewPartners: tChecklist("item.viewPartners"),
-          }}
-        />
+        {/* companies.status décide EN PREMIER de l'affichage — jamais le
+            calcul de complétude/checklist (Phase 10C, LOT 10C-4). Une
+            entreprise déjà publiée (status = 'active') affiche UNIQUEMENT
+            "Entreprise publiée" + le lien vers la fiche publique, même si
+            son profil est redevenu incomplet depuis la publication : ni la
+            checklist, ni "Préparation au matching : X %" ne doivent
+            réapparaître pour une entreprise déjà publiée. Préparation au
+            matching (percent/checklist) et publication (status) restent
+            deux notions distinctes, mais l'AFFICHAGE, lui, est tranché par
+            un seul aiguillage sur status, pas par deux blocs indépendants
+            rendus l'un après l'autre. */}
+        {company.status === "active" ? (
+          <p className="text-sm text-green-700 dark:text-green-400">
+            {t("companyPublished")}{" "}
+            <Link
+              href={{
+                pathname: "/entreprises/[geoOrSlug]",
+                params: { geoOrSlug: company.slug },
+              }}
+              className="underline"
+            >
+              {t("viewPublicProfileAction")}
+            </Link>
+          </p>
+        ) : company.status === "draft" ? (
+          <>
+            <p className="text-sm font-medium text-slate-900 dark:text-white">
+              {t("completenessLabel", { percent: completeness.percent })}
+            </p>
+            <div className="flex flex-col gap-2">
+              {latestPublicationRequest?.status === "pending" ? (
+                <p className="text-sm text-amber-700 dark:text-amber-400">
+                  {t("publicationPending")}
+                </p>
+              ) : (
+                <>
+                  {latestPublicationRequest?.status === "rejected" ? (
+                    <p className="text-sm text-red-600 dark:text-red-400">
+                      {latestPublicationRequest.review_note
+                        ? t("publicationRejected", {
+                            note: latestPublicationRequest.review_note,
+                          })
+                        : t("publicationRejectedNoNote")}
+                    </p>
+                  ) : null}
+                  {activation.isActivated ? (
+                    <>
+                      <p className="text-sm text-slate-700 dark:text-slate-200">
+                        {t("readyForPublication")}
+                      </p>
+                      <p className="text-sm text-slate-500 dark:text-slate-400">
+                        {t("publicationNotPublishedNotice")}
+                      </p>
+                      <RequestPublicationButton companyId={company.id} />
+                    </>
+                  ) : (
+                    <p className="text-sm text-amber-700 dark:text-amber-400">
+                      {t("notReadyForPublication", {
+                        missing: activationMissingText,
+                      })}
+                    </p>
+                  )}
+                </>
+              )}
+            </div>
+            <h2 className="mt-2 text-sm font-semibold text-slate-900 dark:text-white">
+              {tChecklist("title")}
+            </h2>
+            <ActivationChecklist
+              items={checklistItems}
+              labels={{
+                profile: tChecklist("item.profile"),
+                productsServices: tChecklist("item.productsServices"),
+                offer: tChecklist("item.offer"),
+                need: tChecklist("item.need"),
+                markets: tChecklist("item.markets"),
+                viewPartners: tChecklist("item.viewPartners"),
+              }}
+            />
+          </>
+        ) : null}
       </section>
 
       <section id="profile" className="flex flex-col gap-4">
@@ -432,7 +497,7 @@ export default async function EditCompanyPage({
                 actions={
                   <RequestPartnershipButton
                     requesterCompanies={
-                      canManageOffersNeeds
+                      canManageOffersNeeds && company.status === "active"
                         ? [{ id: company.id, name: company.display_name }]
                         : []
                     }

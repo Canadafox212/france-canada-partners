@@ -127,8 +127,15 @@
     "statusActive": "Actif",
     "statusRemoved": "Retiré",
     "completenessLabel": "Préparation au matching : {percent} %",
-    "activatedLabel": "Activée — visible dans le matching",
-    "notActivatedLabel": "Non activée — ajoutez {missing} pour apparaître dans le matching.",
+    "readyForPublication": "Profil prêt pour publication",
+    "notReadyForPublication": "Complétez votre profil pour pouvoir demander la publication : ajoutez {missing}.",
+    "requestPublicationAction": "Demander la publication",
+    "publicationNotPublishedNotice": "Votre entreprise n'est pas encore publiée.",
+    "publicationPending": "Publication en cours de validation",
+    "publicationRejected": "Votre demande de publication a été refusée : {note}",
+    "publicationRejectedNoNote": "Votre demande de publication a été refusée.",
+    "companyPublished": "Entreprise publiée",
+    "viewPublicProfileAction": "Voir la fiche publique",
     "missingCriterion": {
       "claimed": "un membre responsable (propriétaire ou administrateur)",
       "description": "une description",
@@ -417,6 +424,11 @@
     "alreadyPending": "Une demande est déjà en cours avec cette entreprise.",
     "alreadyPendingUnclaimed": "Une demande est déjà enregistrée ; elle sera transmise dès que cette entreprise revendiquera sa fiche.",
     "rateLimitError": "Trop de demandes ont été envoyées récemment. Veuillez réessayer un peu plus tard.",
+    "requesterNotActiveError": "Votre entreprise doit être publiée pour envoyer une demande de mise en relation.",
+    "targetNotActiveError": "Cette entreprise n'est pas disponible pour une mise en relation.",
+    "duplicateActiveRequestError": "Une demande est déjà en cours entre ces deux entreprises.",
+    "notAuthorizedError": "Vous devez être autorisé à agir au nom de cette entreprise.",
+    "publishFirstNotice": "Publiez d'abord votre entreprise pour demander une mise en relation.",
     "listTitle": "Mises en relation",
     "receivedTab": "Reçues",
     "sentTab": "Envoyées",
@@ -472,8 +484,30 @@
       "partnership_request_declined": {
         "title": "Demande refusée",
         "message": "Votre demande de mise en relation a été refusée."
+      },
+      "company_publication_approved": {
+        "title": "Entreprise publiée",
+        "message": "Votre entreprise a été publiée."
+      },
+      "company_publication_rejected": {
+        "title": "Publication refusée",
+        "message": "Votre demande de publication nécessite des modifications."
       }
     }
+  },
+  "CompanyPublication": {
+    "adminTitle": "Publications à examiner",
+    "adminEmpty": "Aucune demande de publication en attente.",
+    "adminColumnCompany": "Entreprise",
+    "adminColumnRequester": "Demandeur",
+    "adminColumnDate": "Date",
+    "adminColumnReady": "Profil prêt",
+    "adminReadyYes": "Oui",
+    "adminReadyNo": "Non",
+    "adminApprove": "Approuver",
+    "adminReject": "Refuser",
+    "adminNotesLabel": "Motif du refus (optionnel)",
+    "adminRequesterUnknown": "— (compte supprimé)"
   },
   "QuebecLanding": {
     "metaTitle": "Rejoindre France Canada Partners — Entreprises du Québec",

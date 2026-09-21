@@ -308,7 +308,7 @@ export default async function EntrepriseOrGeoPage({
     user
       ? supabase
           .from("company_members")
-          .select("company_id, role, companies(id, display_name)")
+          .select("company_id, role, companies(id, display_name, status)")
           .eq("user_id", user.id)
           .eq("status", "active")
           .in("role", ["owner", "admin", "member"])
@@ -331,12 +331,19 @@ export default async function EntrepriseOrGeoPage({
   const isMember = (userCompanies ?? []).some(
     (m) => m.company_id === company.id,
   );
-  const eligibleCompanies = (userCompanies ?? [])
+  const memberCompanies = (userCompanies ?? [])
     .map((m) => (Array.isArray(m.companies) ? m.companies[0] : m.companies))
     .filter(
-      (c): c is { id: string; display_name: string } =>
+      (c): c is { id: string; display_name: string; status: string } =>
         !!c && c.id !== company.id,
     );
+  // Seule une entreprise publiée (status = 'active') peut demander une
+  // mise en relation (Phase 10C, LOT 10C-4) — le serveur (create_
+  // partnership_request) le vérifie déjà, mais ne doit même pas être
+  // proposée comme choix ici.
+  const eligibleCompanies = memberCompanies.filter(
+    (c) => c.status === "active",
+  );
 
   const rawSearchParams = await searchParams;
   const compareWithId = rawSearchParams.compareWith || eligibleCompanies[0]?.id;
@@ -576,6 +583,10 @@ export default async function EntrepriseOrGeoPage({
                 sourceType="DIRECTORY"
                 alreadyActiveStatus={existingPartnershipRequestStatus}
               />
+            ) : !isMember && memberCompanies.length > 0 ? (
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                {tPartnership("publishFirstNotice")}
+              </p>
             ) : null
           ) : (
             <div className="flex flex-col gap-1">
