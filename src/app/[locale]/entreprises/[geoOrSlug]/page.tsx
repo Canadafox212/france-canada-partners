@@ -217,7 +217,63 @@ export default async function EntrepriseOrGeoPage({
 
   // --- Sinon : fiche entreprise publique ------------------------------
   const company = await loadCompanyBySlug(geoOrSlug);
-  if (!company) notFound();
+  if (!company) {
+    // loadCompanyBySlug() est soumis à la RLS publique (status = 'active'
+    // OU appartenance) : une entreprise draft/non active retrouvée par
+    // find_similar_companies() (Phase 10C, LOT 10C-2) donnerait ici un 404
+    // pur pour un visiteur non membre, alors que sa revendication reste
+    // pourtant possible côté base (submit_company_claim() ne vérifie
+    // aucun statut). Pour éviter ce cul-de-sac SANS rendre la fiche
+    // complète publique, une prévisualisation minimale (nom + statut de
+    // revendication uniquement, jamais offres/besoins/description/
+    // coordonnées) est proposée à un utilisateur connecté via une fonction
+    // dédiée à colonnes restreintes.
+    if (user) {
+      const previewClient = await createClient();
+      const { data: previewRows } = await previewClient.rpc(
+        "get_company_claim_preview",
+        { p_slug: geoOrSlug },
+      );
+      const preview = (previewRows ?? [])[0] ?? null;
+      if (preview) {
+        const tPreview = await getTranslations("CompanyPublic");
+        let previewExistingClaim: {
+          id: string;
+          status: "pending" | "verified" | "approved" | "rejected" | "cancelled";
+        } | null = null;
+        if (!preview.is_claimed) {
+          const { data } = await previewClient
+            .from("company_claims")
+            .select("id, status")
+            .eq("company_id", preview.id)
+            .eq("user_id", user.id)
+            .order("submitted_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          previewExistingClaim = data;
+        }
+        return (
+          <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-6 py-16">
+            <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">
+              {preview.display_name}
+            </h1>
+            <p className="rounded-md bg-amber-50 px-4 py-2 text-sm text-amber-800 dark:bg-amber-950 dark:text-amber-200">
+              {preview.is_claimed
+                ? tPreview("draftAlreadyClaimedNotice")
+                : tPreview("draftUnclaimedNotice")}
+            </p>
+            {!preview.is_claimed ? (
+              <ClaimCompanyForm
+                companyId={preview.id}
+                existingClaim={previewExistingClaim}
+              />
+            ) : null}
+          </main>
+        );
+      }
+    }
+    notFound();
+  }
 
   const t = await getTranslations("CompanyPublic");
   const tPartnership = await getTranslations("PartnershipRequest");

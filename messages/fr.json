@@ -354,8 +354,21 @@
     "compatibilityCompareAction": "Comparer",
     "noCompatibility": "Aucune compatibilité calculable pour l'instant entre vos entreprises.",
     "notPublicNotice": "Cette fiche n'est pas encore publique — visible ici uniquement parce que vous êtes rattaché à cette entreprise.",
+    "draftUnclaimedNotice": "Cette entreprise existe déjà sur France Canada Partners et n'est pas encore revendiquée.",
+    "draftAlreadyClaimedNotice": "Cette entreprise existe déjà et a déjà été revendiquée.",
     "copyLinkAction": "Copier le lien",
     "copyLinkDone": "Lien copié."
+  },
+  "DuplicateCheck": {
+    "checkAction": "Vérifier les doublons",
+    "checking": "Vérification en cours…",
+    "strongTitle": "Cette entreprise semble déjà exister sur France Canada Partners.",
+    "strongClaimCta": "Revendiquer cette entreprise",
+    "strongAlreadyClaimed": "Cette entreprise est déjà revendiquée.",
+    "possibleTitle": "Une entreprise similaire existe peut-être. Vérifiez avant de continuer.",
+    "viewAction": "Voir cette entreprise",
+    "continueAction": "Ce n'est pas mon entreprise — continuer la création",
+    "noneFound": "Aucune entreprise similaire trouvée."
   },
   "Claim": {
     "formTitle": "Revendiquer cette fiche",
@@ -403,6 +416,7 @@
     "successPendingUnclaimed": "Cette entreprise n'a pas encore revendiqué sa fiche. Votre demande pourra être transmise lorsqu'elle sera revendiquée.",
     "alreadyPending": "Une demande est déjà en cours avec cette entreprise.",
     "alreadyPendingUnclaimed": "Une demande est déjà enregistrée ; elle sera transmise dès que cette entreprise revendiquera sa fiche.",
+    "rateLimitError": "Trop de demandes ont été envoyées récemment. Veuillez réessayer un peu plus tard.",
     "listTitle": "Mises en relation",
     "receivedTab": "Reçues",
     "sentTab": "Envoyées",

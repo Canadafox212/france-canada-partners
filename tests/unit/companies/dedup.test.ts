@@ -1,6 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { compareForDuplicate, highestDuplicateLevel } from "@/lib/import/dedup";
-import type { DedupProfile } from "@/lib/import/dedup";
+import {
+  compareForDuplicate,
+  highestDuplicateLevel,
+} from "@/lib/companies/dedup";
+import type { DedupProfile } from "@/lib/companies/dedup";
+
+/**
+ * Déplacé depuis tests/unit/import/dedup.test.ts (Phase 10C, LOT 10C-2) en
+ * même temps que la logique elle-même — comportement inchangé, voir
+ * src/lib/companies/dedup.ts. Le pipeline d'import (src/lib/import/staging.ts)
+ * réutilise ce même module sans aucune divergence de règle.
+ */
 
 function profile(overrides: Partial<DedupProfile> = {}): DedupProfile {
   return {
@@ -13,7 +23,7 @@ function profile(overrides: Partial<DedupProfile> = {}): DedupProfile {
   };
 }
 
-describe("compareForDuplicate (§7/§13/§14 de la demande Phase 8)", () => {
+describe("compareForDuplicate (§7/§13/§14 de la demande Phase 8, déplacé Phase 10C)", () => {
   it("numéro d'entreprise identique -> EXACT", () => {
     const result = compareForDuplicate(
       profile({ registrationNumber: "349357343" }),

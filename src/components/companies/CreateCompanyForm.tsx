@@ -13,23 +13,86 @@ import {
 import { FormField, inputClasses } from "@/components/ui/FormField";
 import { SubmitButton } from "@/components/ui/Button";
 import { slugify } from "@/lib/utils";
+import {
+  scoreSimilarCompanies,
+  hasBlockingDuplicate,
+  type ScoredSimilarCompany,
+} from "@/lib/companies/duplicateCheck";
+import { DuplicateWarning } from "@/components/companies/DuplicateWarning";
 
 type Industry = { id: string; label: string };
 
 export function CreateCompanyForm({ industries }: { industries: Industry[] }) {
   const t = useTranslations("Company");
   const tCommon = useTranslations("Common");
+  const tDup = useTranslations("DuplicateCheck");
   const router = useRouter();
   const [formError, setFormError] = useState<string | null>(null);
+  const [checking, setChecking] = useState(false);
+  const [duplicateCandidates, setDuplicateCandidates] = useState<
+    ScoredSimilarCompany[] | null
+  >(null);
+  const [confirmedNotMine, setConfirmedNotMine] = useState(false);
 
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm<CreateCompanyInput>({
     resolver: zodResolver(createCompanySchema),
     defaultValues: { descriptionLocale: "fr" },
   });
+
+  async function handleCheckDuplicates() {
+    const { displayName, legalName, website, city, countryCode } = getValues();
+    if (!displayName || displayName.trim().length === 0) return;
+
+    setChecking(true);
+    setConfirmedNotMine(false);
+    const supabase = createClient();
+    // p_registration_number n'est jamais fourni ici : ce formulaire ne
+    // collecte aucun numéro officiel (SIREN ou équivalent) — voir la revue
+    // de sécurité de la migration 0024. Le paramètre reste plombé côté
+    // fonction/scoring pour un futur appelant qui en collecterait un,
+    // jamais une fonctionnalité fictive présentée comme active ici.
+    const { data } = await supabase.rpc("find_similar_companies", {
+      p_display_name: displayName,
+      p_website: website || null,
+      p_country_code: countryCode || null,
+      p_city: city || null,
+    });
+    setChecking(false);
+
+    const candidates = (data ?? []).map(
+      (c: {
+        id: string;
+        display_name: string;
+        legal_name: string | null;
+        slug: string;
+        website: string | null;
+        country_code: string;
+        region: string | null;
+        city: string | null;
+        is_claimed: boolean;
+        registration_number_match: boolean;
+      }) => ({
+        id: c.id,
+        displayName: c.display_name,
+        legalName: c.legal_name,
+        slug: c.slug,
+        website: c.website,
+        countryCode: c.country_code,
+        region: c.region,
+        city: c.city,
+        isClaimed: c.is_claimed,
+        registrationNumberMatch: c.registration_number_match,
+      }),
+    );
+    setDuplicateCandidates(
+      scoreSimilarCompanies({ displayName, legalName, website, city }, candidates),
+    );
+  }
 
   async function onSubmit(values: CreateCompanyInput) {
     setFormError(null);
@@ -135,6 +198,25 @@ export function CreateCompanyForm({ industries }: { industries: Industry[] }) {
         />
       </FormField>
 
+      <div className="flex flex-col gap-3">
+        <SubmitButton
+          type="button"
+          variant="secondary"
+          className="self-start"
+          isLoading={checking}
+          onClick={handleCheckDuplicates}
+        >
+          {checking ? tDup("checking") : tDup("checkAction")}
+        </SubmitButton>
+        {duplicateCandidates !== null ? (
+          <DuplicateWarning
+            candidates={duplicateCandidates}
+            confirmed={confirmedNotMine}
+            onConfirmNotMine={() => setConfirmedNotMine(true)}
+          />
+        ) : null}
+      </div>
+
       <FormField
         label={t("professionalEmail")}
         htmlFor="professionalEmail"
@@ -202,7 +284,11 @@ export function CreateCompanyForm({ industries }: { industries: Industry[] }) {
         </p>
       ) : null}
 
-      <SubmitButton isLoading={isSubmitting} className="self-start">
+      <SubmitButton
+        isLoading={isSubmitting}
+        disabled={hasBlockingDuplicate(duplicateCandidates) && !confirmedNotMine}
+        className="self-start"
+      >
         {isSubmitting ? tCommon("loading") : t("submitCreate")}
       </SubmitButton>
     </form>

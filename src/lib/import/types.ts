@@ -5,6 +5,11 @@
  * supabase/migrations/0020_import_pipeline.sql.
  */
 
+// Vocabulaire de déduplication : source unique dans src/lib/companies/dedup.ts
+// (Phase 10C, LOT 10C-2 — déplacé depuis ce fichier, jamais dupliqué).
+import type { DuplicateLevel, DuplicateSignal } from "@/lib/companies/dedup";
+export type { DuplicateLevel } from "@/lib/companies/dedup";
+
 export type BatchStatus =
   | "PENDING"
   | "VALIDATING"
@@ -15,9 +20,6 @@ export type BatchStatus =
   | "CANCELLED";
 
 export type ValidationStatus = "VALID" | "WARNING" | "REJECTED" | "QUARANTINED";
-
-export type DuplicateLevel =
-  "EXACT" | "VERY_LIKELY" | "POSSIBLE" | "UNLIKELY" | "NEW";
 
 export type EmailClassification =
   | "GENERIC_BUSINESS"
@@ -90,8 +92,7 @@ export interface ValidatedCompanyRow extends NormalizedCompanyRow {
 
 export interface DuplicateMatch {
   level: Exclude<DuplicateLevel, "NEW">;
-  signal:
-    "registration_number" | "website_domain" | "name_location" | "name_only";
+  signal: DuplicateSignal;
   existingCompanyId?: string;
   otherRowNumber?: number;
 }

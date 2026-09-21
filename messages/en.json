@@ -354,8 +354,21 @@
     "compatibilityCompareAction": "Compare",
     "noCompatibility": "No compatibility can be computed yet between your companies.",
     "notPublicNotice": "This listing is not public yet — visible here only because you are attached to this company.",
+    "draftUnclaimedNotice": "This company already exists on France Canada Partners and has not been claimed yet.",
+    "draftAlreadyClaimedNotice": "This company already exists and has already been claimed.",
     "copyLinkAction": "Copy link",
     "copyLinkDone": "Link copied."
+  },
+  "DuplicateCheck": {
+    "checkAction": "Check for duplicates",
+    "checking": "Checking…",
+    "strongTitle": "This company already seems to exist on France Canada Partners.",
+    "strongClaimCta": "Claim this company",
+    "strongAlreadyClaimed": "This company is already claimed.",
+    "possibleTitle": "A similar company may already exist. Please check before continuing.",
+    "viewAction": "View this company",
+    "continueAction": "This isn't my company — continue creating",
+    "noneFound": "No similar company found."
   },
   "Claim": {
     "formTitle": "Claim this listing",
@@ -403,6 +416,7 @@
     "successPendingUnclaimed": "This company hasn't claimed its profile yet. Your request will be delivered once it does.",
     "alreadyPending": "A request is already in progress with this company.",
     "alreadyPendingUnclaimed": "A request is already on file; it will be delivered once this company claims its profile.",
+    "rateLimitError": "Too many requests have been sent recently. Please try again a little later.",
     "listTitle": "Partnership requests",
     "receivedTab": "Received",
     "sentTab": "Sent",

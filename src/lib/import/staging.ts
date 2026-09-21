@@ -8,7 +8,7 @@ import {
   compareForDuplicate,
   highestDuplicateLevel,
   type DedupProfile,
-} from "./dedup";
+} from "@/lib/companies/dedup";
 import type {
   DuplicateMatch,
   RowIssue,

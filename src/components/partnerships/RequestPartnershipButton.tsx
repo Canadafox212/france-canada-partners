@@ -68,7 +68,15 @@ export function RequestPartnershipButton({
       p_source_opportunity_id: sourceOpportunityId,
     });
     if (error) {
-      setFormError(error.message || tCommon("errorGeneric"));
+      // Marqueur stable renvoyé par create_partnership_request() (Phase 10C,
+      // LOT 10C-2) — traduit ici plutôt que renvoyé déjà en français/anglais
+      // depuis la fonction, pour rester bilingue sans changer la convention
+      // des autres messages de cette RPC (restés en français, voir 0024).
+      setFormError(
+        error.message === "RATE_LIMIT_EXCEEDED"
+          ? t("rateLimitError")
+          : error.message || tCommon("errorGeneric"),
+      );
       return;
     }
     setOutcome(
