@@ -17,7 +17,7 @@ export const loadCompanyBySlug = cache(async (slug: string) => {
   const { data } = await supabase
     .from("companies")
     .select(
-      `id, legal_name, display_name, slug, website, professional_email, phone, country_code,
+      `id, legal_name, display_name, slug, website, country_code,
        verification_status, status, claimed_at, updated_at,
        company_locations(id, region, city, country_code, is_primary),
        company_translations(locale, description, tagline, content_source),

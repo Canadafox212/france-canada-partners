@@ -553,25 +553,13 @@ export default async function EntrepriseOrGeoPage({
             </dd>
           </div>
         ) : null}
-        {company.professional_email ? (
-          <div>
-            <dt className="text-slate-500 dark:text-slate-400">
-              {t("emailLabel")}
-            </dt>
-            <dd className="text-slate-900 dark:text-white">
-              {company.professional_email}
-            </dd>
-          </div>
-        ) : null}
-        {company.phone ? (
-          <div>
-            <dt className="text-slate-500 dark:text-slate-400">
-              {t("phoneLabel")}
-            </dt>
-            <dd className="text-slate-900 dark:text-white">{company.phone}</dd>
-          </div>
-        ) : null}
       </dl>
+      {/* professional_email/phone ne sont plus affichés sur la fiche
+          publique depuis la Phase 10C (LOT 10C-3) : ces coordonnées ne
+          sont plus jamais sélectionnées par loadCompanyBySlug() et
+          vivent désormais dans company_contacts, jamais public. Le site
+          web reste la seule coordonnée publique (voir le bloc "website"
+          ci-dessus). */}
 
       <CopyLinkButton />
 

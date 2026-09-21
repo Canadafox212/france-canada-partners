@@ -651,10 +651,13 @@ describe("Entreprise cible non revendiquée (§3 de la demande)", () => {
   });
 
   it("la demande devient visible (pending) après revendication de l'entreprise cible", async () => {
-    await admin
-      .from("companies")
-      .update({ professional_email: claimant.email })
-      .eq("id", targetUnclaimedCompanyId);
+    // Phase 10C (LOT 10C-3) : professional_email vit désormais dans
+    // company_contacts, jamais dans companies (colonne legacy contrainte
+    // à NULL depuis la migration 0025).
+    await admin.from("company_contacts").upsert(
+      { company_id: targetUnclaimedCompanyId, professional_email: claimant.email },
+      { onConflict: "company_id" },
+    );
 
     const { data: claim, error } = await claimant.client.rpc(
       "submit_company_claim",

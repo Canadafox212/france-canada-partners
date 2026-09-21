@@ -56,6 +56,16 @@ async function createCompany(
   extra: Record<string, unknown> = {},
 ) {
   const slug = `${label.toLowerCase().replace(/\s+/g, "-")}-${RUN_ID}`;
+  // Phase 10C (LOT 10C-3) : professional_email/phone ne sont plus des
+  // colonnes de companies (contrainte CHECK legacy) — extraites de
+  // "extra" et écrites séparément dans company_contacts, pour que les
+  // appelants existants de ce helper n'aient rien à changer.
+  const { professional_email, phone, ...companyExtra } = extra as {
+    professional_email?: string;
+    phone?: string;
+    [key: string]: unknown;
+  };
+  let id: string;
   if (owner) {
     const { data } = await owner.client
       .rpc("create_company", {
@@ -65,26 +75,34 @@ async function createCompany(
         p_country_code: countryCode,
       })
       .single();
-    const id = (data as { id: string }).id;
+    id = (data as { id: string }).id;
     await admin
       .from("companies")
-      .update({ status: "active", ...extra })
+      .update({ status: "active", ...companyExtra })
       .eq("id", id);
-    return id;
+  } else {
+    const { data } = await admin
+      .from("companies")
+      .insert({
+        legal_name: `${label} ${RUN_ID}`,
+        display_name: `${label} ${RUN_ID}`,
+        slug,
+        country_code: countryCode,
+        status: "active",
+        ...companyExtra,
+      })
+      .select("id")
+      .single();
+    id = (data as { id: string }).id;
   }
-  const { data } = await admin
-    .from("companies")
-    .insert({
-      legal_name: `${label} ${RUN_ID}`,
-      display_name: `${label} ${RUN_ID}`,
-      slug,
-      country_code: countryCode,
-      status: "active",
-      ...extra,
-    })
-    .select("id")
-    .single();
-  return (data as { id: string }).id;
+  if (professional_email || phone) {
+    await admin.from("company_contacts").insert({
+      company_id: id,
+      professional_email: professional_email ?? null,
+      phone: phone ?? null,
+    });
+  }
+  return id;
 }
 
 const createdUserIds: string[] = [];
@@ -130,13 +148,19 @@ beforeAll(async () => {
       display_name: label,
       slug: unclaimedCompanySlug,
       country_code: "CA",
-      professional_email: `contact@${claimantDomain}`,
       status: "active",
     })
     .select("id")
     .single();
   unclaimedCompanyId = (company as { id: string }).id;
   createdCompanyIds.push(unclaimedCompanyId);
+  // Phase 10C (LOT 10C-3) : professional_email vit désormais dans
+  // company_contacts, jamais dans companies (colonne legacy contrainte à
+  // NULL depuis la migration 0025).
+  await admin.from("company_contacts").insert({
+    company_id: unclaimedCompanyId,
+    professional_email: `contact@${claimantDomain}`,
+  });
   await admin.from("company_locations").insert({
     company_id: unclaimedCompanyId,
     location_type: "headquarters",

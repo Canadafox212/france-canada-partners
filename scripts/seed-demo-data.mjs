@@ -136,12 +136,20 @@ async function seedCompanies() {
         display_name: "[DEMO] Métallerie du Rhône",
         slug: "metallerie-du-rhone",
         country_code: "FR",
-        professional_email: "contact@metallerie-du-rhone.example",
         status: "active",
       },
     ],
     { returning: "id" },
   );
+  // Phase 10C (LOT 10C-3) : professional_email vit désormais dans
+  // company_contacts, jamais dans companies (colonne legacy contrainte à
+  // NULL depuis la migration 0025).
+  await insert("company_contacts", [
+    {
+      company_id: companyA.id,
+      professional_email: "contact@metallerie-du-rhone.example",
+    },
+  ]);
   await insert("company_locations", [
     {
       company_id: companyA.id,
@@ -209,12 +217,17 @@ async function seedCompanies() {
         display_name: "[DEMO] Distribution Nordique",
         slug: "distribution-nordique",
         country_code: "CA",
-        professional_email: "contact@distribution-nordique.example",
         status: "active",
       },
     ],
     { returning: "id" },
   );
+  await insert("company_contacts", [
+    {
+      company_id: companyB.id,
+      professional_email: "contact@distribution-nordique.example",
+    },
+  ]);
   await insert("company_locations", [
     {
       company_id: companyB.id,
@@ -282,12 +295,17 @@ async function seedCompanies() {
         display_name: "[DEMO] NovaTech Solutions",
         slug: "novatech-solutions",
         country_code: "FR",
-        professional_email: "contact@novatech-solutions.example",
         status: "active",
       },
     ],
     { returning: "id" },
   );
+  await insert("company_contacts", [
+    {
+      company_id: companyC.id,
+      professional_email: "contact@novatech-solutions.example",
+    },
+  ]);
   await insert("company_locations", [
     {
       company_id: companyC.id,

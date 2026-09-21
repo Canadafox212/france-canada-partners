@@ -83,7 +83,7 @@ export default async function EditCompanyPage({
   const { data: company } = await supabase
     .from("companies")
     .select(
-      "id, display_name, legal_name, website, professional_email, phone, company_locations(id, region, city, is_primary), company_translations(locale, description, tagline), company_industries(industry_id)",
+      "id, display_name, legal_name, website, company_locations(id, region, city, is_primary), company_translations(locale, description, tagline), company_industries(industry_id)",
     )
     .eq("id", id)
     .single();
@@ -121,6 +121,7 @@ export default async function EditCompanyPage({
     { data: needRows },
     { data: opportunityRows },
     { data: marketRows },
+    { data: contact },
   ] = await Promise.all([
     supabase
       .from("company_members")
@@ -169,6 +170,14 @@ export default async function EditCompanyPage({
       .eq("company_id", id)
       .eq("market_type", "target")
       .order("created_at"),
+    // Phase 10C (LOT 10C-3) : professional_email/phone vivent désormais
+    // dans company_contacts, jamais dans companies — même RLS de lecture
+    // (owner/admin/member/viewer) que le reste de cette page.
+    supabase
+      .from("company_contacts")
+      .select("professional_email, phone")
+      .eq("company_id", id)
+      .maybeSingle(),
   ]);
 
   const [partners, opportunitiesForYou] = await Promise.all([
@@ -316,8 +325,8 @@ export default async function EditCompanyPage({
               displayName: company.display_name,
               legalName: company.legal_name ?? "",
               website: company.website ?? "",
-              professionalEmail: company.professional_email ?? "",
-              phone: company.phone ?? "",
+              professionalEmail: contact?.professional_email ?? "",
+              phone: contact?.phone ?? "",
               region: primaryLocation?.region ?? "",
               city: primaryLocation?.city ?? "",
               description: translation?.description ?? "",

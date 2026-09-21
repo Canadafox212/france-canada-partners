@@ -118,8 +118,6 @@ export async function commitStagingRow(
       display_name: row.normalized.displayName,
       slug,
       website: row.normalized.website,
-      professional_email: professionalEmail,
-      phone: row.normalized.phone,
       company_registration_number: row.normalized.registrationNumber,
       country_code: row.normalized.countryCode,
       // Toujours 'draft' à l'import (§13/§22 : IMPORTED_DRAFT) — jamais
@@ -134,6 +132,23 @@ export async function commitStagingRow(
       `Création de l'entreprise (ligne ${row.rowNumber}) impossible : ${error.message}`,
     );
   const companyId = company.id as string;
+
+  // Phase 10C (LOT 10C-3) : professional_email/phone ne sont plus écrites
+  // dans companies (colonnes legacy désormais contraintes à NULL — voir
+  // 0025) mais dans company_contacts, en insertion séquentielle comme les
+  // autres tables secondaires ci-dessous (company_locations,
+  // company_translations) — même risque déjà accepté par ce pipeline en
+  // cas d'échec partiel (aucune de ces insertions secondaires n'est
+  // aujourd'hui enveloppée dans une transaction ; une nouvelle
+  // architecture transactionnelle n'a pas été introduite pour ce seul
+  // lot, ce risque préexistant n'étant pas aggravé par ce changement).
+  if (professionalEmail || row.normalized.phone) {
+    await supabase.from("company_contacts").insert({
+      company_id: companyId,
+      professional_email: professionalEmail,
+      phone: row.normalized.phone,
+    });
+  }
 
   if (row.normalized.city || row.normalized.region || row.normalized.address) {
     await supabase.from("company_locations").insert({

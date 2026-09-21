@@ -234,10 +234,16 @@ describe("Création d'entreprise (create_company) et rattachement automatique", 
 });
 
 describe("OWNER peut modifier son entreprise, dans les limites autorisées", () => {
-  it("modifie un champ métier autorisé (phone)", async () => {
+  // legal_name sert ici de champ métier générique pour tester la frontière
+  // RLS d'UPDATE sur companies — phone ne convient plus depuis la Phase
+  // 10C (LOT 10C-3) : companies.phone est désormais contrainte à NULL en
+  // permanence (colonne legacy, migration 0025), donc toujours rejetée
+  // par une contrainte CHECK, y compris pour un owner par ailleurs
+  // autorisé par la RLS — cela testerait la contrainte, plus la RLS.
+  it("modifie un champ métier autorisé (legal_name)", async () => {
     const { error } = await owner.client
       .from("companies")
-      .update({ phone: "+1 418 555 0100" })
+      .update({ legal_name: "Nom légal modifié par le owner" })
       .eq("id", companyId);
     expect(error).toBeNull();
   });
@@ -272,16 +278,16 @@ describe("MEMBER : actions autorisées seulement", () => {
   it("NE PEUT PAS modifier la fiche entreprise elle-même (réservé owner/admin)", async () => {
     const { error } = await member.client
       .from("companies")
-      .update({ phone: "+1 418 555 0199" })
+      .update({ legal_name: "Nom légal modifié par un member" })
       .eq("id", companyId);
     // La ligne n'est simplement pas affectée (0 ligne modifiée) plutôt
     // qu'une erreur explicite : on vérifie que la valeur n'a pas changé.
     const { data } = await admin
       .from("companies")
-      .select("phone")
+      .select("legal_name")
       .eq("id", companyId)
       .single();
-    expect(data?.phone).not.toBe("+1 418 555 0199");
+    expect(data?.legal_name).not.toBe("Nom légal modifié par un member");
     void error;
   });
 });
@@ -290,14 +296,14 @@ describe("Utilisateur extérieur : ne peut jamais modifier une entreprise qui n'
   it("NE PEUT PAS modifier l'entreprise d'un autre", async () => {
     await outsider.client
       .from("companies")
-      .update({ phone: "+1 418 555 0000" })
+      .update({ legal_name: "Nom légal modifié par un tiers" })
       .eq("id", companyId);
     const { data } = await admin
       .from("companies")
-      .select("phone")
+      .select("legal_name")
       .eq("id", companyId)
       .single();
-    expect(data?.phone).not.toBe("+1 418 555 0000");
+    expect(data?.legal_name).not.toBe("Nom légal modifié par un tiers");
   });
 
   it("NE PEUT PAS s'ajouter lui-même comme membre de cette entreprise", async () => {

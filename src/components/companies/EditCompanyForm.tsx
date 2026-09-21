@@ -48,14 +48,19 @@ export function EditCompanyForm({
     // envoyés ici : ils sont protégés côté base (voir migration 0009) et
     // n'apparaissent pas dans ce formulaire (principe de minimisation de
     // ce qui peut être demandé, en plus de la protection technique).
+    //
+    // professional_email/phone ne sont plus écrites dans companies depuis
+    // la Phase 10C (LOT 10C-3) — companies.professional_email/phone sont
+    // désormais NULL en permanence (contrainte CHECK côté base) et
+    // rejetteraient cette écriture si elle était encore tentée ici. Les
+    // vraies valeurs vivent dans company_contacts, upsert séparément
+    // ci-dessous — même geste que company_translations juste après.
     const { error: companyError } = await supabase
       .from("companies")
       .update({
         display_name: values.displayName,
         legal_name: values.legalName || values.displayName,
         website: values.website || null,
-        professional_email: values.professionalEmail || null,
-        phone: values.phone || null,
       })
       .eq("id", companyId);
 
@@ -63,6 +68,15 @@ export function EditCompanyForm({
       setFormError(tCommon("errorGeneric"));
       return;
     }
+
+    await supabase.from("company_contacts").upsert(
+      {
+        company_id: companyId,
+        professional_email: values.professionalEmail || null,
+        phone: values.phone || null,
+      },
+      { onConflict: "company_id" },
+    );
 
     if (locationId) {
       await supabase

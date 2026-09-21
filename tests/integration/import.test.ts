@@ -476,12 +476,17 @@ describe("Courriel nominatif jamais publié automatiquement (§6, réel)", () =>
     createdBatchIds.push(real.batchId);
     createdCompanyIds.push(...real.createdCompanyIds);
 
-    const { data: company } = await admin
-      .from("companies")
+    // Phase 10C (LOT 10C-3) : professional_email vit désormais dans
+    // company_contacts (companies.professional_email est structurellement
+    // toujours NULL depuis la migration 0025 — vérifier cette seule
+    // colonne ne prouverait donc plus rien ; c'est company_contacts qui
+    // doit rester vide ou nulle pour cette entreprise).
+    const { data: contact } = await admin
+      .from("company_contacts")
       .select("professional_email")
-      .eq("id", real.createdCompanyIds[0])
-      .single();
-    expect(company!.professional_email).toBeNull();
+      .eq("company_id", real.createdCompanyIds[0])
+      .maybeSingle();
+    expect(contact?.professional_email ?? null).toBeNull();
   });
 });
 
