@@ -81,12 +81,12 @@ plus tard si le besoin s'en fait sentir.
 ## 6. Confidentialité
 
 Une acceptation confirme uniquement **que la demande a été acceptée** —
-jamais un courriel, un téléphone ou une adresse personnels. Les
-coordonnées de contact restent, comme avant cette phase, celles déjà
-publiques sur la fiche entreprise (si l'entreprise a choisi de les rendre
-publiques) ; cette phase ne change rien à leur visibilité. Le
-déverrouillage de coordonnées privées à l'acceptation est une décision
-volontairement laissée à une itération future.
+jamais un courriel, un téléphone ou une adresse personnels. **Mise à jour
+Phase 10C (LOT 10C-3)** : `professional_email`/`phone` ne sont plus
+affichés sur la fiche publique (déplacés vers `company_contacts`, jamais
+public — voir `docs/SECURITY.md`) ; le site web reste la seule coordonnée
+publique. Le déverrouillage de coordonnées privées à l'acceptation d'une
+demande reste une décision volontairement laissée à une itération future.
 
 ## 7. Notifications
 

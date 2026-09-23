@@ -33,8 +33,10 @@ Phase 3) — ne pas confondre les deux échelles.
 `approved`, rattachement `owner` dans la même transaction) si **toutes**
 ces conditions sont réunies :
 
-1. l'entreprise a un `professional_email` dont le domaine correspond
-   EXACTEMENT à celui soumis par le demandeur dans le formulaire ;
+1. l'entreprise a un `professional_email` (table `company_contacts` depuis
+   la Phase 10C/LOT 10C-3, jamais `companies` directement — voir
+   `docs/SECURITY.md`) dont le domaine correspond EXACTEMENT à celui
+   soumis par le demandeur dans le formulaire ;
 2. ce domaine n'est pas un domaine grand public (gmail.com, outlook.com,
    hotmail.com, icloud.com, yahoo.com, live.com, aol.com, protonmail.com —
    liste fixe dans la fonction, à étendre si besoin) ;
