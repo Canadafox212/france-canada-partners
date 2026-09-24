@@ -28,7 +28,7 @@ Le site est accessible sur [http://localhost:3000](http://localhost:3000) (redir
 | `npm run lint`             | Vérifie le style et les erreurs courantes                                     |
 | `npm run typecheck`        | Vérifie les types TypeScript                                                  |
 | `npm test`                 | Lance les tests unitaires (rapides, hors-ligne)                               |
-| `npm run test:integration` | Lance les tests réels contre le vrai projet Supabase (nécessite `.env.local`) |
+| `npm run test:integration` | Lance les tests réels contre un projet Supabase de préproduction (nécessite `.env.preprod.local`, jamais `.env.local`) |
 | `npm run format`           | Reformate le code automatiquement                                             |
 
 ## Documentation

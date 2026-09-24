@@ -33,6 +33,7 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 !.env.example
+!.env.preprod.local.example
 
 # vercel
 .vercel
@@ -53,3 +54,7 @@ next-env.d.ts
 # 10C, LOT 10C-4) : définitions SQL sensibles à l'état exact du projet
 # Supabase du moment, jamais versionnées ni partagées via git.
 /docs/rollback/
+
+# Script d'application des migrations sur un projet Supabase de
+# préproduction — chemins absolus propres à la machine, jamais versionné.
+/scripts/preprod/
