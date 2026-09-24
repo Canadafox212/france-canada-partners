@@ -50,11 +50,6 @@ next-env.d.ts
 # Cache local de la CLI Supabase (recréé automatiquement).
 /supabase/.temp/
 
-# Plans de retour arrière de migrations en attente d'application (Phase
-# 10C, LOT 10C-4) : définitions SQL sensibles à l'état exact du projet
-# Supabase du moment, jamais versionnées ni partagées via git.
-/docs/rollback/
-
 # Script d'application des migrations sur un projet Supabase de
 # préproduction — chemins absolus propres à la machine, jamais versionné.
 /scripts/preprod/
