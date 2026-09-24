@@ -1,5 +1,6 @@
 import { readFileSync, existsSync } from "node:fs";
 import path from "node:path";
+import { assertPreprodSupabaseUrl } from "./productionGuard";
 
 /**
  * Depuis la Phase 10C (dette documentée dans CHANGELOG.md) : les tests
@@ -35,23 +36,8 @@ for (const line of readFileSync(envPath, "utf8").split(/\r?\n/)) {
 
 // Sécurité (Phase 10C, dette documentée dans CHANGELOG.md) : les tests
 // d'intégration ne doivent plus jamais s'exécuter contre la production,
-// ni contre un projet Supabase autre que le préprod attendu. Ces deux
-// identifiants sont volontairement en dur : jamais à lire depuis une
-// variable d'environnement, qui est justement ce que l'on vérifie ici.
-const PRODUCTION_PROJECT_REF = "exfhxhoragpphrksdcjf";
-const EXPECTED_PREPROD_PROJECT_REF = "eowveslvhbufomsdkhzt"; // fcp-preprod
+// ni contre un projet Supabase autre que le préprod attendu. Logique
+// extraite dans productionGuard.ts pour être testable sans réseau — voir
+// tests/unit/productionGuard.test.ts.
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-
-if (supabaseUrl.includes(PRODUCTION_PROJECT_REF)) {
-  throw new Error(
-    `SÉCURITÉ : NEXT_PUBLIC_SUPABASE_URL pointe vers le projet Supabase de PRODUCTION (identifiant "${PRODUCTION_PROJECT_REF}" détecté dans "${supabaseUrl}"). ` +
-      "Les tests d'intégration ne doivent jamais s'exécuter contre la production — vérifiez .env.preprod.local.",
-  );
-}
-
-if (!supabaseUrl.includes(EXPECTED_PREPROD_PROJECT_REF)) {
-  throw new Error(
-    `SÉCURITÉ : NEXT_PUBLIC_SUPABASE_URL ne pointe pas vers le projet de préproduction attendu (identifiant "${EXPECTED_PREPROD_PROJECT_REF}" absent de "${supabaseUrl}"). ` +
-      "Vérifiez .env.preprod.local.",
-  );
-}
+assertPreprodSupabaseUrl(supabaseUrl);

@@ -8,6 +8,21 @@
 
 ---
 
+## Priorités au 2026-09-24
+
+**Gel des fonctionnalités avant le pilote** : aucune nouvelle fonctionnalité n'est démarrée tant que les points ci-dessous ne sont pas traités. Le back-office admin complet (Phase 10, §16 point 10) est explicitement **reporté après la refonte de la fiche entreprise** listée ci-dessous.
+
+**Phase 0 — préparation au pilote** (ne s'insère pas dans la numérotation 1-14 du §16 : il s'agit de travail de stabilisation et de mise en production, pas d'une nouvelle fonction produit) :
+
+1. **Préproduction pour les tests** : `fcp-preprod` reste la seule base contre laquelle `npm run test:integration` s'exécute (voir §17 et CHANGELOG.md, Phase 10C) — jamais la production, jamais `.env.local`.
+2. **Plans de retour arrière testés en préprod** pour les migrations `0024` (dédoublonnage + anti-rafale) et `0025` (protection des coordonnées professionnelles) — dette identifiée à l'issue de la Phase 10C (seul `0026` a un plan, partiel). Écrits puis **réellement exécutés contre `fcp-preprod`** avant d'être considérés faits, jamais rédigés puis laissés non vérifiés.
+3. **Dépublication des 3 entreprises `[DEMO]`** et **des 3 entreprises réellement importées et publiées** (FIGEAC AERO, Airbus Atlantic, MAF AGROBOTIC — voir §16 point 8) — `companies.status` remis à `draft`/`inactive` avant le pilote.
+4. **Déploiement Vercel** de l'application.
+5. **Refonte de la fiche entreprise publique** (`/entreprises/[slug]`).
+6. **Protection contre le double envoi du formulaire de création d'entreprise, et contrôle de doublon (site web, SIREN/NEQ)** — constaté sur l'inventaire de production (2026-09-24, vérifié par le propriétaire du projet dans le SQL Editor Supabase, lecture seule) : 6 `active`, 14 `draft` (contre 6/11 le 21 septembre). Les 3 brouillons supplémentaires sont des tests manuels, pas de vraies entreprises : « YUL ADMIN TEST » et une entreprise en double sur le domaine `jaimelequebec.com`, créée à 2 secondes d'intervalle — un double envoi du même formulaire.
+
+---
+
 ## 0. Vérification de robustesse du modèle (revue du 2026-09-19)
 
 Avant de démarrer la Phase 1, le modèle de données a été relu point par point pour vérifier qu'il supporte réellement les exigences suivantes. Deux lacunes ont été corrigées (marquées ✅ _corrigé_), tout le reste était déjà couvert par la version précédente.
@@ -474,7 +489,7 @@ PROJECT_SPEC.md
 7. Annuaire public + recherche + filtres + fiche entreprise + revendication + SEO de base — **fait** : recherche plein texte PostgreSQL (`search_companies()`, insensible aux accents), filtres combinables, pagination, URLs géographiques/sectorielles (`/entreprises/france`, `/entreprises/quebec/[secteur]`), fiche entreprise (offres/besoins/opportunités actifs, compatibilité ciblée réutilisant le moteur Phase 6), revendication (`company_claims`, auto-approbation à domaine fort ou examen manuel admin), sitemap/robots/structured data — canonicals et hreflang (fr/en/x-default) corrigés en Phase 8 (suite) pour refléter les vraies routes traduites. Voir docs/DIRECTORY.md et docs/CLAIMING.md. Validé initialement avec les données `[DEMO]` uniquement ; complété depuis par le lot pilote réel (voir point 8 ci-dessous).
 8. Audit des données de sourcing + pipeline d'import (`data/raw/`) — **audit, pipeline ET import pilote réel faits** (Phase 8, voir docs/DATA_INVENTORY.md, docs/DATA_MAPPING.md, docs/DATA_SOURCES.md, docs/IMPORT_PIPELINE.md) : garde-fou de licence, staging, dédoublonnage testés réellement. **Import réel exécuté** (batch `FRANCE_PILOT_001`) pour les 13 entreprises françaises approuvées ; **3 publiées** (FIGEAC AERO, Airbus Atlantic, MAF AGROBOTIC), **10 restent `draft`** (dont Safran et STMicroelectronics Rousset SAS, secteur/description déjà préparés). Les **87 entreprises françaises restantes n'ont pas été importées**, faute d'identification suffisamment fiable (aucun SIREN exploitable dans la source). **Aucune entreprise québécoise importée** (docs/QUEBEC_SOURCING_STRATEGY.md, documentation seulement — aucune source québécoise approuvée pour un usage commercial). Explicitement reporté à une phase ultérieure sur demande du propriétaire du projet : le badge « entreprise vérifiée » avancé (`company_verifications`).
 9. Demandes de mise en relation — **fait** (Phase 9, favoris toujours reporté) : `partnership_requests`, 4 fonctions SECURITY DEFINER, CTA sur la fiche publique et sur les partenaires potentiels, « Mes mises en relation » (REÇUES/ENVOYÉES + détail), « Mes notifications » — voir docs/PARTNERSHIP_REQUESTS.md et docs/SECURITY.md.
-10. Back-office admin complet (incluant le traitement des demandes RGPD/Loi 25) — `/admin/revendications` déjà posé en Phase 7 comme première page, `/admin/imports` à venir avec le pipeline d'import
+10. Back-office admin complet (incluant le traitement des demandes RGPD/Loi 25) — `/admin/revendications` déjà posé en Phase 7 comme première page, `/admin/imports` à venir avec le pipeline d'import. **Reporté après la refonte de la fiche entreprise, voir « Priorités au 2026-09-24 » en tête de document.**
 11. Vérification de profil d'entreprise (`company_verifications`, distincte de la revendication déjà construite en Phase 7) — reporté après l'import sur demande explicite
 12. Structure des abonnements, puis intégration Stripe
 13. SEO avancé + durcissement sécurité + performance
